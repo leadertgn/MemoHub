@@ -1,0 +1,24 @@
+import { Routes, Route } from 'react-router-dom'
+import Layout from './components/layout/Layout'
+import Home from './pages/Home'
+import Search from './pages/Search'
+import MemoirDetail from './pages/MemoirDetail'
+import Upload from './pages/Upload'
+import Login from './pages/Login'
+import { AuthProvider } from './context/AuthContext'
+
+export default function App() {
+  return (
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="search" element={<Search />} />
+            <Route path="memoirs/:id" element={<MemoirDetail />} />
+            <Route path="upload" element={<Upload />} />
+            <Route path="login" element={<Login />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
+  )
+}
