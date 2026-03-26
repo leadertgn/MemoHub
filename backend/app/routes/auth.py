@@ -25,8 +25,11 @@ async def google_auth(payload: GoogleAuthRequest, session: Session = Depends(get
     """
     from app.core.config import settings
 
+    # Créer un client avec timeout et réutiliser pour les deux requêtes
+    timeout = httpx.Timeout(30.0)
+
     # 1. Échange le code Google contre un access_token Google
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=timeout) as client:
         token_response = await client.post(GOOGLE_TOKEN_URL, data={
             "code":          payload.code,
             "client_id":     settings.GOOGLE_CLIENT_ID,
@@ -41,7 +44,7 @@ async def google_auth(payload: GoogleAuthRequest, session: Session = Depends(get
     google_token = token_response.json().get("access_token")
 
     # 2. Récupère les infos de l'utilisateur depuis Google
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=timeout) as client:
         userinfo_response = await client.get(
             GOOGLE_USERINFO_URL,
             headers={"Authorization": f"Bearer {google_token}"}

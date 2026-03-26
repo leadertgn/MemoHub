@@ -220,3 +220,9 @@ credentials.json
 *.key
 *.pem
 firebase-*.json
+CHECKLIST.md
+DASHBOARD.txt
+FRONTEND_ROADMAP.md
+MVP_ANALYSIS.md
+README_ANALYSIS.md
+SCALABILITY_OPTIMIZATION.md
