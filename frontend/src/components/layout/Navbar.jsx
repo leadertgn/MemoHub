@@ -28,7 +28,20 @@ export default function Navbar() {
             >
               Rechercher
             </NavLink>
-
+            {(user?.role === "admin" || user?.role === "moderator") && (
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors ${
+                    isActive
+                      ? "text-blue-600"
+                      : "text-gray-600 hover:text-blue-600"
+                  }`
+                }
+              >
+                Admin
+              </NavLink>
+            )}
             {isAuthenticated && (
               <NavLink
                 to="/upload"

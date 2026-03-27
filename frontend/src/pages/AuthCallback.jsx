@@ -1,51 +1,53 @@
-import { useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { apiClient } from '../api/client'
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { apiClient } from "../api/client";
 
 export default function AuthCallback() {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  const { login } = useAuth()
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   useEffect(() => {
-    const code = searchParams.get('code')
-    const state = searchParams.get('state')
-    const storedState = localStorage.getItem('oauth_state')
+    const code = searchParams.get("code");
+    const state = searchParams.get("state");
+    const storedState = localStorage.getItem("oauth_state");
 
     // Verify CSRF state to prevent attacks
     if (!code || !state || state !== storedState) {
-      localStorage.removeItem('oauth_state')
-      navigate('/login')
-      return
+      localStorage.removeItem("oauth_state");
+      navigate("/login");
+      return;
     }
 
     // Clear the used state
-    localStorage.removeItem('oauth_state')
+    localStorage.removeItem("oauth_state");
 
     // Envoie le code à ton backend FastAPI
-    apiClient('/auth/google', {
-      method: 'POST',
+    apiClient("/auth/google", {
+      method: "POST",
       body: JSON.stringify({
         code,
-        redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'http://localhost:5173/auth/callback'
-      })
+        redirect_uri:
+          import.meta.env.VITE_REDIRECT_URI ||
+          "http://localhost:5173/auth/callback",
+      }),
     })
-      .then(data => {
+      .then((data) => {
         // data contient : access_token, user_id, role, full_name, avatar_url
         login(
           {
-            id:         data.user_id,
-            full_name:  data.full_name,
+            id: data.user_id,
+            full_name: data.full_name,
             avatar_url: data.avatar_url,
-            role:       data.role,
+            role: data.role,
           },
-          data.access_token
-        )
-        navigate('/')
+          data.access_token,
+        );
+        navigate("/");
       })
-      .catch(() => navigate('/login'))
-  }, [])
+      .catch(() => navigate("/login"));
+  }, []);
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center">
@@ -54,5 +56,5 @@ export default function AuthCallback() {
         <p className="text-sm text-gray-500">Connexion en cours...</p>
       </div>
     </div>
-  )
+  );
 }

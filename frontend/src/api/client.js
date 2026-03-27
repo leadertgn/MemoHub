@@ -10,10 +10,13 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 export async function apiClient(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
+  // Ne pas forcer Content-Type si c'est FormData (le browser le gère automatiquement)
+  const isFormData = options.body instanceof FormData;
+
   const config = {
     headers: {
-      "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
+      ...(!isFormData && { "Content-Type": "application/json" }),
       ...options.headers,
     },
     ...options,
