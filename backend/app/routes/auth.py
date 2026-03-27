@@ -25,6 +25,11 @@ async def google_auth(payload: GoogleAuthRequest, session: Session = Depends(get
     """
     from app.core.config import settings
 
+    # Validate redirect_uri is in whitelist to prevent open redirect attacks
+    allowed_uris = [uri.strip() for uri in settings.ALLOWED_REDIRECT_URIS.split(",")]
+    if payload.redirect_uri not in allowed_uris:
+        raise HTTPException(status_code=400, detail="Invalid redirect URI")
+
     # Créer un client avec timeout et réutiliser pour les deux requêtes
     timeout = httpx.Timeout(30.0)
 

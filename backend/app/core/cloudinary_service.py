@@ -57,9 +57,10 @@ async def upload_memoir_pdf(file: UploadFile, memoir_title: str) -> str:
         return result["secure_url"]     # URL HTTPS permanente
 
     except Exception as e:
+        # Mask error details in production to prevent information disclosure
         raise HTTPException(
             status_code=500,
-            detail=f"Erreur lors de l'upload : {str(e)}"
+            detail="Une erreur est survenue lors de l'upload. Veuillez réessayer."
         )
 
 

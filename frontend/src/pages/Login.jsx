@@ -15,12 +15,17 @@ export default function Login() {
   }, [isAuthenticated, navigate])
 
   const handleGoogleLogin = () => {
+    // Generate CSRF state token to prevent CSRF attacks
+    const state = Math.random().toString(36).substring(7) + Date.now().toString(36)
+    localStorage.setItem('oauth_state', state)
+
     const params = new URLSearchParams({
       client_id:     GOOGLE_CLIENT_ID,
       redirect_uri:  REDIRECT_URI,
       response_type: 'code',
       scope:         'openid email profile',
       access_type:   'offline',
+      state:         state,
     })
     window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`
   }

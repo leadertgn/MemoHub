@@ -16,6 +16,7 @@ class MemoirRead(SQLModel):
     field_of_study_id: int
     university_id: int
     status: MemoirStatus
+    rejection_reason: Optional[str] = None  # Raison du rejet si applicable
     is_premium: bool
     view_count: int
 

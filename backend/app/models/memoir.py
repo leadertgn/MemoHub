@@ -41,6 +41,7 @@ class MemoirUpdate(SQLModel):
     degree: Optional[DegreeLevel] = None
     language: Optional[str] = None
     status: Optional[MemoirStatus] = None        # Modifiable uniquement par admin/modérateur
+    rejection_reason: Optional[str] = None       # Raison du rejet (modifiable par modérateur/admin)
     field_of_study_id: Optional[int] = None
     university_id: Optional[int] = None
     is_premium: Optional[bool] = None            # Modifiable par admin pour activer/désactiver le premium
@@ -54,6 +55,7 @@ class Memoir(MemoirBase, TimestampMixin, table=True):
 
     # Modération
     status: MemoirStatus = Field(default=MemoirStatus.pending)
+    rejection_reason: Optional[str] = Field(default=None)  # Raison du rejet (null si approuvé)
 
     # Accès premium
     # False = lecture libre pour tous

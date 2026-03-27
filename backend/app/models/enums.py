@@ -16,18 +16,20 @@ from enum import Enum
 # UTILISATEUR
 # ==========================================
 class UserRole(str, Enum):
-    student   = "student"     # Étudiant lambda
-    moderator = "moderator"   # Modérateur de contenu
-    admin     = "admin"       # Administrateur de la plateforme
+    student    = "student"     # Étudiant lambda
+    ambassador = "ambassador" # Ambassadeur (université/filière)
+    moderator  = "moderator"   # Modérateur de contenu
+    admin      = "admin"       # Administrateur de la plateforme
 
 
 # ==========================================
 # MÉMOIRE
 # ==========================================
 class MemoirStatus(str, Enum):
-    pending  = "pending"   # En attente de validation
-    approved = "approved"  # Validé, visible par tous
-    rejected = "rejected"  # Rejeté, visible uniquement par l'auteur
+    pending      = "pending"       # En attente de validation (état initial)
+    pre_validated = "pre_validated" # Pré-validé par ambassadeur (facultatif)
+    approved    = "approved"      # Validé par modérateur, visible par tous
+    rejected    = "rejected"      # Rejeté, visible uniquement par l'auteur
 
 
 class DegreeLevel(str, Enum):

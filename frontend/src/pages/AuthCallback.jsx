@@ -10,10 +10,18 @@ export default function AuthCallback() {
 
   useEffect(() => {
     const code = searchParams.get('code')
-    if (!code) {
+    const state = searchParams.get('state')
+    const storedState = localStorage.getItem('oauth_state')
+
+    // Verify CSRF state to prevent attacks
+    if (!code || !state || state !== storedState) {
+      localStorage.removeItem('oauth_state')
       navigate('/login')
       return
     }
+
+    // Clear the used state
+    localStorage.removeItem('oauth_state')
 
     // Envoie le code à ton backend FastAPI
     apiClient('/auth/google', {
