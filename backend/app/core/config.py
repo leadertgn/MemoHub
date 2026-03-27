@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     # Google OAuth2
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
+    ALLOWED_REDIRECT_URIS: str = "http://localhost:5173/auth/callback,https://memohub.africa/auth/callback"
 
     # Cloudinary
     CLOUDINARY_CLOUD_NAME: str
@@ -27,6 +28,14 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str
+
+    # Brevo (Email notifications)
+    BREVO_API_KEY: str
+    BREVO_SENDER_EMAIL: str = "noreply@memohub.africa"
+    BREVO_SENDER_NAME: str = "MemoHub"
+
+    # Environment
+    ENVIRONMENT: str = "development"
 
     class Config:
         env_file = ".env"

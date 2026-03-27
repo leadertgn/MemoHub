@@ -34,8 +34,8 @@ app.add_middleware(
         "http://localhost:5173",    # frontend Vite en dev
     ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Restrict to necessary methods
+    allow_headers=["Content-Type", "Authorization"],  # Only necessary headers
 )
 
 app.include_router(countries.router, prefix="/api/v1")

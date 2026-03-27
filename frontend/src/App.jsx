@@ -6,7 +6,8 @@ import MemoirDetail from './pages/MemoirDetail'
 import Upload from './pages/Upload'
 import Login from './pages/Login'
 import { AuthProvider } from './context/AuthContext'
-
+import AuthCallback from './pages/AuthCallback'
+import Dashboard from './components/admin/Dashboard'
 export default function App() {
   return (
       <AuthProvider>
@@ -17,6 +18,8 @@ export default function App() {
             <Route path="memoirs/:id" element={<MemoirDetail />} />
             <Route path="upload" element={<Upload />} />
             <Route path="login" element={<Login />} />
+            <Route path="auth/callback" element={<AuthCallback />} />
+            <Route path="admin" element={<Dashboard />} />
           </Route>
         </Routes>
       </AuthProvider>

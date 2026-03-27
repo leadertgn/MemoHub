@@ -214,6 +214,11 @@ def update_memoir_status(
         )
 
     memoir.status = status_data.status
+    if status_data.rejection_reason:
+        memoir.rejection_reason = status_data.rejection_reason
+    elif status_data.status == MemoirStatus.approved:
+        # Clear rejection reason if approving
+        memoir.rejection_reason = None
     session.add(memoir)
     session.commit()
     session.refresh(memoir)
