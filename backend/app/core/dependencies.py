@@ -64,3 +64,15 @@ def require_moderator(current_user: User = Depends(get_current_user)) -> User:
             detail="Accès réservé aux modérateurs"
         )
     return current_user
+
+
+def require_ambassador(current_user: User = Depends(get_current_user)) -> User:
+    """
+    Dépendance — admin, modérateur ou ambassadeur.
+    """
+    if current_user.role not in [UserRole.admin, UserRole.moderator, UserRole.ambassador]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accès réservé aux ambassadeurs ou supérieurs"
+        )
+    return current_user

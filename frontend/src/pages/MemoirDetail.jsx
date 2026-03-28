@@ -1,6 +1,8 @@
 import { useParams, Link } from 'react-router-dom'
 import { useMemoirDetail } from '../hooks/useMemoirs'
 import { useAuth } from '../context/AuthContext'
+import { useState } from 'react'
+import SecurePDFViewer from '../components/SecurePDFViewer'
 
 const DEGREE_LABELS = {
   licence: 'Licence', master: 'Master', doctorat: 'Doctorat',
@@ -32,6 +34,31 @@ export default function MemoirDetail() {
         </Link>
       </div>
     )
+  }
+
+  const handleDownload = async () => {
+    try {
+      const url = `${import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1"}/memoirs/${memoir.id}/download`;
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!res.ok) throw new Error("Erreur téléchargement");
+      
+      const blob = await res.blob();
+      const objUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objUrl;
+      const safeTitle = memoir.title.replace(/[^a-zA-Z0-9]/g, '_');
+      a.download = `MemoHub_${safeTitle}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(objUrl);
+    } catch (err) {
+      alert("Impossible de télécharger le document. Il n'est peut-être pas disponible.");
+    }
   }
 
   return (
@@ -84,7 +111,7 @@ export default function MemoirDetail() {
         {!isAuthenticated ? (
           <div className="text-center py-6 space-y-3 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-600">
-              Connecte-toi pour consulter ce mémoire
+              Connectez-vous pour lire et télécharger le mémoire complet.
             </p>
             <Link
               to="/login"
@@ -94,32 +121,19 @@ export default function MemoirDetail() {
             </Link>
           </div>
         ) : (
-          <div className="flex gap-3">
-            <a 
-              href={`${import.meta.env.VITE_API_URL}/memoirs/${memoir.id}/view`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 text-center bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              📖 Consulter en ligne
-            </a>
-
-            {!memoir.is_premium ? (
-              <a
-                href={`${import.meta.env.VITE_API_URL}/memoirs/${memoir.id}/download`}
-                className="flex-1 text-center border border-blue-600 text-blue-600 text-sm py-2 rounded-lg hover:bg-blue-50 transition-colors"
-              >
-                ⬇️ Télécharger
-              </a>
-            ) : (
+          <div className="space-y-6">
+            <div className="flex gap-3 justify-end">
               <button
-                disabled
-                className="flex-1 text-center border border-gray-200 text-gray-400 text-sm py-2 rounded-lg cursor-not-allowed"
-                title="Réservé aux membres premium"
+                onClick={handleDownload}
+                className="flex items-center gap-2 bg-blue-600 text-white text-sm px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
-                🔒 Premium uniquement
+                <span className="text-lg">⬇️</span> 
+                Télécharger (avec filigrane)
               </button>
-            )}
+            </div>
+            
+            {/* Lecteur PDF */}
+            <SecurePDFViewer memoirId={memoir.id} />
           </div>
         )}
       </div>

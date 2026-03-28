@@ -3,10 +3,10 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select, func
 
-from app.core.dependencies import require_admin, require_moderator
+from app.core.dependencies import require_admin, require_moderator, require_ambassador
 from app.database import get_session
 from app.models import Memoir, University, User
-from app.models.enums import MemoirStatus, UniversityStatus
+from app.models.enums import UserRole, MemoirStatus, UniversityStatus
 from app.schemas.memoir import MemoirRead
 from app.schemas.university import UniversityRead
 
@@ -61,18 +61,25 @@ def get_stats(
 
 
 # --------------------------------------------------
-# GET /admin/memoirs/pending  — modérateur/admin
+# GET /admin/memoirs/pending  — ambassadeur/modérateur/admin
 # --------------------------------------------------
 @router.get("/memoirs/pending", response_model=List[MemoirRead])
 def get_pending_memoirs(
     session: Session = Depends(get_session),
-    _: User = Depends(require_moderator)
+    current_user: User = Depends(require_ambassador)
 ):
-    memoirs = session.exec(
-        select(Memoir)
-        .where(Memoir.status == MemoirStatus.pending)
-        .order_by(Memoir.created_at)  # les plus anciens en premier
-    ).all()
+    query = select(Memoir)
+    
+    if current_user.role == UserRole.ambassador:
+        # L'ambassadeur ne voit que les siens en pending
+        query = query.where(Memoir.university_id == current_user.university_id)
+        query = query.where(Memoir.status == MemoirStatus.pending)
+    else:
+        # Les modérateurs/admins voient tout ce qui n'est pas approuvé/rejeté
+        query = query.where(Memoir.status.in_([MemoirStatus.pending, MemoirStatus.pre_validated]))
+        
+    query = query.order_by(Memoir.created_at)
+    memoirs = session.exec(query).all()
     return memoirs
 
 

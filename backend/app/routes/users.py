@@ -11,6 +11,20 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 
 # --------------------------------------------------
+# GET /users
+# Lister tous les utilisateurs — admin seulement
+# --------------------------------------------------
+@router.get("/", response_model=list[UserReadPrivate])
+def get_all_users(
+    session: Session = Depends(get_session),
+    _: User = Depends(require_admin)
+):
+    from sqlmodel import select
+    users = session.exec(select(User)).all()
+    return users
+
+
+# --------------------------------------------------
 # GET /users/me
 # Mon propre profil — auth requise
 # --------------------------------------------------

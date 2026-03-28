@@ -22,10 +22,15 @@ const TABS = [
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const [activeTab, setActiveTab] = useState('stats')
+  const [activeTab, setActiveTab] = useState(user?.role === 'ambassador' ? 'memoirs' : 'stats')
 
-  // Redirige si pas admin
-  if (user?.role !== 'admin' && user?.role !== 'moderator') {
+  const visibleTabs = TABS.filter(tab => {
+    if (user?.role === 'ambassador') return tab.id === 'memoirs'
+    return true
+  })
+
+  // Redirige si pas le droit
+  if (user?.role !== 'admin' && user?.role !== 'moderator' && user?.role !== 'ambassador') {
     return <Navigate to="/" replace />
   }
 
@@ -42,7 +47,7 @@ export default function Dashboard() {
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
-        {TABS.map(tab => (
+        {visibleTabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -153,7 +158,7 @@ function UsersTab() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              {['Utilisateur', 'Email', 'Rôle', 'Premium', 'Action'].map(h => (
+              {['Utilisateur', 'Email', 'Rôle', 'Action'].map(h => (
                 <th key={h} className="text-left px-4 py-3 text-xs font-medium text-gray-500">
                   {h}
                 </th>
@@ -175,18 +180,13 @@ function UsersTab() {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  {user.is_premium
-                    ? <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Premium</span>
-                    : <span className="text-xs text-gray-400">—</span>
-                  }
-                </td>
-                <td className="px-4 py-3">
                   <select
                     value={user.role}
                     onChange={e => updateRole({ id: user.id, role: e.target.value })}
                     className="text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="student">student</option>
+                    <option value="ambassador">ambassador</option>
                     <option value="moderator">moderator</option>
                     <option value="admin">admin</option>
                   </select>

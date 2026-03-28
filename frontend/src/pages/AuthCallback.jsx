@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { apiClient } from "../api/client";
-
+import { authApi } from "../api/auth";
 export default function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -24,16 +23,10 @@ export default function AuthCallback() {
     localStorage.removeItem("oauth_state");
 
     // Envoie le code à ton backend FastAPI
-    apiClient("/auth/google", {
-      method: "POST",
-      body: JSON.stringify({
-        code,
-        redirect_uri:
-          import.meta.env.VITE_REDIRECT_URI ||
-          "http://localhost:5173/auth/callback",
-      }),
-    })
-      .then((data) => {
+    authApi.loginWithGoogle(
+        code, 
+        import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173/auth/callback"
+    ).then((data) => {
         // data contient : access_token, user_id, role, full_name, avatar_url
         login(
           {

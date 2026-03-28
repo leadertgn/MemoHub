@@ -4,17 +4,20 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, 
 from sqlmodel import Session, select
 from sqlalchemy import  func
 
-from app.core.dependencies import get_current_user, require_moderator
+from app.core.dependencies import get_current_user, require_moderator, require_ambassador
 from app.core.cloudinary_service import upload_memoir_pdf, delete_memoir_pdf
 from app.database import get_session
 from app.models import Memoir, User, FieldOfStudy, University
-from app.models.enums import MemoirStatus, DegreeLevel, UniversityStatus
+from app.models.enums import UserRole, MemoirStatus, DegreeLevel, UniversityStatus
 from app.schemas.memoir import (
     MemoirRead, MemoirReadWithAccess, MemoirCreate, MemoirUpdate, MemoirStatusUpdate
 )
 
 from app.core.cloudinary_service import generate_signed_url
 from app.schemas.memoir import MemoirDownloadResponse
+from app.core.pdf_service import fetch_pdf, add_watermark
+from fastapi.responses import Response, StreamingResponse
+import io
 
 router = APIRouter(prefix="/memoirs", tags=["Memoirs"])
 
@@ -98,14 +101,7 @@ def get_memoir_with_access(
     if not memoir or memoir.status != MemoirStatus.approved:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 
-    # Vérifie les droits d'accès
-    # - Mémoire gratuit → tout le monde
-    # - Mémoire premium → utilisateur premium seulement
-    if memoir.is_premium and not current_user.is_premium:
-        raise HTTPException(
-            status_code=403,
-            detail="Ce mémoire nécessite un abonnement premium"
-        )
+    # Vérifie les droits d'accès - Mémoire gratuit pour tous!
 
     return memoir
 
@@ -193,18 +189,25 @@ def update_memoir(
 
 
 # --------------------------------------------------
-# PATCH /memoirs/{id}/status  — modérateur/admin
+# PATCH /memoirs/{id}/status  — ambassadeur/modérateur/admin
 # --------------------------------------------------
 @router.patch("/{memoir_id}/status", response_model=MemoirRead)
 def update_memoir_status(
     memoir_id: int,
     status_data: MemoirStatusUpdate,
     session: Session = Depends(get_session),
-    _: User = Depends(require_moderator)
+    current_user: User = Depends(require_ambassador)
 ):
     memoir = session.get(Memoir, memoir_id)
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
+
+    # Si c'est un ambassadeur, vérifier université + statut correct
+    if current_user.role == UserRole.ambassador:
+        if memoir.university_id != current_user.university_id:
+            raise HTTPException(status_code=403, detail="Vous ne modérez pas cette université")
+        if status_data.status not in [MemoirStatus.pre_validated, MemoirStatus.rejected]:
+            raise HTTPException(status_code=403, detail="L'ambassadeur ne peut que pré-valider ou rejeter")
 
     # Si rejeté, une raison est obligatoire
     if status_data.status == MemoirStatus.rejected and not status_data.rejection_reason:
@@ -246,58 +249,77 @@ def delete_memoir(
 
 
 # --------------------------------------------------
-# GET /memoirs/{id}/download  — premium seulement
-# Génère une URL signée temporaire pour télécharger
+# GET /memoirs/{id}/download  — tout le monde (connecté)
+# Téléchargement d'un mémoire AVEC filigrane
 # --------------------------------------------------
-@router.get("/{memoir_id}/download", response_model=MemoirDownloadResponse)
-def download_memoir(
+@router.get("/{memoir_id}/download")
+async def download_memoir(
     memoir_id: int,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
     memoir = session.get(Memoir, memoir_id)
-    if not memoir or memoir.status != MemoirStatus.approved:
+    if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
+        
+    if memoir.status != MemoirStatus.approved and memoir.author_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Mémoire non disponible")
 
-    # Vérifie les droits premium
-    if memoir.is_premium and not current_user.is_premium:
-        raise HTTPException(
-            status_code=403,
-            detail="Téléchargement réservé aux abonnés premium"
+    # Si le telechargement est désactivé
+    if not memoir.allow_download:
+        raise HTTPException(status_code=403, detail="L'auteur n'autorise pas le téléchargement")
+
+    try:
+        # Télécharge le PDF en mémoire
+        pdf_bytes = await fetch_pdf(memoir.file_url)
+        
+        # Prépare le filigrane
+        univ_name = memoir.university.name if memoir.university else "MemoHub"
+        watermark_text = f"Téléchargé depuis MemoHub - {univ_name}"
+        
+        # Applique le filigrane
+        watermarked_pdf = add_watermark(pdf_bytes, watermark_text)
+        
+        # Nettoyage du titre pour le nom du fichier
+        safe_title = "".join([c if c.isalnum() else "_" for c in memoir.title])
+        
+        return Response(
+            content=watermarked_pdf,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=MemoHub_{safe_title}.pdf"}
         )
-
-    # Génère l'URL signée (expire dans 60s)
-    signed_url = generate_signed_url(memoir.file_url, expires_in_seconds=60)
-
-    return MemoirDownloadResponse(
-        signed_url=signed_url,
-        expires_in=60,
-        memoir_id=memoir.id,
-        title=memoir.title
-    )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de traitement du PDF : {str(e)}")
 
 
 # --------------------------------------------------
-# GET /memoirs/{id}/view  — tout le monde
-# URL signée pour visualisation en ligne (expire dans 30 min)
+# GET /memoirs/{id}/stream  — tout le monde
+# Stream le PDF original (protégé) pour la visionneuse React-PDF
 # --------------------------------------------------
-@router.get("/{memoir_id}/view", response_model=MemoirDownloadResponse)
-def view_memoir(
+@router.get("/{memoir_id}/stream")
+async def stream_memoir(
     memoir_id: int,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
     memoir = session.get(Memoir, memoir_id)
     if not memoir or memoir.status != MemoirStatus.approved:
-        raise HTTPException(status_code=404, detail="Mémoire introuvable")
+        if memoir and memoir.author_id == current_user.id:
+            pass # L'auteur peut voir son mémoire non approuvé
+        else:
+            raise HTTPException(status_code=404, detail="Mémoire introuvable ou non approuvé")
 
-    # Visualisation disponible pour tous les connectés
-    # URL valide 30 minutes — assez pour lire un mémoire
-    signed_url = generate_signed_url(memoir.file_url, expires_in_seconds=1800)
-
-    return MemoirDownloadResponse(
-        signed_url=signed_url,
-        expires_in=1800,
-        memoir_id=memoir.id,
-        title=memoir.title
-    )
+    try:
+        # Télécharge le PDF en mémoire depuis Cloudinary
+        pdf_bytes = await fetch_pdf(memoir.file_url)
+        
+        # Retourne en stream
+        return StreamingResponse(
+            io.BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": "inline"  # Indique au navigateur d'afficher au lieu de télécharger
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Impossible de lire le document")

@@ -11,7 +11,6 @@ class UserBase(SQLModel):
     full_name: str
     avatar_url: Optional[str] = None       # Photo de profil retournée par Google OAuth
     role: UserRole = Field(default=UserRole.student)
-    is_premium: bool = Field(default=False)
 
 
 class UserCreate(UserBase):
@@ -22,7 +21,6 @@ class UserUpdate(SQLModel):
     full_name: Optional[str] = None
     avatar_url: Optional[str] = None
     role: Optional[UserRole] = None        # Seul l'admin peut modifier le rôle
-    is_premium: Optional[bool] = None
 
 
 class User(UserBase, TimestampMixin, table=True):
@@ -30,6 +28,9 @@ class User(UserBase, TimestampMixin, table=True):
     google_id: str = Field(unique=True, index=True)
 
     # Relations
+    # université affiliée (seulement pour l'ambassadeur)
+    university_id: Optional[int] = Field(default=None, foreign_key="university.id")
+
     memoirs: List["Memoir"] = Relationship(back_populates="author")
 
     # Mémoires soumis par cet user pour modération

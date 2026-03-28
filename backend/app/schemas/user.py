@@ -10,7 +10,6 @@ class UserRead(SQLModel):
     full_name: str
     avatar_url: Optional[str] = None
     role: UserRole
-    is_premium: bool
 
 
 class UserReadPrivate(UserRead):

@@ -1,6 +1,6 @@
-# seed.py
+import sys
 import httpx
-from sqlmodel import Session, select
+from sqlmodel import Session, select, SQLModel
 from app.database import engine, create_db_and_tables
 from app.models import Country, Domain, University, FieldOfStudy
 from app.models.enums import UniversityStatus
@@ -114,24 +114,24 @@ def seed_insti(session: Session):
         print("  ❌ Bénin introuvable — lance d'abord seed_countries()")
         return
 
-    # 2. Crée l'UNSTIM si elle n'existe pas
-    unstim = session.exec(
-        select(University).where(
-            University.name == "Université Nationale des Sciences, Technologies, Ingénierie et Mathématiques (UNSTIM)")
+    # 2. Crée l'INSTI directement comme une Université autonome
+    insti_name = "Institut National Supérieur de Technologie Industrielle (INSTI)"
+    insti = session.exec(
+        select(University).where(University.name == insti_name)
     ).first()
 
-    if not unstim:
-        unstim = University(
-            name="Université Nationale des Sciences, Technologies, Ingénierie et Mathématiques (UNSTIM)",
+    if not insti:
+        insti = University(
+            name=insti_name,
             country_id=benin.id,
-            website="https://unstim.bj",
+            website="https://unstim.bj/insti",
             status=UniversityStatus.approved
         )
-        session.add(unstim)
+        session.add(insti)
         session.flush()
-        print("  ✅ UNSTIM créée")
+        print("  ✅ INSTI (Loco) créée")
     else:
-        print("  ℹ️  UNSTIM déjà présente")
+        print("  ℹ️  INSTI déjà présente")
 
     # 3. Helper pour récupérer un domaine
     def get_domain(label):
@@ -198,14 +198,14 @@ def seed_insti(session: Session):
         existing = session.exec(
             select(FieldOfStudy).where(
                 FieldOfStudy.label == label,
-                FieldOfStudy.university_id == unstim.id
+                FieldOfStudy.university_id == insti.id
             )
         ).first()
 
         if not existing:
             session.add(FieldOfStudy(
                 label=label,
-                university_id=unstim.id,
+                university_id=insti.id,
                 domain_id=domain.id
             ))
             added += 1
@@ -214,7 +214,14 @@ def seed_insti(session: Session):
 
 
 def seed_data():
-    print("🔧 Vérification des tables...")
+    reset_mode = "--reset" in sys.argv
+
+    if reset_mode:
+        print("🧨 MODE RESET ACTIVÉ : Suppression de toutes les données existantes...")
+        SQLModel.metadata.drop_all(engine)
+        print("✅ Base de données purgée.")
+
+    print("🔧 Création et Vérification des tables...")
     create_db_and_tables()
 
     with Session(engine) as session:
