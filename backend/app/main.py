@@ -51,5 +51,3 @@ app.include_router(admin.router,prefix="/api/v1")
 def read_root():
     return {"message": "Bienvenue sur MemoHub API v1.0"}
 
-
-
