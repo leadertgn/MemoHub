@@ -1,0 +1,63 @@
+// src/components/memoir/MemoirCard.jsx
+import { Link } from 'react-router-dom'
+import { Eye } from 'lucide-react'
+
+const DEGREE_LABELS = {
+  licence:   'Licence',
+  master:    'Master',
+  doctorat:  'Doctorat',
+  ingenieur: 'Ingénieur',
+  bts:       'BTS',
+  dut:       'DUT',
+}
+
+const DEGREE_COLORS = {
+  licence:   'bg-blue-100 text-blue-700',
+  master:    'bg-purple-100 text-purple-700',
+  doctorat:  'bg-red-100 text-red-700',
+  ingenieur: 'bg-green-100 text-green-700',
+  bts:       'bg-orange-100 text-orange-700',
+  dut:       'bg-yellow-100 text-yellow-700',
+}
+
+export default function MemoirCard({ memoir }) {
+  return (
+    <Link
+      to={`/memoirs/${memoir.id}`}
+      className="block bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 p-5 space-y-4 relative overflow-hidden group"
+    >
+      {/* Ligne décorative en haut au hover */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      {/* En-tête */}
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 flex-1">
+          {memoir.title}
+        </h3>
+        <span className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${DEGREE_COLORS[memoir.degree]}`}>
+          {DEGREE_LABELS[memoir.degree]}
+        </span>
+      </div>
+
+      {/* Résumé */}
+      <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+        {memoir.abstract}
+      </p>
+
+      {/* Métadonnées */}
+      <div className="flex items-center justify-between text-xs text-gray-400 pt-1 border-t border-gray-50">
+        <span className="font-medium text-gray-600">{memoir.author_name}</span>
+        <div className="flex items-center gap-3">
+          <span>{memoir.year}</span>
+          <span className="flex items-center gap-1">
+            <Eye className="w-3.5 h-3.5" /> {memoir.view_count}
+          </span>
+          {!memoir.allow_download && (
+            <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">
+              Sur Demande
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
+  )
+}
