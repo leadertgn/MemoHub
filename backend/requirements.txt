@@ -6,7 +6,7 @@ python-dotenv==1.0.1
 pyjwt==2.8.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.9
-psycopg2-binary==2.9.9
+psycopg[binary]
 alembic==1.13.1
 cloudinary==1.40.0
 sib-api-v3-sdk==7.6.0
