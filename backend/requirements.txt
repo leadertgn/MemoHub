@@ -6,7 +6,7 @@ pydantic-settings==2.3.4
 python-dotenv==1.0.1
 python-jose>=3.3.0
 python-multipart==0.0.9
-psycopg2-binary==2.9.9
+psycopg[binary]
 alembic==1.13.1
 cloudinary==1.40.0
 httpx==0.27.0
