@@ -31,6 +31,8 @@ export default function Upload() {
     title:             '',
     abstract:          '',
     author_name:       '',
+    author_email:      '',
+    author_phone:      '',
     year:              new Date().getFullYear(),
     degree:            '',
     language:          'fr',
@@ -66,6 +68,8 @@ export default function Upload() {
     if (!form.title.trim())       newErrors.title = 'Le titre est obligatoire'
     if (!form.abstract.trim())    newErrors.abstract = 'Le résumé est obligatoire'
     if (!form.author_name.trim()) newErrors.author_name = "Le nom de l'auteur est obligatoire"
+    if (!form.author_email.trim()) newErrors.author_email = "L'email de contact est obligatoire"
+    if (!form.author_phone.trim()) newErrors.author_phone = "Le numéro de téléphone est obligatoire"
     if (!form.degree)             newErrors.degree = 'Le niveau est obligatoire'
     if (!form.country_id)         newErrors.country_id = 'Le pays est obligatoire'
     if (!form.university_id)      newErrors.university_id = "L'université est obligatoire"
@@ -165,17 +169,46 @@ export default function Upload() {
         </Field>
 
         {/* Nom auteur réel */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field
+            label="Nom complet de l'auteur *"
+            error={errors.author_name}
+            hint="La personne ayant rédigé le mémoire"
+          >
+            <input
+              type="text"
+              placeholder="ex: Jean AGOSSOU"
+              value={form.author_name}
+              onChange={e => handleChange('author_name', e.target.value)}
+              className={inputClass(errors.author_name)}
+            />
+          </Field>
+          <Field
+            label="Téléphone de l'auteur (ou le vôtre) *"
+            error={errors.author_phone}
+            hint="Pour vérification par l'équipe (strictement privé)"
+          >
+            <input
+              type="tel"
+              placeholder="ex: +229 00 00 00 00"
+              value={form.author_phone}
+              onChange={e => handleChange('author_phone', e.target.value)}
+              className={inputClass(errors.author_phone)}
+            />
+          </Field>
+        </div>
+
         <Field
-          label="Nom de l'auteur réel *"
-          error={errors.author_name}
-          hint="Le nom de la personne qui a rédigé ce mémoire (peut être différent de vous)"
+          label="Email de l'auteur *"
+          error={errors.author_email}
+          hint="Nous pourrons envoyer un mail de confirmation d'accord."
         >
           <input
-            type="text"
-            placeholder="ex: Jean AGOSSOU"
-            value={form.author_name}
-            onChange={e => handleChange('author_name', e.target.value)}
-            className={inputClass(errors.author_name)}
+            type="email"
+            placeholder="ex: jean.agossou@email.com"
+            value={form.author_email}
+            onChange={e => handleChange('author_email', e.target.value)}
+            className={inputClass(errors.author_email)}
           />
         </Field>
 

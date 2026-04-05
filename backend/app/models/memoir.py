@@ -17,6 +17,8 @@ class MemoirBase(SQLModel):
     # author_id   = l'utilisateur qui l'a soumis sur la plateforme
     # Ces deux personnes peuvent être différentes !
     author_name: str = Field(index=True)                 # Nom de l'auteur réel du mémoire
+    author_email: str = Field(default="non_renseigné@email.com")   # Défaut pour ne pas casser Alembic sur les vieilles lignes
+    author_phone: str = Field(default="Inconnu")         # Obligatoire dans le routeur mais default pour le passé
 
     year: int = Field(index=True)                        # Année de soutenance
     degree: DegreeLevel                                  # Niveau académique (master, licence, etc.)

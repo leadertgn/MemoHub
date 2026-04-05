@@ -8,7 +8,7 @@ from app.core.dependencies import require_admin, require_moderator, require_amba
 from app.database import get_session
 from app.models import Memoir, University, User, FieldOfStudy
 from app.models.enums import UserRole, MemoirStatus, UniversityStatus, FieldStatus
-from app.schemas.memoir import MemoirRead
+from app.schemas.memoir import MemoirRead, MemoirModeratorRead
 from app.schemas.university import UniversityRead
 from app.schemas.field_of_study import FieldOfStudyRead
 
@@ -65,7 +65,7 @@ def get_stats(
 # --------------------------------------------------
 # GET /admin/memoirs/pending  — ambassadeur/modérateur/admin
 # --------------------------------------------------
-@router.get("/memoirs/pending", response_model=List[MemoirRead])
+@router.get("/memoirs/pending", response_model=List[MemoirModeratorRead])
 def get_pending_memoirs(
     session: Session = Depends(get_session),
     current_user: User = Depends(require_ambassador)

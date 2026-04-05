@@ -31,6 +31,14 @@ class MemoirReadWithAccess(MemoirRead):
     file_url: str
 
 
+class MemoirModeratorRead(MemoirRead):
+    """
+    Retourné aux administrateurs avec les informations de contact critiques.
+    """
+    author_email: str
+    author_phone: str
+
+
 class MemoirCreate(SQLModel):
     title: str
     abstract: str

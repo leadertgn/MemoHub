@@ -53,6 +53,17 @@ export default function MemoirModerationCard({ memoir }) {
       {/* Résumé */}
       <p className="text-xs text-gray-500 line-clamp-2">{memoir.abstract}</p>
 
+      {/* Info privées */}
+      {(memoir.author_email || memoir.author_phone) && (
+        <div className="bg-blue-50 border border-blue-100 p-2 rounded-lg text-xs space-y-1">
+          <p className="font-semibold text-blue-900 pb-1">Vérification identité (Privé)</p>
+          <div className="flex flex-col gap-1 text-blue-700">
+            {memoir.author_phone && <p>📞 {memoir.author_phone}</p>}
+            {memoir.author_email && <p>✉️ {memoir.author_email}</p>}
+          </div>
+        </div>
+      )}
+
       {/* Actions */}
       {!showRejectForm ? (
         <div className="flex gap-2 pt-1">
