@@ -69,8 +69,8 @@ export default function SecurePDFViewer({ memoirId }) {
         </button>
       </div>
 
-      {/* Le PDF (rendu en Canvas protégé) */}
-      <div className="shadow-2xl border border-gray-300 bg-white select-none">
+      {/* Le PDF (rendu en Canvas protégé) avec Overlay Filigrane */}
+      <div className="shadow-2xl border border-gray-300 bg-white select-none relative overflow-hidden group">
         {errorLoading ? (
            <div className="p-20 text-red-500 font-medium bg-red-50 rounded-lg m-4 flex items-center gap-2">
              <AlertTriangle className="w-6 h-6" /> Erreur ou document inaccessible.
@@ -81,29 +81,41 @@ export default function SecurePDFViewer({ memoirId }) {
                <p>Chargement initial du document ...</p>
             </div>
         ) : (
-        <Document
-          file={pdfData}
-          onLoadSuccess={onDocumentLoadSuccess}
-          loading={
-             <div className="flex flex-col items-center justify-center p-20 text-gray-500 space-y-4 font-medium">
-                <Loader2 className="w-12 h-12 animate-spin" />
-                <p className="animate-pulse">Connexion au proxy de téléchargement sécurisé...</p>
-             </div>
-          }
-          error={
-            <div className="p-20 text-red-500 font-medium bg-red-50 rounded-lg m-4 flex items-center gap-2">
-              <AlertTriangle className="w-6 h-6" /> Erreur lors de l'affichage du PDF.
+          <>
+            <Document
+              file={pdfData}
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={
+                 <div className="flex flex-col items-center justify-center p-20 text-gray-500 space-y-4 font-medium">
+                    <Loader2 className="w-12 h-12 animate-spin" />
+                    <p className="animate-pulse">Connexion au proxy de téléchargement sécurisé...</p>
+                 </div>
+              }
+              error={
+                <div className="p-20 text-red-500 font-medium bg-red-50 rounded-lg m-4 flex items-center gap-2">
+                  <AlertTriangle className="w-6 h-6" /> Erreur lors de l'affichage du PDF.
+                </div>
+              }
+            >
+              <Page 
+                pageNumber={pageNumber} 
+                renderTextLayer={false}       // Empêche la sélection directe du texte (sécurité)
+                renderAnnotationLayer={false} 
+                width={Math.min(window.innerWidth - 64, 800)} // Responsive max width
+                className="pointer-events-none" // Empêche le drag & drop de l'image du canvas
+              />
+            </Document>
+
+            {/* Filigrane Anti-Capture d'Écran */}
+            <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center overflow-hidden opacity-[0.06] select-none z-50">
+              <div className="transform -rotate-45 font-black text-6xl whitespace-nowrap text-gray-900 tracking-widest uppercase">
+                MemoHub Sécurisé
+              </div>
+              <div className="transform -rotate-45 mt-20 font-bold text-3xl whitespace-nowrap text-gray-900 tracking-widen">
+                Lecture Seule - Copie Interdite
+              </div>
             </div>
-          }
-        >
-          <Page 
-            pageNumber={pageNumber} 
-            renderTextLayer={false}       // Empêche la sélection directe du texte (sécurité)
-            renderAnnotationLayer={false} 
-            width={Math.min(window.innerWidth - 64, 800)} // Responsive max width
-            className="pointer-events-none" // Empêche le drag & drop de l'image du canvas
-          />
-        </Document>
+          </>
         )}
       </div>
       
