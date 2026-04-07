@@ -3,11 +3,11 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.core.security import create_access_token
+from app.core.security import create_access_token, create_refresh_token, decode_access_token
 from app.database import get_session
 from app.models import User
 from app.models.enums import UserRole
-from app.schemas.auth import GoogleAuthRequest, TokenResponse
+from app.schemas.auth import GoogleAuthRequest, TokenResponse, RefreshTokenRequest
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -79,14 +79,44 @@ async def google_auth(payload: GoogleAuthRequest, session: Session = Depends(get
         session.commit()
         session.refresh(user)
 
-    # 4. Génère et retourne le JWT MemoHub
-    access_token = create_access_token(data={
-        "sub":  str(user.id),
-        "role": user.role
-    })
+    # 4. Génère et retourne les JWTs MemoHub
+    access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
+    refresh_token = create_refresh_token(data={"sub": str(user.id)})
 
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        user_id=user.id,
+        role=user.role,
+        full_name=user.full_name,
+        avatar_url=user.avatar_url
+    )
+
+@router.post("/refresh", response_model=TokenResponse)
+def refresh_session(payload: RefreshTokenRequest, session: Session = Depends(get_session)):
+    """
+    Reçoit un refresh_token, le valide, et retourne de nouveaux access et refresh tokens.
+    """
+    decoded = decode_access_token(payload.refresh_token)
+    if not decoded or decoded.get("type") != "refresh":
+        raise HTTPException(status_code=401, detail="Refresh token invalide ou expiré")
+
+    user_id_str = decoded.get("sub")
+    if not user_id_str:
+        raise HTTPException(status_code=401, detail="Refresh token invalide")
+
+    user = session.get(User, int(user_id_str))
+    if not user:
+        raise HTTPException(status_code=401, detail="Utilisateur introuvable")
+
+    # Génère de nouveaux tokens
+    access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
+    refresh_token = create_refresh_token(data={"sub": str(user.id)})
+
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
         token_type="bearer",
         user_id=user.id,
         role=user.role,

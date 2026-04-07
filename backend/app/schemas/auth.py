@@ -10,8 +10,12 @@ class GoogleAuthRequest(SQLModel):
 
 class TokenResponse(SQLModel):
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
     user_id: int
     role: str
     full_name: str
     avatar_url: Optional[str] = None
+
+class RefreshTokenRequest(SQLModel):
+    refresh_token: str

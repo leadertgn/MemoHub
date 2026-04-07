@@ -36,6 +36,7 @@ export default function AuthCallback() {
             role: data.role,
           },
           data.access_token,
+          data.refresh_token
         );
         navigate("/");
       })

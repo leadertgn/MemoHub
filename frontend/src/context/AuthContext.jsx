@@ -32,6 +32,7 @@ export function AuthProvider({ children }) {
       setUser(null);
       setToken(null);
       localStorage.removeItem("token");
+      localStorage.removeItem("refresh_token");
       localStorage.removeItem("user");
       queryClient.clear();
     };
@@ -39,10 +40,11 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("auth:logout", handleAutoLogout);
   }, [queryClient]);
 
-  const login = (userData, accessToken) => {
+  const login = (userData, accessToken, refreshToken) => {
     setUser(userData);
     setToken(accessToken);
     localStorage.setItem("token", accessToken);
+    if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
     localStorage.setItem("user", JSON.stringify(userData));
   };
 
@@ -50,6 +52,7 @@ export function AuthProvider({ children }) {
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
     queryClient.clear();
   };

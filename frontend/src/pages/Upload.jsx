@@ -201,7 +201,7 @@ export default function Upload() {
         <Field
           label="Email de l'auteur *"
           error={errors.author_email}
-          hint="Nous pourrons envoyer un mail de confirmation d'accord."
+          hint="Nous pourrons envoyer un mail de confirmation d'abord."
         >
           <input
             type="email"
