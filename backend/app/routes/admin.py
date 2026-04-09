@@ -80,6 +80,12 @@ def get_pending_memoirs(
         # Les modérateurs/admins voient tout ce qui n'est pas approuvé/rejeté
         query = query.where(Memoir.status.in_([MemoirStatus.pending, MemoirStatus.pre_validated]))
         
+    query = query.options(
+        joinedload(Memoir.university),
+        joinedload(Memoir.field_of_study),
+        joinedload(Memoir.author)
+    )
+        
     query = query.order_by(Memoir.created_at)
     memoirs = session.exec(query).all()
     return memoirs

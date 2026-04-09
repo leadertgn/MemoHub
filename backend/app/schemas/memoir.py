@@ -1,6 +1,6 @@
 # app/schemas/memoir.py
 from typing import Optional, List
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, Field
 from app.models.enums import MemoirStatus, DegreeLevel
 
 
@@ -40,9 +40,9 @@ class MemoirModeratorRead(MemoirRead):
 
 
 class MemoirCreate(SQLModel):
-    title: str
-    abstract: str
-    author_name: str
+    title: str = Field(max_length=255)
+    abstract: str = Field(max_length=3000)
+    author_name: str = Field(max_length=150)
     year: int
     degree: DegreeLevel
     language: str = "fr"
@@ -51,9 +51,9 @@ class MemoirCreate(SQLModel):
 
 
 class MemoirUpdate(SQLModel):
-    title: Optional[str] = None
-    abstract: Optional[str] = None
-    author_name: Optional[str] = None
+    title: Optional[str] = Field(default=None, max_length=255)
+    abstract: Optional[str] = Field(default=None, max_length=3000)
+    author_name: Optional[str] = Field(default=None, max_length=150)
     year: Optional[int] = None
     degree: Optional[DegreeLevel] = None
     language: Optional[str] = None

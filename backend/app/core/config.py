@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 # Charge les variables d'environnement depuis le fichier .env
@@ -15,6 +16,13 @@ class Settings(BaseSettings):
     SECRET_KEY: str                    # Clé secrète pour signer les tokens
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24h
+
+    @field_validator("SECRET_KEY", mode="after")
+    @classmethod
+    def validate_secret_key(cls, v: str) -> str:
+        if len(v) < 32:
+            raise ValueError("SECRET_KEY doit contenir au moins 32 caractères pour la sécurité des jetons JWT.")
+        return v
 
     # Google OAuth2
     GOOGLE_CLIENT_ID: str
