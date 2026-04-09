@@ -11,10 +11,7 @@ database_url = settings.DATABASE_URL
 engine = create_engine(
     database_url,
     echo=False,          # True uniquement en dev local si tu veux voir les SQL
-    connect_args={
-        "sslmode": "require",
-        "connect_timeout": 10
-    },
+    connect_args={"sslmode": "require"},
     pool_pre_ping=True
 )
 
