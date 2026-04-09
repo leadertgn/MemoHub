@@ -1,9 +1,10 @@
+import argparse
 import sys
 import httpx
 from sqlmodel import Session, select, SQLModel
 from app.database import engine, create_db_and_tables
-from app.models import Country, Domain, University, FieldOfStudy
-from app.models.enums import UniversityStatus
+from app.models import Country, Domain, University, FieldOfStudy, User
+from app.models.enums import UniversityStatus, UserRole
 
 
 def seed_countries(session: Session):
@@ -97,7 +98,7 @@ def seed_domains(session: Session):
     session.flush()  # pour que les IDs soient disponibles
 
 
-def seed_insti(session: Session):
+def seed_insti(session: Session, admin_id: int | None = None):
     """
     Seed de l'INSTI (Institut National Supérieur de Technologie Industrielle)
     rattaché à l'UNSTIM - Abomey, Bénin.
@@ -115,7 +116,9 @@ def seed_insti(session: Session):
         return
 
     # 2. Crée l'INSTI directement comme une Université autonome
-    insti_name = "Institut National Supérieur de Technologie Industrielle (INSTI)"
+    insti_name = "Institut National Supérieur de Technologie Industrielle (INSTI)".upper()
+    insti_acronym = "INSTI"
+    
     insti = session.exec(
         select(University).where(University.name == insti_name)
     ).first()
@@ -123,9 +126,12 @@ def seed_insti(session: Session):
     if not insti:
         insti = University(
             name=insti_name,
+            acronym=insti_acronym,
             country_id=benin.id,
             website="https://unstim.bj/insti",
-            status=UniversityStatus.approved
+            status=UniversityStatus.approved,
+            submitted_by=admin_id,
+            moderated_by=admin_id
         )
         session.add(insti)
         session.flush()
@@ -204,9 +210,11 @@ def seed_insti(session: Session):
 
         if not existing:
             session.add(FieldOfStudy(
-                label=label,
+                label=label.title(),
                 university_id=insti.id,
-                domain_id=domain.id
+                domain_id=domain.id,
+                submitted_by=admin_id,
+                moderated_by=admin_id
             ))
             added += 1
 
@@ -214,12 +222,15 @@ def seed_insti(session: Session):
 
 
 def seed_data():
-    reset_mode = "--reset" in sys.argv
+    parser = argparse.ArgumentParser(description="Peupler la base de données MemoHub")
+    parser.add_argument("--reset", action="store_true", help="Supprime toutes les données avant de commencer")
+    parser.add_argument("--admin-email", type=str, help="L'email du compte admin qui sera désigné comme auteur du seed")
+    args = parser.parse_args()
 
-    if reset_mode:
+    if args.reset:
         print("🧨 MODE RESET ACTIVÉ : Suppression de toutes les données existantes...")
         
-        # Astuce pour contourner l'erreur de "Circular Dependency" causée par les Foreign Keys
+        # Astuce contournement circular dependency Foreign Keys
         if engine.name == "postgresql":
             from sqlalchemy import text
             with engine.begin() as conn:
@@ -228,13 +239,10 @@ def seed_data():
             print("✅ Schéma PostgreSQL purgé en mode CASCADE.")
         elif getattr(engine, "name", "").startswith("sqlite"):
             import os
-            # Le chemin d'un URL SQLite ressemble à "sqlite:///memo.db"
             db_path = str(engine.url).replace("sqlite:///", "")
             if os.path.exists(db_path):
                 os.remove(db_path)
                 print(f"✅ Fichier SQLite '{db_path}' supprimé.")
-            else:
-                print(f"⚠️ Fichier SQLite introuvable : {db_path} (peut-être déjà supprimé)")
         else:
             SQLModel.metadata.drop_all(engine)
             print("✅ Base de données purgée standard.")
@@ -243,9 +251,29 @@ def seed_data():
     create_db_and_tables()
 
     with Session(engine) as session:
+        # Recherche du compte Admin si spécifié
+        admin_id = None
+        if args.admin_email:
+            admin_user = session.exec(select(User).where(User.email == args.admin_email)).first()
+            if admin_user:
+                admin_id = admin_user.id
+                print(f"👑 Utilisateur trouvé : {admin_user.full_name} ({admin_user.email})")
+                
+                # Vérification stricte du rôle
+                if admin_user.role != UserRole.admin:
+                    print(f"❌ ERREUR: Cet utilisateur n'a pas le rôle 'admin'.")
+                    print(f"💡 Astuce : Allez dans l'interface de NeonDB, trouvez l'utilisateur et changez son rôle à 'admin' avant de lancer le seed.")
+                    sys.exit(1)
+                    
+                print("✅ Rôle administrateur confirmé.")
+            else:
+                print(f"⚠️ Email {args.admin_email} introuvable en DB. Connectez-vous d'abord à l'application.")
+                print(f"❌ Arrêt du seed (l'Auteur Administrateur est requis).")
+                sys.exit(1)
+
         seed_countries(session)
         seed_domains(session)
-        seed_insti(session)
+        seed_insti(session, admin_id=admin_id)
         session.commit()
 
     print("\n🚀 Seed terminé avec succès !")

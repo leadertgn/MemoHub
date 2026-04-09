@@ -75,6 +75,9 @@ def create_field_of_study(
     if not domain:
         raise HTTPException(status_code=404, detail="Domaine introuvable")
 
+    # Normalisation : Majuscule à chaque mot pour le nom de la filière
+    field_data.label = field_data.label.strip().title()
+
     # Vérifie qu'il n'y a pas de doublon dans cette université
     existing = session.exec(
         select(FieldOfStudy).where(
@@ -211,6 +214,9 @@ def suggest_field_of_study(
     domain = session.get(Domain, field_data.domain_id)
     if not domain:
         raise HTTPException(status_code=404, detail="Domaine introuvable")
+
+    # Normalisation : Title Case pour la filière
+    field_data.label = field_data.label.strip().title()
 
     # Vérifie les doublons
     existing = session.exec(

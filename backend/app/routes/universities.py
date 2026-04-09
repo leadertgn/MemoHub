@@ -81,9 +81,10 @@ def submit_university(
     current_user: User = Depends(get_current_user)
 ):
     # Vérifie si une université avec ce nom existe déjà dans ce pays
+    # On compare en ignorant la casse au cas où, bien que ce soit normalisé
     existing = session.exec(
         select(University).where(
-            University.name == university_data.name,
+            func.upper(University.name) == university_data.name.strip().upper(),
             University.country_id == university_data.country_id
         )
     ).first()
@@ -92,6 +93,11 @@ def submit_university(
             status_code=409,
             detail="Cette université existe déjà ou est en attente de validation"
         )
+
+    # Normalisation : Nom de l'université en MAJUSCULES
+    university_data.name = university_data.name.strip().upper()
+    if university_data.acronym:
+        university_data.acronym = university_data.acronym.strip().upper()
 
     university = University(
         **university_data.model_dump(),
