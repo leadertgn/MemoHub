@@ -5,7 +5,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 
 async def fetch_pdf(url: str) -> bytes:
-    """Télécharge le PDF original depuis Cloudinary ou S3."""
+    """Télécharge le PDF original depuis Cloudinary exclusivement."""
+    if not url.startswith("https://res.cloudinary.com/"):
+        raise ValueError("URL invalide : tentative de Server-Side Request Forgery bloquée.")
+        
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         response.raise_for_status()
