@@ -32,7 +32,7 @@ router = APIRouter(prefix="/memoirs", tags=["Memoirs"])
 # --------------------------------------------------
 # GET /memoirs  — public, filtres avancés + pagination
 # --------------------------------------------------
-@router.get("/", response_model=PaginatedMemoirsResponse)
+@router.get("", response_model=PaginatedMemoirsResponse)
 def get_memoirs(
     domain_id:           Optional[int] = Query(default=None),
     university_id:       Optional[int] = Query(default=None),
@@ -163,7 +163,7 @@ def get_memoir_with_access(
 # POST /memoirs  — auth requise
 # Upload avec métadonnées
 # --------------------------------------------------
-@router.post("/", response_model=MemoirRead, status_code=201)
+@router.post("", response_model=MemoirRead, status_code=201)
 async def submit_memoir(
     # Métadonnées envoyées en Form (multipart)
     title:             str = Form(...),

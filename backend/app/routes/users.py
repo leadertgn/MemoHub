@@ -16,7 +16,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 # GET /users
 # Lister tous les utilisateurs — admin seulement
 # --------------------------------------------------
-@router.get("/", response_model=list[UserReadPrivate])
+@router.get("", response_model=list[UserReadPrivate])
 def get_all_users(
     session: Session = Depends(get_session),
     _: User = Depends(require_admin)
