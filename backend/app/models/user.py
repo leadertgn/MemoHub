@@ -7,7 +7,18 @@ from .enums import UserRole
 from .application import TeamApplication
 
 
+import uuid
+from sqlalchemy import text
+
 class UserBase(SQLModel):
+    public_id: uuid.UUID = Field(
+        default_factory=uuid.uuid4, 
+        index=True, 
+        sa_column_kwargs={
+            "unique": True,
+            "server_default": text("gen_random_uuid()")
+        }
+    )
     email: str = Field(index=True, unique=True)
     full_name: str
     avatar_url: Optional[str] = None       # Photo de profil retournée par Google OAuth

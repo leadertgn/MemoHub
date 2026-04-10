@@ -20,9 +20,12 @@ class TeamApplicationUpdate(BaseModel):
     admin_notes: Optional[str] = None
     reviewed_at: Optional[datetime] = None
 
+import uuid
+
 class TeamApplicationResponse(TeamApplicationBase):
     """Schema pour la réponse API"""
     id: int
+    public_id: uuid.UUID
     user_id: int
     status: str
     admin_notes: Optional[str] = None

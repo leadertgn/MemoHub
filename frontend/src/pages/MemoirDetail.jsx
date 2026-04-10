@@ -38,7 +38,7 @@ export default function MemoirDetail() {
 
   const handleDownload = async () => {
     try {
-      const url = `${import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1"}/memoirs/${memoir.id}/download`;
+      const url = `${import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1"}/memoirs/${memoir.public_id}/download`;
       const res = await fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -139,7 +139,7 @@ export default function MemoirDetail() {
             
             {/* Lecteur PDF */}
             <div className="rounded-xl overflow-hidden shadow-inner border border-gray-200">
-                <SecurePDFViewer memoirId={memoir.id} />
+                <SecurePDFViewer memoirId={memoir.public_id} />
             </div>
           </div>
         )}

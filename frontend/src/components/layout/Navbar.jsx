@@ -35,10 +35,10 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Bouton Hamburger Mobile */}
           <button 
             className="md:hidden p-2 text-gray-600 hover:text-blue-600 focus:outline-none transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
           >
             {isMobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -98,6 +98,7 @@ export default function Navbar() {
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-red-600 transition-colors bg-gray-50 hover:bg-red-50 px-3 py-1.5 rounded-lg"
+                  aria-label="Se déconnecter"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="hidden sm:inline">Déconnexion</span>

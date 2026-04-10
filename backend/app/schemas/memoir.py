@@ -4,9 +4,12 @@ from sqlmodel import SQLModel, Field
 from app.models.enums import MemoirStatus, DegreeLevel
 
 
+import uuid
+
 class MemoirRead(SQLModel):
     """Ce que l'API retourne — jamais le file_url direct."""
     id: int
+    public_id: uuid.UUID
     title: str
     abstract: str
     author_name: str

@@ -1,6 +1,7 @@
 # app/routes/universities.py
 from typing import List, Optional
 from datetime import datetime
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlmodel import Session, select
 from sqlalchemy import  func
@@ -57,11 +58,11 @@ def get_universities(
 # --------------------------------------------------
 # GET /universities/{id}  — public
 # --------------------------------------------------
-@router.get("/{university_id}", response_model=UniversityRead)
-def get_university(university_id: int, session: Session = Depends(get_session)):
+@router.get("/{public_id}", response_model=UniversityRead)
+def get_university(public_id: uuid.UUID, session: Session = Depends(get_session)):
     university = session.exec(
         select(University)
-        .where(University.id == university_id)
+        .where(University.public_id == public_id)
         .options(joinedload(University.submitted_by_user))
     ).first()
     if not university:
@@ -121,15 +122,15 @@ def submit_university(
 # PATCH /universities/{id}/status  — admin/moderator
 # Valider ou rejeter une université soumise
 # --------------------------------------------------
-@router.patch("/{university_id}/status", response_model=UniversityRead)
+@router.patch("/{public_id}/status", response_model=UniversityRead)
 def update_university_status(
-    university_id: int,
+    public_id: uuid.UUID,
     status_data: UniversityStatusUpdate,
     background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
     current_user: User = Depends(require_moderator)
 ):
-    university = session.get(University, university_id)
+    university = session.exec(select(University).where(University.public_id == public_id)).first()
     if not university:
         raise HTTPException(status_code=404, detail="Université introuvable")
 

@@ -257,7 +257,7 @@ function FieldsTab() {
                   <p className="text-xs text-gray-500 mt-1 mt-1">Suggérée par l'utilisateur {f.submitted_by ? `#${f.submitted_by}` : 'Inconnu'}</p>
               </div>
               <div className="flex gap-2 mt-4">
-                  <button onClick={() => updateField({ id: f.id, status: 'approved' }, {
+                  <button onClick={() => updateField({ id: f.public_id || f.id, status: 'approved' }, {
                       onSuccess: () => toast.success("Filière validée avec succès !"),
                       onError: (err) => toast.error(`Erreur: ${err.message}`)
                   })} className="flex-1 bg-green-50 text-green-700 font-semibold py-2 rounded-xl hover:bg-green-100 transition-colors">
@@ -266,7 +266,7 @@ function FieldsTab() {
                   <button onClick={() => {
                       const reason = window.prompt("Motif de refus pour cette filière (envoyé par email) ?");
                       if (!reason) return;
-                      updateField({ id: f.id, status: 'rejected', rejection_reason: reason }, {
+                      updateField({ id: f.public_id || f.id, status: 'rejected', rejection_reason: reason }, {
                           onSuccess: () => toast.success("Filière rejetée, notification envoyée."),
                           onError: (err) => toast.error(`Erreur: ${err.message}`)
                       });
@@ -323,7 +323,7 @@ function UsersTab() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {users?.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+                <tr key={user.public_id || user.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium text-gray-900">
                     {user.full_name}
                   </td>
@@ -342,7 +342,7 @@ function UsersTab() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    {user.id !== currentUser?.id ? (
+                    {user.public_id !== currentUser?.public_id ? (
                       <RoleAssigner user={user} onEdit={setEditingUser} />
                     ) : (
                       <span className="text-xs text-gray-400 italic">

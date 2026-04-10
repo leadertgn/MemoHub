@@ -86,8 +86,8 @@ export default function Home() {
   return (
     <div className="space-y-24 pb-20 overflow-hidden">
       {/* Background Decoratif */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10" />
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 -z-10" />
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 -z-10 pointer-events-none" />
 
       {/* Hero Section */}
       <section className="text-center pt-24 pb-10 px-4 space-y-8 max-w-4xl mx-auto">
@@ -201,7 +201,7 @@ export default function Home() {
               key={item.step}
               className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100/50 hover:shadow-lg transition-shadow duration-300 group"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-bold text-lg mb-6 shadow-md group-hover:rotate-6 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-bold text-lg mb-6 shadow-md group-hover:rotate-6 transition-transform" aria-hidden="true">
                 {item.step}
               </div>
               <h3 className="font-bold text-xl text-gray-900 mb-3">

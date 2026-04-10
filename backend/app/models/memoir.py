@@ -7,8 +7,19 @@ from .base import TimestampMixin
 from .enums import MemoirStatus, DegreeLevel
 
 
+import uuid
+from sqlalchemy import text
+
 class MemoirBase(SQLModel):
     # --- Informations sur le document académique ---
+    public_id: uuid.UUID = Field(
+        default_factory=uuid.uuid4, 
+        index=True, 
+        sa_column_kwargs={
+            "unique": True,
+            "server_default": text("gen_random_uuid()")
+        }
+    )
     title: str = Field(index=True)
     abstract: str                                        # Résumé du mémoire
 
