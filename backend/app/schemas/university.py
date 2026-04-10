@@ -5,8 +5,11 @@ from app.models.enums import UniversityStatus
 from app.schemas.country import CountryRead
 
 
+import uuid
+
 class UniversityRead(SQLModel):
     id: int
+    public_id: uuid.UUID
     name: str
     acronym: Optional[str] = None
     website: Optional[str] = None

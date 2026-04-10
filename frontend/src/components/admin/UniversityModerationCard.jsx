@@ -6,7 +6,7 @@ export default function UniversityModerationCard({ university }) {
   const { mutate: updateStatus, isPending } = useUpdateUniversityStatus()
 
   const handleApprove = () => {
-    updateStatus({ id: university.id, status: 'approved' }, {
+    updateStatus({ id: university.public_id || university.id, status: 'approved' }, {
       onSuccess: () => toast.success("Université validée avec succès !"),
       onError: (err) => toast.error(`Erreur: ${err.message}`)
     })
@@ -15,7 +15,7 @@ export default function UniversityModerationCard({ university }) {
   const handleReject = () => {
     const reason = window.prompt("Quel est le motif de refus de cette université (envoyé par email) ?");
     if (!reason) return;
-    updateStatus({ id: university.id, status: 'rejected', rejection_reason: reason }, {
+    updateStatus({ id: university.public_id || university.id, status: 'rejected', rejection_reason: reason }, {
       onSuccess: () => toast.success("Université rejetée, un e-mail a été envoyé avec le motif."),
       onError: (err) => toast.error(`Erreur: ${err.message}`)
     });

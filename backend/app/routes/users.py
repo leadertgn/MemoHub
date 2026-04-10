@@ -1,6 +1,7 @@
 # app/routes/users.py
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlmodel import Session, select
+import uuid
 
 from app.core.dependencies import get_current_user, require_admin
 from app.database import get_session
@@ -64,13 +65,13 @@ def update_my_profile(
 # GET /users/{user_id}
 # Profil public d'un utilisateur — admin seulement
 # --------------------------------------------------
-@router.get("/{user_id}", response_model=UserRead)
+@router.get("/{public_id}", response_model=UserRead)
 def get_user(
-    user_id: int,
+    public_id: uuid.UUID,
     session: Session = Depends(get_session),
     _: User = Depends(require_admin)   # _ = on vérifie le rôle mais on n'utilise pas l'objet
 ):
-    user = session.get(User, user_id)
+    user = session.exec(select(User).where(User.public_id == public_id)).first()
     if not user:
         raise HTTPException(status_code=404, detail="Utilisateur introuvable")
     return user
@@ -80,9 +81,9 @@ def get_user(
 # PATCH /users/{user_id}/role
 # Changer le rôle d'un utilisateur — admin seulement
 # --------------------------------------------------
-@router.patch("/{user_id}/role", response_model=UserRead)
+@router.patch("/{public_id}/role", response_model=UserRead)
 def update_user_role(
-    user_id: int,
+    public_id: uuid.UUID,
     role_data: UserUpdateRole,
     session: Session = Depends(get_session),
     current_user: User = Depends(require_admin),
@@ -90,13 +91,13 @@ def update_user_role(
 ):
     # Un admin ne peut pas modifier son propre rôle
     # (évite de se retrouver sans admin par accident)
-    if user_id == current_user.id:
+    if public_id == current_user.public_id:
         raise HTTPException(
             status_code=400,
             detail="Vous ne pouvez pas modifier votre propre rôle"
         )
 
-    user = session.get(User, user_id)
+    user = session.exec(select(User).where(User.public_id == public_id)).first()
     if not user:
         raise HTTPException(status_code=404, detail="Utilisateur introuvable")
 

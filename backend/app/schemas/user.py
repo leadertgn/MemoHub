@@ -4,9 +4,12 @@ from sqlmodel import SQLModel
 from app.models.enums import UserRole
 
 
+import uuid
+
 class UserRead(SQLModel):
     """Profil public d'un utilisateur."""
     id: int
+    public_id: uuid.UUID
     full_name: str
     avatar_url: Optional[str] = None
     role: UserRole

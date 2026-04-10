@@ -5,8 +5,11 @@ from app.models.enums import FieldStatus
 from app.schemas.university import UniversityRead
 from app.schemas.domain import DomainRead
 
+import uuid
+
 class FieldOfStudyRead(SQLModel):
     id: int
+    public_id: uuid.UUID
     label: str
     university_id: int
     university: Optional[UniversityRead] = None

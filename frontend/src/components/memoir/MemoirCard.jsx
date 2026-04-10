@@ -23,7 +23,7 @@ const DEGREE_COLORS = {
 export default function MemoirCard({ memoir }) {
   return (
     <Link
-      to={`/memoirs/${memoir.id}`}
+      to={`/memoirs/${memoir.public_id}`}
       className="block bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 p-5 space-y-4 relative overflow-hidden group"
     >
       {/* Ligne décorative en haut au hover */}

@@ -26,7 +26,18 @@ from .base import TimestampMixin
 from .enums import FieldStatus
 
 
+import uuid
+from sqlalchemy import text
+
 class FieldOfStudyBase(SQLModel):
+    public_id: uuid.UUID = Field(
+        default_factory=uuid.uuid4, 
+        index=True, 
+        sa_column_kwargs={
+            "unique": True,
+            "server_default": text("gen_random_uuid()")
+        }
+    )
     label: str = Field(index=True)                   # "Génie Informatique" (nom exact dans l'université)
     university_id: int = Field(foreign_key="university.id")
     domain_id: int = Field(foreign_key="domain.id")  # Domaine normalisé auquel elle appartient

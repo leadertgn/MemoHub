@@ -7,7 +7,18 @@ from .base import TimestampMixin
 from .enums import UniversityStatus
 
 
+import uuid
+from sqlalchemy import text
+
 class UniversityBase(SQLModel):
+    public_id: uuid.UUID = Field(
+        default_factory=uuid.uuid4, 
+        index=True, 
+        sa_column_kwargs={
+            "unique": True,
+            "server_default": text("gen_random_uuid()")
+        }
+    )
     name: str = Field(index=True)
     country_id: int = Field(foreign_key="country.id")
     acronym: Optional[str] = None          # Acronyme de l'université (ex: UAC, ENEAM)

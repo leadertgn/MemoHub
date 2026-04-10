@@ -99,7 +99,7 @@ export default function Profile() {
                 )}
                 {memoir.status === 'approved' && (
                     <div className="mt-4">
-                        <Link to={`/memoirs/${memoir.id}`} className="text-blue-600 font-medium text-sm hover:underline">
+                        <Link to={`/memoirs/${memoir.public_id}`} className="text-blue-600 font-medium text-sm hover:underline">
                             Voir la publication publique →
                         </Link>
                     </div>

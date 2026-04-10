@@ -1,6 +1,7 @@
 # app/routes/fields_of_study.py
 from typing import List, Optional
 from datetime import datetime
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlmodel import Session, select
 
@@ -43,9 +44,9 @@ def get_fields_of_study(
 # --------------------------------------------------
 # GET /fields-of-study/{id}  — public
 # --------------------------------------------------
-@router.get("/{field_id}", response_model=FieldOfStudyRead)
-def get_field_of_study(field_id: int, session: Session = Depends(get_session)):
-    field = session.get(FieldOfStudy, field_id)
+@router.get("/{public_id}", response_model=FieldOfStudyRead)
+def get_field_of_study(public_id: uuid.UUID, session: Session = Depends(get_session)):
+    field = session.exec(select(FieldOfStudy).where(FieldOfStudy.public_id == public_id)).first()
     if not field:
         raise HTTPException(status_code=404, detail="Filière introuvable")
     return field
@@ -101,14 +102,14 @@ def create_field_of_study(
 # --------------------------------------------------
 # PATCH /fields-of-study/{id}  — admin seulement
 # --------------------------------------------------
-@router.patch("/{field_id}", response_model=FieldOfStudyRead)
+@router.patch("/{public_id}", response_model=FieldOfStudyRead)
 def update_field_of_study(
-    field_id: int,
+    public_id: uuid.UUID,
     field_data: FieldOfStudyUpdate,
     session: Session = Depends(get_session),
     _: object = Depends(require_admin)
 ):
-    field = session.get(FieldOfStudy, field_id)
+    field = session.exec(select(FieldOfStudy).where(FieldOfStudy.public_id == public_id)).first()
     if not field:
         raise HTTPException(status_code=404, detail="Filière introuvable")
 
@@ -131,15 +132,15 @@ def update_field_of_study(
 # PATCH /fields-of-study/{id}/status  — admin/moderator
 # Valider ou rejeter une filière suggérée
 # --------------------------------------------------
-@router.patch("/{field_id}/status", response_model=FieldOfStudyRead)
+@router.patch("/{public_id}/status", response_model=FieldOfStudyRead)
 def update_field_of_study_status(
-    field_id: int,
+    public_id: uuid.UUID,
     status_data: FieldOfStudyStatusUpdate,
     background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
     current_user: User = Depends(require_moderator)
 ):
-    field = session.get(FieldOfStudy, field_id)
+    field = session.exec(select(FieldOfStudy).where(FieldOfStudy.public_id == public_id)).first()
     if not field:
         raise HTTPException(status_code=404, detail="Filière introuvable")
 
@@ -255,13 +256,13 @@ def suggest_field_of_study(
 # --------------------------------------------------
 # DELETE /fields-of-study/{id}  — admin seulement
 # --------------------------------------------------
-@router.delete("/{field_id}", status_code=204)
+@router.delete("/{public_id}", status_code=204)
 def delete_field_of_study(
-    field_id: int,
+    public_id: uuid.UUID,
     session: Session = Depends(get_session),
     _: object = Depends(require_admin)
 ):
-    field = session.get(FieldOfStudy, field_id)
+    field = session.exec(select(FieldOfStudy).where(FieldOfStudy.public_id == public_id)).first()
     if not field:
         raise HTTPException(status_code=404, detail="Filière introuvable")
 

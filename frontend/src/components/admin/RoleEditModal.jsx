@@ -30,7 +30,7 @@ export default function RoleEditModal({ user, onClose, onSave }) {
       return;
     }
 
-    const payload = { id: user.id, role: selectedRole };
+    const payload = { id: user.public_id || user.id, role: selectedRole };
     if (selectedRole === "moderator") {
       payload.country_id = parseInt(selectedCountry);
     }

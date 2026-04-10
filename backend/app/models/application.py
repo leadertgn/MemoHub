@@ -3,10 +3,21 @@ from sqlmodel import Field, SQLModel, Relationship
 from datetime import datetime
 from typing import Optional
 
+import uuid
+from sqlalchemy import text
+
 class TeamApplication(SQLModel, table=True):
     __tablename__ = "team_applications"
     
     id: Optional[int] = Field(default=None, primary_key=True)
+    public_id: uuid.UUID = Field(
+        default_factory=uuid.uuid4, 
+        index=True, 
+        sa_column_kwargs={
+            "unique": True,
+            "server_default": text("gen_random_uuid()")
+        }
+    )
     user_id: int = Field(foreign_key="user.id", nullable=False)
     
     # Rôle auquel l'utilisateur postule

@@ -1,6 +1,7 @@
 # app/routes/memoirs.py
 from typing import List, Optional
 from datetime import datetime
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, BackgroundTasks, Request
 from sqlmodel import Session, select
 from sqlalchemy import  func
@@ -110,13 +111,13 @@ def get_my_memoirs(
 # GET /memoirs/{id}  — public
 # Incrémente le view_count à chaque consultation
 # --------------------------------------------------
-@router.get("/{memoir_id}", response_model=MemoirRead)
+@router.get("/{public_id}", response_model=MemoirRead)
 def get_memoir(
-    memoir_id: int,
+    public_id: uuid.UUID,
     session: Session = Depends(get_session),
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
-    memoir = session.get(Memoir, memoir_id)
+    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 
@@ -385,13 +386,13 @@ def delete_memoir(
 # GET /memoirs/{id}/download  — tout le monde (connecté)
 # Téléchargement d'un mémoire AVEC filigrane
 # --------------------------------------------------
-@router.get("/{memoir_id}/download")
+@router.get("/{public_id}/download")
 async def download_memoir(
-    memoir_id: int,
+    public_id: uuid.UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
-    memoir = session.get(Memoir, memoir_id)
+    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
         
@@ -444,14 +445,14 @@ async def download_memoir(
 # GET /memoirs/{id}/stream  — tout le monde
 # Stream le PDF original (protégé) pour la visionneuse React-PDF
 # --------------------------------------------------
-@router.get("/{memoir_id}/stream")
+@router.get("/{public_id}/stream")
 async def stream_memoir(
-    memoir_id: int,
+    public_id: uuid.UUID,
     request: Request,
     session: Session = Depends(get_session),
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
-    memoir = session.get(Memoir, memoir_id)
+    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 
