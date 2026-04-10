@@ -22,7 +22,7 @@ router = APIRouter(prefix="/universities", tags=["Universities"])
 # --------------------------------------------------
 # GET /universities  — public
 # --------------------------------------------------
-@router.get("/", response_model=List[UniversityRead])
+@router.get("", response_model=List[UniversityRead])
 def get_universities(
     country_id: Optional[int] = Query(default=None),
     search: Optional[str] = Query(default=None),
@@ -73,7 +73,7 @@ def get_university(university_id: int, session: Session = Depends(get_session)):
 # POST /universities  — auth requise
 # N'importe quel utilisateur connecté peut soumettre une université
 # --------------------------------------------------
-@router.post("/", response_model=UniversityRead, status_code=201)
+@router.post("", response_model=UniversityRead, status_code=201)
 def submit_university(
     university_data: UniversityCreate,
     background_tasks: BackgroundTasks,

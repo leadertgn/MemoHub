@@ -15,7 +15,7 @@ router = APIRouter(prefix="/domains", tags=["Domains"])
 # --------------------------------------------------
 # GET /domains  — public
 # --------------------------------------------------
-@router.get("/", response_model=List[DomainRead])
+@router.get("", response_model=List[DomainRead])
 def get_domains(session: Session = Depends(get_session)):
     domains = session.exec(
         select(Domain)
@@ -39,7 +39,7 @@ def get_domain(domain_id: int, session: Session = Depends(get_session)):
 # --------------------------------------------------
 # POST /domains  — admin seulement
 # --------------------------------------------------
-@router.post("/", response_model=DomainRead, status_code=201)
+@router.post("", response_model=DomainRead, status_code=201)
 def create_domain(
     domain_data: DomainCreate,
     session: Session = Depends(get_session),

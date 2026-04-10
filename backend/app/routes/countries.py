@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["Countries"]
 )
 
-@router.get("/", response_model=List[CountryRead])
+@router.get("", response_model=List[CountryRead])
 def get_countries(
     search: str = Query(default=None),
     session: Session = Depends(get_session)

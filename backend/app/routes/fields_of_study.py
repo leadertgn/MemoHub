@@ -24,7 +24,7 @@ router = APIRouter(prefix="/fields-of-study", tags=["Fields of Study"])
 # GET /fields-of-study  — public
 # Filtrable par university_id et/ou domain_id
 # --------------------------------------------------
-@router.get("/", response_model=List[FieldOfStudyRead])
+@router.get("", response_model=List[FieldOfStudyRead])
 def get_fields_of_study(
     university_id: Optional[int] = Query(default=None, description="Filtrer par université"),
     domain_id: Optional[int] = Query(default=None, description="Filtrer par domaine"),
@@ -54,7 +54,7 @@ def get_field_of_study(field_id: int, session: Session = Depends(get_session)):
 # --------------------------------------------------
 # POST /fields-of-study  — admin seulement
 # --------------------------------------------------
-@router.post("/", response_model=FieldOfStudyRead, status_code=201)
+@router.post("", response_model=FieldOfStudyRead, status_code=201)
 def create_field_of_study(
     field_data: FieldOfStudyCreate,
     session: Session = Depends(get_session),
