@@ -1,28 +1,38 @@
 from sqlmodel import Session, select
 from app.models import User, University, FieldOfStudy, Memoir
 from app.models.enums import UserRole
-from app.services.email_service import send_email_async
-from fastapi import BackgroundTasks
+from app.services.email_service import send_email_async, get_base_layout
 
 def get_team_notification_html(resource_type: str, resource_name: str, action: str, details: str = "") -> str:
     from app.core.config import settings
-    return f"""
-    <html>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h2 style="color: #2563eb;">Nouvelle activité en attente : {action}</h2>
+    
+    content = f"""
+        <h1 style="color: #2563eb;">Alerte Modération : {action}</h1>
         <p>Bonjour,</p>
-        <p>Une nouvelle demande nécessitant votre attention vient d'être générée sur le portail.</p>
-        <div style="background-color: #f8fafc; padding: 15px; border-left: 4px solid #3b82f6; margin: 15px 0;">
-            <p style="margin: 0;"><b>Type de Ressource :</b> {resource_type}</p>
-            <p style="margin: 5px 0 0 0;"><b>Nom / Titre :</b> {resource_name}</p>
-            {f'<p style="margin: 5px 0 0 0;"><b>Détails :</b> {details}</p>' if details else ''}
+        <p>Une nouvelle activité nécessitant votre attention a été détectée sur la plateforme MemoHub.</p>
+        
+        <div class="card-info" style="border-left-color: #2563eb; background-color: #f0f9ff;">
+            <div style="margin-bottom: 12px;">
+                <span class="label-item">TYPE DE RESSOURCE</span>
+                <span class="value-item">{resource_type}</span>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <span class="label-item">NOM / TITRE</span>
+                <span class="value-item">{resource_name}</span>
+            </div>
+            {f'<div><span class="label-item">DÉTAILS</span><span class="value-item">{details}</span></div>' if details else ''}
         </div>
-        <p>Connectez-vous au <a href="{settings.FRONTEND_URL}/" style="color: #2563eb; font-weight: bold;">Dashboard Administrateur</a> pour prendre une décision (Valider ou Rejeter).</p>
-        <br/>
-        <p>L'équipe technique MemoHub</p>
-      </body>
-    </html>
+        
+        <p>Merci de vous connecter au panel d'administration pour traiter cette demande dans les meilleurs délais.</p>
+        
+        <div style="text-align: center; margin: 35px 0;">
+            <a href="{settings.FRONTEND_URL}/" class="btn" style="background-color: #1e293b;">Accéder au Dashboard</a>
+        </div>
+        
+        <p><i>Ceci est une notification automatique générée par le système de surveillance MemoHub.</i></p>
     """
+    return get_base_layout(content, f"[Alerte] {action} - MemoHub", "Une nouvelle demande de modération est en attente.")
+
 
 def notify_team_for_action(
     session: Session, 
