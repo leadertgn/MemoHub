@@ -10,11 +10,11 @@ export default function Footer() {
                     <span className="font-bold text-gray-900 tracking-tight">MemoHub</span>
                 </div>
                 <p>© {current_year} MemoHub — La bibliothèque académique universelle</p>
-                <div className="flex items-center gap-4 pb-1">
+                <nav className="flex items-center gap-4 pb-1" aria-label="Liens secondaires">
                     <a href="/terms" className="hover:text-gray-700 transition-colors">Conditions d'utilisation</a>
-                    <span className="text-gray-300">•</span>
+                    <span className="text-gray-300" aria-hidden="true">•</span>
                     <a href="/privacy" className="hover:text-gray-700 transition-colors">Confidentialité</a>
-                </div>
+                </nav>
                 <p className="text-gray-400">Faciliter l'accès au savoir pour les chercheurs de demain.</p>
             </div>
         </footer>
