@@ -349,7 +349,7 @@ export default function Upload() {
             className="mt-0.5"
           />
           <label htmlFor="allow_download" className="text-sm text-gray-600 cursor-pointer">
-            Autoriser le téléchargement de ce mémoire (membres premium uniquement)
+            Autoriser le téléchargement direct de ce mémoire
           </label>
         </div>
 

@@ -7,10 +7,10 @@ from app.models import Country, Domain, University, FieldOfStudy, User
 from app.models.enums import UniversityStatus, UserRole
 
 
-def seed_countries(session: Session):
+def seed_countries(session: Session, api_data: list):
     """
-    Charge tous les pays depuis restcountries.com une seule fois.
-    Si l'API échoue, on a un fallback avec les pays africains essentiels.
+    Charge tous les pays à partir des données pré-téléchargées.
+    Si l'API a échoué, on utilise un fallback avec les pays africains essentiels.
     """
     print("\n🌍 Peuplement des pays...")
 
@@ -31,26 +31,15 @@ def seed_countries(session: Session):
 
     countries_to_add = []
 
-    try:
-        print("  Tentative de chargement depuis restcountries.com...")
-        response = httpx.get(
-            "https://restcountries.com/v3.1/all?fields=name,cca3",
-            timeout=10.0
-        )
-        response.raise_for_status()
-        data = response.json()
-
-        for country in data:
+    if api_data:
+        for country in api_data:
             countries_to_add.append({
                 "name": country["name"]["common"],
                 "iso_code": country["cca3"]
             })
-
-        print(f"  ✅ {len(countries_to_add)} pays récupérés depuis l'API")
-
-    except Exception as e:
-        print(f"  ⚠️  API indisponible ({e})")
-        print(f"  ↩️  Utilisation du fallback ({len(fallback_countries)} pays)")
+        print(f"  ✅ {len(countries_to_add)} pays en préparation")
+    else:
+        print("  ↩️  Utilisation du fallback (données par défaut)")
         countries_to_add = fallback_countries
 
     added = 0
@@ -250,6 +239,18 @@ def seed_data():
     print("🔧 Création et Vérification des tables...")
     create_db_and_tables()
 
+    # 1. On télécharge la volumineuse API AVANT d'ouvrir une session SQL 
+    # (Neon ferme agressivement les connexions inactives)
+    api_data = None
+    try:
+        print("\n🌍 Préchauffage HTTP : chargement depuis restcountries.com...")
+        response = httpx.get("https://restcountries.com/v3.1/all?fields=name,cca3", timeout=10.0)
+        response.raise_for_status()
+        api_data = response.json()
+        print("  ✅ Téléchargement API terminé avec succès.")
+    except Exception as e:
+        print(f"  ⚠️  API indisponible ({e}) - Nous utiliserons le fallback.")
+
     with Session(engine) as session:
         # Recherche du compte Admin si spécifié
         admin_id = None
@@ -271,7 +272,7 @@ def seed_data():
                 print(f"❌ Arrêt du seed (l'Auteur Administrateur est requis).")
                 sys.exit(1)
 
-        seed_countries(session)
+        seed_countries(session, api_data=api_data)
         seed_domains(session)
         seed_insti(session, admin_id=admin_id)
         session.commit()
