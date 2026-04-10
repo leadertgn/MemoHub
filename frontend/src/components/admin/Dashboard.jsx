@@ -398,8 +398,8 @@ function HistoryTab() {
                     {item.title}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    Modéré par <span className="font-medium text-gray-700">{item.moderator_name}</span> le{' '}
-                    {new Date(item.moderated_at).toLocaleString('fr-FR')}
+                    Modéré par <span className="font-medium text-gray-700">{item.moderator_name}</span>
+                    {item.moderated_at ? ` le ${new Date(item.moderated_at).toLocaleString('fr-FR')}` : ''}
                   </p>
                   {item.rejection_reason && (
                     <p className="text-xs text-red-600 mt-2 bg-red-50 p-2 rounded-md border border-red-100 w-fit">
