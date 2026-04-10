@@ -80,7 +80,7 @@ export default function Search() {
 
         {isError && (
           <div className="text-center py-20">
-            <p className="text-red-500">Une erreur est survenue. Vérifie ta connexion.</p>
+            <p className="text-red-500">Une erreur serveur l'empêche de s'afficher correctement.</p>
           </div>
         )}
 
