@@ -215,7 +215,7 @@ export default function Home() {
 
       {/* Devenir Ambassadeur ou Modérateur */}
       <section className="px-4 max-w-6xl mx-auto">
-        <div className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
+        <div className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 text-white relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -253,7 +253,7 @@ export default function Home() {
             </div>
 
             {/* Formulaire de candidature */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 text-gray-900">
+            <div className="bg-white rounded-2xl p-5 sm:p-6 md:p-8 text-gray-900">
               <h3 className="text-xl font-bold mb-6">Postuler maintenant</h3>
               <form onSubmit={handleAmbassadorSubmit} className="space-y-4">
                 {/* Type de candidature */}
@@ -261,7 +261,7 @@ export default function Home() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Type de candidature
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setApplicationType('ambassador')}
