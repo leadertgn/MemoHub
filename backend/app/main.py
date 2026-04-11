@@ -4,7 +4,15 @@ from fastapi import FastAPI, Depends, Request
 from starlette.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select, func
 import time
+from datetime import datetime
 import logging
+from app.database import engine
+from app.database import create_db_and_tables, get_session
+from app.core.config import settings
+from app.models import Memoir, University, User, RefreshTokenBlacklist
+from app.models.enums import MemoirStatus, UniversityStatus
+
+from app.routes import countries,auth,users,domains,universities,fields_of_study,memoirs,admin,applications
 
 # Configuration du logging avec couleurs
 logging.basicConfig(
@@ -31,29 +39,44 @@ class Colors:
     BG_YELLOW = "\033[43m"
     BG_BLUE = "\033[44m"
 
-from app.database import create_db_and_tables, get_session
-from app.core.config import settings
-from app.models import Memoir, University, User
-from app.models.enums import MemoirStatus, UniversityStatus
-
-# Plus tard tu ajouteras tes routers ici :
-from app.routes import countries,auth,users,domains,universities,fields_of_study,memoirs,admin,applications
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
     Exécuté au démarrage et à l'arrêt de l'app.
-    C'est le pattern moderne FastAPI (remplace @app.on_event deprecated).
+    Combine les logs de démarrage et le nettoyage des refresh tokens expirés.
     """
-    # --- Démarrage ---
+    # --- DÉMARRAGE ---
     logger.info(f"{Colors.BG_BLUE}{Colors.BOLD}🚀 MemoHub API{Colors.RESET} - Démarrage en cours...")
     logger.info(f"{Colors.CYAN}📡 Environment:{Colors.RESET} {settings.ENVIRONMENT}")
     logger.info(f"{Colors.CYAN}🌐 CORS Origins:{Colors.RESET} {settings.allowed_origins_list}")
-    #create_db_and_tables()   # temporaire, sera remplacé par Alembic
-    yield
-    # --- Arrêt (optionnel, pour fermer des ressources) ---
-    logger.info(f"{Colors.YELLOW}🛑 Arrêt de l'API{Colors.RESET}")
 
+    # Nettoyage des refresh tokens expirés au démarrage
+    try:
+        with Session(engine) as session:
+            now = datetime.utcnow()
+            expired_tokens = session.exec(
+                select(RefreshTokenBlacklist)
+                .where(RefreshTokenBlacklist.expires_at < now)
+            ).all()
+
+            if expired_tokens:
+                for token in expired_tokens:
+                    session.delete(token)
+                session.commit()
+                logger.info(f"{Colors.GREEN}🧹 Nettoyage : {len(expired_tokens)} refresh token(s) expiré(s) supprimé(s){Colors.RESET}")
+            else:
+                logger.info(f"{Colors.CYAN}🧹 Aucun refresh token expiré à nettoyer{Colors.RESET}")
+    except Exception as e:
+        logger.error(f"{Colors.RED}❌ Erreur lors du nettoyage des refresh tokens : {e}{Colors.RESET}")
+        # On ne bloque pas le démarrage pour cette erreur non critique
+
+    # create_db_and_tables()  # temporaire, sera remplacé par Alembic
+
+    yield  # L'application tourne ici
+
+    # --- ARRÊT ---
+    logger.info(f"{Colors.YELLOW}🛑 Arrêt de l'API{Colors.RESET}")
 app = FastAPI(
     title="MemoHub API",
     description="API de gestion des archives de mémoires académiques",

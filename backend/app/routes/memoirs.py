@@ -108,7 +108,7 @@ def get_my_memoirs(
     return session.exec(query).all()
 
 # --------------------------------------------------
-# GET /memoirs/{id}  — public
+# GET /memoirs/{public_id}  — public
 # Incrémente le view_count à chaque consultation
 # --------------------------------------------------
 @router.get("/{public_id}", response_model=MemoirRead)
@@ -347,9 +347,7 @@ def update_memoir_status(
                 memoir.title,
                 status_data.rejection_reason or "Non spécifié",
                 university_name=university_name,
-                field_name=field_name,
-                year=year,
-                degree=degree
+                field_name=field_name
             )
             background_tasks.add_task(
                 send_email_async, 

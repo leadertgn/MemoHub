@@ -1,4 +1,5 @@
-# app/core/security.py
+# backend/app/core/security.py
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -6,36 +7,32 @@ from app.core.config import settings
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """
-    Génère un JWT signé avec les données fournies.
-
-    data doit contenir au minimum : {"sub": str(user_id), "role": role}
-    """
     to_encode = data.copy()
-
     expire = datetime.utcnow() + (
-            expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     to_encode.update({"exp": expire})
-
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def create_refresh_token(data: dict) -> str:
+def create_refresh_token(data: dict) -> tuple[str, str]:
     """
-    Génère un Refresh Token valable 7 jours.
+    Retourne maintenant un tuple (token, jti).
+    Le jti doit être stocké côté serveur pour permettre la révocation.
     """
     to_encode = data.copy()
+    jti = str(uuid.uuid4())           # identifiant unique de CE token
     expire = datetime.utcnow() + timedelta(days=7)
-    to_encode.update({"exp": expire, "type": "refresh"})
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    to_encode.update({
+        "exp": expire,
+        "type": "refresh",
+        "jti": jti                    # injecté dans le payload JWT
+    })
+    token = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return token, jti                 # on retourne les deux
 
 
 def decode_access_token(token: str) -> Optional[dict]:
-    """
-    Décode et vérifie un JWT.
-    Retourne le payload si valide, None si invalide ou expiré.
-    """
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return payload

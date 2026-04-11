@@ -2,7 +2,7 @@
 
 # L'ordre d'import est important pour SQLModel :
 # les modèles sans dépendances d'abord, puis ceux qui en ont.
-
+from .refresh_token import RefreshTokenBlacklist
 from .enums import UserRole, MemoirStatus, DegreeLevel, UniversityStatus, DomainStatus
 from .base import TimestampMixin
 
