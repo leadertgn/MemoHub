@@ -3,11 +3,11 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select, func
 from sqlalchemy.orm import joinedload
-from app.core.dependencies import require_admin, require_moderator, require_ambassador
+from app.core.dependencies import  require_moderator, require_ambassador
 from app.database import get_session
 from app.models import Memoir, University, User, FieldOfStudy
 from app.models.enums import UserRole, MemoirStatus, UniversityStatus, FieldStatus
-from app.schemas.memoir import MemoirRead, MemoirModeratorRead
+from app.schemas.memoir import MemoirModeratorRead
 from app.schemas.university import UniversityRead
 from app.schemas.field_of_study import FieldOfStudyRead
 
@@ -153,7 +153,7 @@ def get_moderation_history(
 
     memoir_query = (
         select(Memoir)
-        .where(Memoir.moderated_by != None)
+        .where(Memoir.moderated_by is not None)
         .options(
             joinedload(Memoir.moderator),    # m.moderator.full_name → 0 requête supplémentaire
             joinedload(Memoir.university),   # m.university.name → 0 requête supplémentaire
@@ -163,7 +163,7 @@ def get_moderation_history(
 
     university_query = (
         select(University)
-        .where(University.moderated_by != None)
+        .where(University.moderated_by is not None)
         .options(
             joinedload(University.moderator),          # u.moderator.full_name
             joinedload(University.submitted_by_user),  # u.submitted_by_user.full_name
@@ -172,7 +172,7 @@ def get_moderation_history(
 
     field_query = (
         select(FieldOfStudy)
-        .where(FieldOfStudy.moderated_by != None)
+        .where(FieldOfStudy.moderated_by is not None)
         .options(
             joinedload(FieldOfStudy.moderator),          # f.moderator.full_name
             joinedload(FieldOfStudy.submitted_by_user),  # f.submitted_by_user.full_name
@@ -239,7 +239,6 @@ def get_moderation_history(
             "university_name": f.university.name if f.university else None
         })
     from datetime import datetime
-    # Fix du tri (bug 2 déjà identifié) — datetime.min évite le crash TypeError
     history.sort(
         key=lambda x: x["moderated_at"] if x["moderated_at"] else datetime.min,
         reverse=True

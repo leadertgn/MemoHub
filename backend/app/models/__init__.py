@@ -14,5 +14,3 @@ from .field_of_study import FieldOfStudy
 from .memoir import Memoir
 
 from .application import TeamApplication
-
-# Plus de Category — remplacée par Domain + FieldOfStudy

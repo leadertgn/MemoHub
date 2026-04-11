@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 import logging
 from app.database import engine
-from app.database import create_db_and_tables, get_session
+from app.database import get_session
 from app.core.config import settings
 from app.models import Memoir, University, User, RefreshTokenBlacklist
 from app.models.enums import MemoirStatus, UniversityStatus

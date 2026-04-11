@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.core.dependencies import get_current_user, require_admin
+from app.core.dependencies import require_admin
 from app.database import get_session
 from app.models import Domain
 from app.models.enums import DomainStatus

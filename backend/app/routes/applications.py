@@ -1,15 +1,14 @@
 # app/routes/applications.py
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi import BackgroundTasks
 from sqlmodel import Session, select
-from datetime import datetime
 
-from app.database import get_session
 from app.core.dependencies import get_current_user
+from app.database import get_session
 from app.models import User, Country, University
 from app.models.application import TeamApplication
 from app.schemas.application import TeamApplicationCreate, TeamApplicationResponse
 from app.services.team_notification_service import notify_team_for_action
-from fastapi import BackgroundTasks
 
 router = APIRouter(prefix="/applications", tags=["applications"])
 

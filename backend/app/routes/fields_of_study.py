@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 from app.core.dependencies import get_current_user, require_admin, require_moderator
 from app.database import get_session
 from app.models import FieldOfStudy, Domain, University, User
-from app.models.enums import UniversityStatus, FieldStatus, UserRole
+from app.models.enums import UniversityStatus, FieldStatus
 from app.schemas.field_of_study import (
     FieldOfStudyRead,
     FieldOfStudyCreate,
@@ -176,13 +176,11 @@ def update_field_of_study_status(
             if field.submitted_by_user and field.submitted_by_user.email:
                 reason = status_data.rejection_reason or "Ne correspond pas à nos critères de référencement acédemique."
                 # Récupérer les détails pour l'email
-                university_name = field.university.name if field.university else None
                 html = get_suggestion_rejected_html(
                     field.submitted_by_user.full_name, 
                     "field", 
                     field.label, 
-                    reason,
-                    university_name=university_name
+                    reason
                 )
                 background_tasks.add_task(
                     send_email_async,

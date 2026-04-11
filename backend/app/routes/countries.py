@@ -2,7 +2,7 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
-from sqlalchemy import func
+
 
 from app.database import get_session
 from app.models import Country

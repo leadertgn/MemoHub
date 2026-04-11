@@ -3,7 +3,7 @@
 Tous les Enum du projet centralisés ici.
 
 Pourquoi des Enum et pas des str libres ?
-- Sécurité : impossible d'écrire status="approvd" par erreur
+- Sécurité : impossible d'écrire status="approved" par erreur
 - Lisibilité : l'IDE autocompléte les valeurs
 - Cohérence : une seule source de vérité pour les valeurs autorisées
 - Validation automatique par FastAPI/Pydantic à chaque requête

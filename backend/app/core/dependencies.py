@@ -15,7 +15,7 @@ bearer_scheme = HTTPBearer()
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     session: Session = Depends(get_session)
-) -> User:
+) -> type[User]:
     """
     Dépendance de base — vérifie que l'utilisateur est connecté.
     Utilisation : user: User = Depends(get_current_user)
