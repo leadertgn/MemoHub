@@ -85,16 +85,18 @@ export default function MemoirDetail() {
         </div>
 
         {/* Métadonnées */}
-        <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
           {[
             { label: 'Auteur',      value: memoir.author_name },
             { label: 'Année',       value: memoir.year },
+            { label: 'Université',  value: memoir.university?.name || 'Non renseignée' },
+            { label: 'Filière',     value: memoir.field_of_study?.label || 'Non renseignée' },
             { label: 'Langue',      value: memoir.language?.toUpperCase() },
             { label: 'Vues',        value: memoir.view_count },
           ].map(item => (
             <div key={item.label} className="space-y-0.5">
-              <p className="text-xs text-gray-400">{item.label}</p>
-              <p className="font-medium text-gray-800">{item.value}</p>
+              <p className="text-xs text-gray-400 font-medium">{item.label}</p>
+              <p className="font-semibold text-gray-800">{item.value}</p>
             </div>
           ))}
         </div>

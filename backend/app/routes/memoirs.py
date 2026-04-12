@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, BackgroundTasks, Request
 from sqlmodel import Session, select, col
 from sqlalchemy import func
+from sqlalchemy.orm import selectinload
 
 from app.core.dependencies import get_current_user, require_moderator, require_ambassador, get_current_user_optional
 from app.core.cloudinary_service import upload_memoir_pdf, delete_memoir_pdf
@@ -80,7 +81,11 @@ def get_memoirs(
 
     # Pagination
     offset = (page - 1) * limit
-    query = query.offset(offset).limit(limit)
+    # Ajout du chargement des relations pour avoir les noms en front
+    query = query.offset(offset).limit(limit).options(
+        selectinload(Memoir.university), 
+        selectinload(Memoir.field_of_study)
+    )
     items = session.exec(query).all()
 
     import math
@@ -103,7 +108,12 @@ def get_my_memoirs(
     current_user: User = Depends(get_current_user)
 ):
     # order by id desc pour avoir les plus récents en premier
-    query = select(Memoir).where(Memoir.author_id == current_user.id).order_by(col(Memoir.id).desc())
+    query = (
+        select(Memoir)
+        .where(Memoir.author_id == current_user.id)
+        .order_by(col(Memoir.id).desc())
+        .options(selectinload(Memoir.university), selectinload(Memoir.field_of_study))
+    )
     return session.exec(query).all()
 
 # --------------------------------------------------
@@ -116,7 +126,11 @@ def get_memoir(
     session: Session = Depends(get_session),
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
-    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
+    memoir = session.exec(
+        select(Memoir)
+        .where(Memoir.public_id == public_id)
+        .options(selectinload(Memoir.university), selectinload(Memoir.field_of_study))
+    ).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 
@@ -149,11 +163,16 @@ def get_memoir_with_access(
     memoir_id: int,
     session: Session = Depends(get_session),
 ):
-    memoir = session.get(Memoir, memoir_id)
+    # On recharge proprement avec les relations si nécessaire
+    query = (
+        select(Memoir)
+        .where(Memoir.id == memoir_id)
+        .options(selectinload(Memoir.university), selectinload(Memoir.field_of_study))
+    )
+    memoir = session.exec(query).first()
+    
     if not memoir or memoir.status != MemoirStatus.approved:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
-
-    # Vérifie les droits d'accès - Mémoire gratuit pour tous!
 
     return memoir
 

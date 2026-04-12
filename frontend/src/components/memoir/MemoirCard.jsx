@@ -1,6 +1,6 @@
 // src/components/memoir/MemoirCard.jsx
 import { Link } from 'react-router-dom'
-import { Eye } from 'lucide-react'
+import { Eye, Building2 } from 'lucide-react'
 
 const DEGREE_LABELS = {
   licence:   'Licence',
@@ -42,6 +42,14 @@ export default function MemoirCard({ memoir }) {
       <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
         {memoir.abstract}
       </p>
+
+      {/* Université */}
+      {memoir.university?.name && (
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider font-bold text-gray-400">
+          <Building2 className="w-3 h-3 text-indigo-500/60" />
+          <span className="truncate">{memoir.university.name}</span>
+        </div>
+      )}
 
       {/* Métadonnées */}
       <div className="flex items-center justify-between text-xs text-gray-400 pt-1 border-t border-gray-50">
