@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useMemoirDetail } from '../hooks/useMemoirs'
 import { useAuth } from '../context/AuthContext'
 import SecurePDFViewer from '../components/SecurePDFViewer'
+import CitationBlock from '../components/memoir/CitationBlock'
 
 const DEGREE_LABELS = {
   licence: 'Licence', master: 'Master', doctorat: 'Doctorat',
@@ -104,6 +105,9 @@ export default function MemoirDetail() {
         <h2 className="font-semibold text-gray-900">Résumé</h2>
         <p className="text-sm text-gray-600 leading-relaxed">{memoir.abstract}</p>
       </div>
+
+      {/* Citation */}
+      <CitationBlock memoir={memoir} />
 
       {/* Accès au document */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 space-y-6">

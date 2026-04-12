@@ -1,6 +1,7 @@
 # app/routes/memoirs.py
 from typing import List, Optional
 import uuid
+import re
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, BackgroundTasks, Request
 from sqlmodel import Session, select, col
@@ -181,6 +182,21 @@ async def submit_memoir(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
+    # Validation du numéro de téléphone (norme ITU-T E.164 : 8–15 chiffres)
+    phone_digits = re.sub(r'\D', '', author_phone)
+    if len(phone_digits) < 8 or len(phone_digits) > 15:
+        raise HTTPException(
+            status_code=422,
+            detail="Numéro de téléphone invalide. Fournissez un numéro valide (8 à 15 chiffres, ex\u00a0: +229 90 00 00 00)."
+        )
+
+    # Validation basique de l'email
+    if "@" not in author_email or "." not in author_email.split("@")[-1]:
+        raise HTTPException(
+            status_code=422,
+            detail="Adresse email invalide."
+        )
+
     # Vérifie que la filière appartient bien à l'université
     field = session.get(FieldOfStudy, field_of_study_id)
     if not field or field.university_id != university_id:

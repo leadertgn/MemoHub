@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../context/AuthContext'
 import { memoirsApi } from '../api/memoirs'
 import { useCountries, useUniversities, useFieldsOfStudy } from '../hooks/useFilters'
 import { SuggestUniversityModal, SuggestFieldModal } from '../components/upload/SuggestionModals'
-import { Lock, CheckCircle } from 'lucide-react';
+import { Lock, CheckCircle, PartyPopper, FileText as FileIcon, ArrowRight } from 'lucide-react';
 
 const DEGREES = [
   { value: 'licence',   label: 'Licence (Bac+3)' },
@@ -44,6 +44,7 @@ export default function Upload() {
   })
   const [file, setFile] = useState(null)
   const [errors, setErrors] = useState({})
+  const [submitted, setSubmitted] = useState(false)
 
   const [isUniModalOpen, setIsUniModalOpen] = useState(false)
   const [isFieldModalOpen, setIsFieldModalOpen] = useState(false)
@@ -57,9 +58,9 @@ export default function Upload() {
   const { mutate: submitMemoir, isPending, isError, error } = useMutation({
     mutationFn: (formData) => memoirsApi.submit(formData),
     onSuccess: () => {
-      navigate('/search', {
-        state: { message: 'Mémoire soumis avec succès ! Il sera visible après validation.' }
-      })
+      setSubmitted(true)
+      // Scroll en haut pour voir l'écran de succès
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   })
 
@@ -69,7 +70,15 @@ export default function Upload() {
     if (!form.abstract.trim())    newErrors.abstract = 'Le résumé est obligatoire'
     if (!form.author_name.trim()) newErrors.author_name = "Le nom de l'auteur est obligatoire"
     if (!form.author_email.trim()) newErrors.author_email = "L'email de contact est obligatoire"
-    if (!form.author_phone.trim()) newErrors.author_phone = "Le numéro de téléphone est obligatoire"
+    if (!form.author_phone.trim()) {
+      newErrors.author_phone = "Le numéro de téléphone est obligatoire"
+    } else {
+      // Validation format téléphone international : +, chiffres, espaces, tirets, parenthèses — 8 à 15 chiffres
+      const phoneDigits = form.author_phone.replace(/\D/g, '')
+      if (phoneDigits.length < 8 || phoneDigits.length > 15) {
+        newErrors.author_phone = "Numéro invalide (8 à 15 chiffres requis, ex\u00a0: +229 90 00 00 00)"
+      }
+    }
     if (!form.degree)             newErrors.degree = 'Le niveau est obligatoire'
     if (!form.country_id)         newErrors.country_id = 'Le pays est obligatoire'
     if (!form.university_id)      newErrors.university_id = "L'université est obligatoire"
@@ -119,7 +128,49 @@ export default function Upload() {
     }
   }
 
-  // Redirige si non connecté
+  // Écran de succès — affiché après soumission réussie
+  if (submitted) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center py-20 px-4 space-y-6 text-center">
+        <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-2 shadow-inner">
+          <PartyPopper className="w-12 h-12 text-green-500" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-extrabold text-gray-900">Merci pour votre contribution&nbsp;!</h1>
+          <p className="text-gray-500 max-w-md text-base">
+            Votre mémoire a bien été soumis. Notre équipe de modération va l'examiner sous peu.
+            Vous serez notifié par email une fois la décision prise.
+          </p>
+        </div>
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl px-6 py-4 max-w-sm text-sm text-blue-800 space-y-1">
+          <p className="font-semibold">📋 Et maintenant ?</p>
+          <ul className="text-left space-y-1 list-disc pl-4">
+            <li>Suivez l'état dans votre <strong>profil</strong></li>
+            <li>Un email vous sera envoyé lors de la validation</li>
+            <li>Le mémoire sera visible publiquement après approbation</li>
+          </ul>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Link
+            to="/profile"
+            className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-full font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+          >
+            Voir mes soumissions
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            to="/search"
+            className="flex items-center gap-2 bg-white border-2 border-gray-200 text-gray-700 px-6 py-3 rounded-full font-bold text-sm hover:border-blue-200 hover:text-blue-700 transition-all"
+          >
+            <FileIcon className="w-4 h-4" />
+            Explorer les mémoires
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirection si non connecté
   if (!isAuthenticated) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center py-20 space-y-4">

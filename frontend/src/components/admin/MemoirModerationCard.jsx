@@ -84,10 +84,11 @@ export default function MemoirModerationCard({ memoir }) {
             Rejeter
           </button>
           <a
-            href={`/memoirs/${memoir.id}`}
+            href={`/memoirs/${memoir.public_id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-3 flex items-center justify-center bg-gray-50 text-gray-600 text-xs py-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Voir le mémoire dans un nouvel onglet"
           >
             <Eye className="w-3.5 h-3.5" />
           </a>
