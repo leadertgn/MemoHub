@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useUpdateMemoirStatus } from '../../hooks/useAdmin'
 import { toast } from 'sonner'
-import { Eye, Check, X } from 'lucide-react'
+import { Eye, Check, X, Phone, Mail } from 'lucide-react'
 
 export default function MemoirModerationCard({ memoir }) {
   const [showRejectForm, setShowRejectForm] = useState(false)
@@ -58,8 +58,8 @@ export default function MemoirModerationCard({ memoir }) {
         <div className="bg-blue-50 border border-blue-100 p-2 rounded-lg text-xs space-y-1">
           <p className="font-semibold text-blue-900 pb-1">Vérification identité (Privé)</p>
           <div className="flex flex-col gap-1 text-blue-700">
-            {memoir.author_phone && <p>📞 {memoir.author_phone}</p>}
-            {memoir.author_email && <p>✉️ {memoir.author_email}</p>}
+            {memoir.author_phone && <p className="flex items-center gap-2"><Phone className="w-3 h-3" /> {memoir.author_phone}</p>}
+            {memoir.author_email && <p className="flex items-center gap-2"><Mail className="w-3 h-3" /> {memoir.author_email}</p>}
           </div>
         </div>
       )}
@@ -84,10 +84,11 @@ export default function MemoirModerationCard({ memoir }) {
             Rejeter
           </button>
           <a
-            href={`/memoirs/${memoir.id}`}
+            href={`/memoirs/${memoir.public_id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-3 flex items-center justify-center bg-gray-50 text-gray-600 text-xs py-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Voir le mémoire dans un nouvel onglet"
           >
             <Eye className="w-3.5 h-3.5" />
           </a>

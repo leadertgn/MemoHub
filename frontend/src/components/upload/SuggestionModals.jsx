@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CheckCircle, Lightbulb, X } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '../../api/client';
 import { useCountries, useDomains } from '../../hooks/useFilters';
@@ -9,7 +10,9 @@ function ModalWrapper({ title, children, onClose }) {
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
           <h3 className="font-bold text-lg text-gray-900">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <X className="w-5 h-5" />
+          </button>
         </div>
         <div className="p-6 overflow-y-auto">
           {children}
@@ -20,7 +23,7 @@ function ModalWrapper({ title, children, onClose }) {
 }
 
 export function SuggestUniversityModal({ isOpen, onClose }) {
-  const [form, setForm] = useState({ name: '', acronym: '', country_id: '', website: '' });
+  const [form, setForm] = useState({ name: '', acronym: '', country_id: null, website: '' });
   const { data: countries } = useCountries();
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -34,7 +37,7 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
       setTimeout(() => {
         onClose();
         setSuccessMsg('');
-        setForm({ name: '', acronym: '', country_id: '', website: '' });
+        setForm({ name: '', acronym: '', country_id: null, website: '' });
       }, 3000);
     }
   });
@@ -50,15 +53,20 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
     <ModalWrapper title="Suggérer une École/Institut" onClose={onClose}>
       {successMsg ? (
         <div className="text-center py-6">
-            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">✓</div>
+            <div className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <CheckCircle className="w-10 h-10" />
+            </div>
             <p className="font-bold text-gray-900">{successMsg}</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
             {error && <p className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">{error.message || 'Une erreur est survenue'}</p>}
             
-            <div className="bg-blue-50 p-4 rounded-xl text-sm text-blue-800 mb-4 border border-blue-100">
-              💡 <strong>Note :</strong> Ajoutez l'école ou institut direct (ex: INSTI) plutôt que l'université parente (ex: UNSTIM) pour éviter la confusion.
+            <div className="bg-blue-50/50 p-4 rounded-xl text-sm text-blue-800 mb-4 border border-blue-100 flex items-start gap-3">
+              <Lightbulb className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+              <p>
+                <strong>Note :</strong> Ajoutez l'école ou institut direct (ex: INSTI) plutôt que l'université parente (ex: UNSTIM) pour éviter la confusion.
+              </p>
             </div>
 
             <div className="space-y-1">
@@ -84,7 +92,7 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
                 <input type="url" className="w-full border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://..." value={form.website} onChange={e => setForm({...form, website: e.target.value})} />
             </div>
 
-            <button disabled={isPending || !form.name || !form.country_id} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
+            <button disabled={isPending || !form.name || form.country_id === null} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
                 {isPending ? 'Envoi...' : 'Soumettre la suggestion'}
             </button>
         </form>
@@ -94,7 +102,7 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
 }
 
 export function SuggestFieldModal({ isOpen, onClose, universityId, universityName }) {
-    const [form, setForm] = useState({ label: '', domain_id: '' });
+    const [form, setForm] = useState({ label: '', domain_id: null });
     const { data: domains } = useDomains();
     const [successMsg, setSuccessMsg] = useState('');
   
@@ -108,7 +116,7 @@ export function SuggestFieldModal({ isOpen, onClose, universityId, universityNam
         setTimeout(() => {
           onClose();
           setSuccessMsg('');
-          setForm({ label: '', domain_id: '' });
+          setForm({ label: '', domain_id: null });
         }, 3000);
       }
     });
@@ -148,7 +156,7 @@ export function SuggestFieldModal({ isOpen, onClose, universityId, universityNam
                   </select>
               </div>
   
-              <button disabled={isPending || !form.label || !form.domain_id} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
+              <button disabled={isPending || !form.label || form.domain_id === null} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
                   {isPending ? 'Envoi...' : 'Soumettre la suggestion'}
               </button>
           </form>

@@ -1,10 +1,12 @@
 # app/routes/memoirs.py
 from typing import List, Optional
-from datetime import datetime
 import uuid
+import re
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, BackgroundTasks, Request
-from sqlmodel import Session, select
-from sqlalchemy import  func
+from sqlmodel import Session, select, col
+from sqlalchemy import func
+from sqlalchemy.orm import selectinload
 
 from app.core.dependencies import get_current_user, require_moderator, require_ambassador, get_current_user_optional
 from app.core.cloudinary_service import upload_memoir_pdf, delete_memoir_pdf
@@ -52,11 +54,12 @@ def get_memoirs(
         query = query.where(Memoir.degree == degree)
     if year:
         query = query.where(Memoir.year == year)
+    search_pattern = None
     if search:
         search_pattern = f"%{search}%"
         query = query.where(
-            Memoir.title.ilike(search_pattern) |
-            Memoir.author_name.ilike(search_pattern)
+            col(Memoir.title).ilike(search_pattern) |
+            col(Memoir.author_name).ilike(search_pattern)
         )
     if domain_id:
         query = query.join(FieldOfStudy).where(FieldOfStudy.domain_id == domain_id)
@@ -68,9 +71,9 @@ def get_memoirs(
     if field_of_study_id: count_query = count_query.where(Memoir.field_of_study_id == field_of_study_id)
     if degree: count_query = count_query.where(Memoir.degree == degree)
     if year: count_query = count_query.where(Memoir.year == year)
-    if search:
+    if search and search_pattern:
         count_query = count_query.where(
-            Memoir.title.ilike(search_pattern) | Memoir.author_name.ilike(search_pattern)
+            col(Memoir.title).ilike(search_pattern) | col(Memoir.author_name).ilike(search_pattern)
         )
     if domain_id: count_query = count_query.join(FieldOfStudy).where(FieldOfStudy.domain_id == domain_id)
 
@@ -78,7 +81,11 @@ def get_memoirs(
 
     # Pagination
     offset = (page - 1) * limit
-    query = query.offset(offset).limit(limit)
+    # Ajout du chargement des relations pour avoir les noms en front
+    query = query.offset(offset).limit(limit).options(
+        selectinload(Memoir.university), 
+        selectinload(Memoir.field_of_study)
+    )
     items = session.exec(query).all()
 
     import math
@@ -101,7 +108,12 @@ def get_my_memoirs(
     current_user: User = Depends(get_current_user)
 ):
     # order by id desc pour avoir les plus récents en premier
-    query = select(Memoir).where(Memoir.author_id == current_user.id).order_by(Memoir.id.desc())
+    query = (
+        select(Memoir)
+        .where(Memoir.author_id == current_user.id)
+        .order_by(col(Memoir.id).desc())
+        .options(selectinload(Memoir.university), selectinload(Memoir.field_of_study))
+    )
     return session.exec(query).all()
 
 # --------------------------------------------------
@@ -114,7 +126,11 @@ def get_memoir(
     session: Session = Depends(get_session),
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
-    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
+    memoir = session.exec(
+        select(Memoir)
+        .where(Memoir.public_id == public_id)
+        .options(selectinload(Memoir.university), selectinload(Memoir.field_of_study))
+    ).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 
@@ -147,11 +163,16 @@ def get_memoir_with_access(
     memoir_id: int,
     session: Session = Depends(get_session),
 ):
-    memoir = session.get(Memoir, memoir_id)
+    # On recharge proprement avec les relations si nécessaire
+    query = (
+        select(Memoir)
+        .where(Memoir.id == memoir_id)
+        .options(selectinload(Memoir.university), selectinload(Memoir.field_of_study))
+    )
+    memoir = session.exec(query).first()
+    
     if not memoir or memoir.status != MemoirStatus.approved:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
-
-    # Vérifie les droits d'accès - Mémoire gratuit pour tous!
 
     return memoir
 
@@ -180,6 +201,21 @@ async def submit_memoir(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
+    # Validation du numéro de téléphone (norme ITU-T E.164 : 8–15 chiffres)
+    phone_digits = re.sub(r'\D', '', author_phone)
+    if len(phone_digits) < 8 or len(phone_digits) > 15:
+        raise HTTPException(
+            status_code=422,
+            detail="Numéro de téléphone invalide. Fournissez un numéro valide (8 à 15 chiffres, ex\u00a0: +229 90 00 00 00)."
+        )
+
+    # Validation basique de l'email
+    if "@" not in author_email or "." not in author_email.split("@")[-1]:
+        raise HTTPException(
+            status_code=422,
+            detail="Adresse email invalide."
+        )
+
     # Vérifie que la filière appartient bien à l'université
     field = session.get(FieldOfStudy, field_of_study_id)
     if not field or field.university_id != university_id:
@@ -198,7 +234,7 @@ async def submit_memoir(
     await file.seek(0) # IMPORTANT: Rembobine le fichier pour que Cloudinary puisse le lire
 
     # Upload le PDF sur Cloudinary
-    file_url = await upload_memoir_pdf(file, title)
+    file_url = await upload_memoir_pdf(file)
 
     memoir = Memoir(
         title=title,
@@ -302,7 +338,7 @@ def update_memoir_status(
     if old_status != status_data.status:
         memoir.status = status_data.status
         memoir.moderated_by = current_user.id
-        memoir.moderated_at = datetime.utcnow()
+        memoir.moderated_at = datetime.now(timezone.utc)
         if status_data.rejection_reason:
             memoir.rejection_reason = status_data.rejection_reason
         elif status_data.status == MemoirStatus.approved:

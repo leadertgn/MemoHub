@@ -2,6 +2,8 @@
 from typing import Optional, List
 from sqlmodel import SQLModel, Field
 from app.models.enums import MemoirStatus, DegreeLevel
+from app.schemas.university import UniversityRead
+from app.schemas.field_of_study import FieldOfStudyRead
 
 
 import uuid
@@ -24,6 +26,8 @@ class MemoirRead(SQLModel):
     allow_download: bool
     accepted_terms: bool
     author_id: int
+    university: Optional[UniversityRead] = None
+    field_of_study: Optional[FieldOfStudyRead] = None
 
 
 class MemoirReadWithAccess(MemoirRead):

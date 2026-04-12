@@ -11,6 +11,8 @@ import Dashboard from './components/admin/Dashboard'
 import Profile from './pages/Profile'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
+import About from './pages/About'
+import Guide from './pages/Guide'
 
 export default function App() {
   return (
@@ -27,6 +29,8 @@ export default function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="terms" element={<Terms />} />
             <Route path="privacy" element={<Privacy />} />
+            <Route path="about" element={<About />} />
+            <Route path="guide" element={<Guide />} />
           </Route>
         </Routes>
       </AuthProvider>

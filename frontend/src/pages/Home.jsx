@@ -3,9 +3,74 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "../api/client";
 import { applicationsApi } from "../api/applications";
 import { Search, Upload, FileText, Building2, Scale, Users, Shield, Heart, ArrowRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { useCountries, useUniversities } from "../hooks/useFilters";
+
+// Hook personnalisé : compteur animé qui s'incrémente au scroll (IntersectionObserver)
+function useCountUp(target, duration = 1200) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef(null);
+
+  const startAnimation = useCallback(() => {
+    if (started || typeof target !== "number") return;
+    setStarted(true);
+    const steps = 40;
+    const increment = target / steps;
+    let current = 0;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(current));
+      }
+    }, duration / steps);
+  }, [target, duration, started]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) startAnimation(); },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [startAnimation]);
+
+  return { count, ref };
+}
+
+// Composant card de statistique avec animation CountUp et sous-texte dynamique
+function StatCard({ label, rawValue, icon: Icon, color, bg, gradient, subtitle }) {
+  const numericValue = typeof rawValue === "number" ? rawValue : null;
+  const { count, ref } = useCountUp(numericValue);
+  const displayValue = numericValue !== null ? count.toLocaleString() : "...";
+
+  return (
+    <div
+      ref={ref}
+      className="group relative bg-white/70 backdrop-blur-xl rounded-2xl p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] border border-white hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-300"
+    >
+      <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${gradient}`} />
+      <div className="relative z-10">
+        <div className={`w-14 h-14 rounded-2xl ${bg} ${color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+          <Icon className="w-7 h-7" />
+        </div>
+        <div className="text-4xl font-black text-gray-900 mb-1 tabular-nums">
+          {displayValue}
+        </div>
+        <div className="text-sm font-medium text-gray-500 leading-snug">{label}</div>
+        {subtitle && (
+          <div className="mt-3 text-xs text-gray-400 font-medium">
+            {subtitle}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const { data: stats } = useQuery({
@@ -121,48 +186,53 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section with Glassmorphism */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 max-w-6xl mx-auto">
-        {[
-          {
-            label: "Mémoires validés et certifiés",
-            value: stats?.memoirs?.total ?? "...",
-            icon: FileText,
-            color: "text-blue-500",
-            bg: "bg-blue-50",
-          },
-          {
-            label: "Grandes Écoles et Universités",
-            value: stats?.universities?.total ?? "...",
-            icon: Building2,
-            color: "text-indigo-500",
-            bg: "bg-indigo-50",
-          },
-          {
-            label: "Documents sous revue",
-            value: stats?.memoirs?.pending ?? "...",
-            icon: Scale,
-            color: "text-amber-500",
-            bg: "bg-amber-50",
-          },
-        ].map((stat, i) => (
-          <div
-            key={i}
-            className="group bg-white/60 backdrop-blur-xl rounded-2xl p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-white hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 transform"
-          >
-            <div
-              className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
-            >
-              <stat.icon className="w-7 h-7" />
-            </div>
-            <div className="text-4xl font-black text-gray-900 mb-1">
-              {stat.value}
-            </div>
-            <div className="text-sm font-medium text-gray-500 leading-snug">
-              {stat.label}
-            </div>
-          </div>
-        ))}
+      {/* Stats Section enrichie */}
+      <section className="px-4 max-w-6xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-800">La plateforme en chiffres</h2>
+          <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-200">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+            En direct
+          </span>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <StatCard
+            label="Mémoires validés et certifiés"
+            rawValue={stats?.memoirs?.total}
+            icon={FileText}
+            color="text-blue-600"
+            bg="bg-blue-50"
+            gradient="bg-linear-to-br from-blue-50/60 to-transparent"
+            subtitle={stats?.memoirs?.pre_validated ? `dont ${stats.memoirs.pre_validated} en cours de validation finale` : "Vérifiés et accessibles librement"}
+          />
+          <StatCard
+            label="Documents sous revue"
+            rawValue={stats?.memoirs?.pending}
+            icon={Scale}
+            color="text-amber-600"
+            bg="bg-amber-50"
+            gradient="bg-linear-to-br from-amber-50/60 to-transparent"
+            subtitle="En attente de validation par l'équipe"
+          />
+          <StatCard
+            label="Universités et Grandes Écoles"
+            rawValue={stats?.universities?.total}
+            icon={Building2}
+            color="text-indigo-600"
+            bg="bg-indigo-50"
+            gradient="bg-linear-to-br from-indigo-50/60 to-transparent"
+            subtitle="Institutions référencées et validées"
+          />
+          <StatCard
+            label="Membres de la communauté"
+            rawValue={stats?.users?.total}
+            icon={Users}
+            color="text-violet-600"
+            bg="bg-violet-50"
+            gradient="bg-linear-to-br from-violet-50/60 to-transparent"
+            subtitle="Étudiants, auteurs et lecteurs"
+          />
+        </div>
       </section>
 
       {/* Comment ça marche */}

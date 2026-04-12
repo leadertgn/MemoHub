@@ -1,6 +1,6 @@
 # app/routes/fields_of_study.py
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlmodel import Session, select
@@ -148,7 +148,7 @@ def update_field_of_study_status(
     if old_status != status_data.status:
         field.status = status_data.status
         field.moderated_by = current_user.id
-        field.moderated_at = datetime.utcnow()
+        field.moderated_at = datetime.now(timezone.utc)
 
     session.add(field)
     session.commit()

@@ -1,7 +1,7 @@
 # app/routes/applications.py
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import BackgroundTasks
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 
 from app.core.dependencies import get_current_user
 from app.database import get_session
@@ -122,7 +122,7 @@ def get_my_applications(
     applications = session.exec(
         select(TeamApplication)
         .where(TeamApplication.user_id == current_user.id)
-        .order_by(TeamApplication.created_at.desc())
+        .order_by(col(TeamApplication.created_at).desc())
     ).all()
     
     return applications

@@ -37,7 +37,9 @@ export default function Profile() {
       }
     }
 
-    fetchMyData();
+    fetchMyData().catch((err) => {
+      console.error("Erreur inattendue dans fetchMyData:", err);
+    });
 
     return () => { cancelled = true; }; // cleanup
   }, []); // ← tableau vide : s'exécute UNE seule fois au montage
