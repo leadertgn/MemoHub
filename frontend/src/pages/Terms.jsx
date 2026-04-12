@@ -1,12 +1,33 @@
+import { Link } from "react-router-dom";
+import { Scale, ArrowLeft } from "lucide-react";
+
 export default function Terms() {
     return (
         <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="container mx-auto max-w-4xl">
+
+                {/* Bouton retour */}
+                <Link
+                    to="/"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 transition-colors mb-6 group"
+                >
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    Retour à l'accueil
+                </Link>
+
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    {/* Header avec dégradé subtil */}
-                    <div className="bg-linear-to-r from-indigo-600 to-blue-600 px-8 py-10 text-white">
-                        <h1 className="text-3xl font-extrabold tracking-tight">Conditions Générales d'Utilisation</h1>
-                        <p className="mt-2 text-indigo-100 opacity-90">Dernière mise à jour : 10 Avril 2026</p>
+
+                    {/* Header avec dégradé Indigo/Bleu */}
+                    <div className="bg-linear-to-r from-indigo-600 to-blue-600 px-8 py-10 text-white relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4" />
+                        <div className="relative z-10">
+                            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
+                                <Scale className="w-4 h-4" />
+                                <span className="text-sm font-medium">Cadre légal · Conditions d'utilisation</span>
+                            </div>
+                            <h1 className="text-3xl font-extrabold tracking-tight">Conditions Générales d'Utilisation</h1>
+                            <p className="mt-2 text-indigo-100 opacity-90">Dernière mise à jour : 10 Avril 2026</p>
+                        </div>
                     </div>
 
                     <div className="p-8 sm:p-12 prose prose-slate max-w-none">
@@ -17,7 +38,7 @@ export default function Terms() {
                         <div className="space-y-10 mt-10">
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm">01</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">01</span>
                                     Objet du Service
                                 </h2>
                                 <p>
@@ -27,7 +48,7 @@ export default function Terms() {
 
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm">02</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">02</span>
                                     Propriété Intellectuelle et Licence
                                 </h2>
                                 <p>
@@ -40,7 +61,7 @@ export default function Terms() {
 
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm">03</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">03</span>
                                     Responsabilité de l'Utilisateur
                                 </h2>
                                 <p>
@@ -55,7 +76,7 @@ export default function Terms() {
 
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm">04</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">04</span>
                                     Modération et Administration
                                 </h2>
                                 <p>
@@ -65,7 +86,7 @@ export default function Terms() {
 
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm">05</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">05</span>
                                     Limitation de Responsabilité
                                 </h2>
                                 <p>
@@ -74,7 +95,10 @@ export default function Terms() {
                             </section>
 
                             <section className="pt-8 border-t border-gray-100">
-                                <h2 className="text-xl font-bold text-gray-900">Contact Juridique</h2>
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">06</span>
+                                    Contact Juridique
+                                </h2>
                                 <p>
                                     Pour tout signalement relatif à la propriété intellectuelle (DMCA/Droit d'Auteur), veuillez nous contacter à l'adresse suivante : <span className="text-indigo-600 font-medium">legal@memohub.com</span>.
                                 </p>

@@ -1,23 +1,46 @@
+import { Link } from "react-router-dom";
+import { ShieldCheck, ArrowLeft } from "lucide-react";
+
 export default function Privacy() {
+
     return (
         <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="container mx-auto max-w-4xl">
+
+                {/* Bouton retour */}
+                <Link
+                    to="/"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 transition-colors mb-6 group"
+                >
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    Retour à l'accueil
+                </Link>
+
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    {/* Header avec dégradé subtil */}
-                    <div className="bg-linear-to-r from-teal-600 to-blue-600 px-8 py-10 text-white">
-                        <h1 className="text-3xl font-extrabold tracking-tight">Politique de Confidentialité</h1>
-                        <p className="mt-2 text-teal-50 opacity-90">Conformité RGPD & Protection des Données</p>
+
+                    {/* Header — même palette Indigo/Bleu que Terms.jsx */}
+                    <div className="bg-linear-to-r from-indigo-600 to-blue-600 px-8 py-10 text-white relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4" />
+                        <div className="relative z-10">
+                            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
+                                <ShieldCheck className="w-4 h-4" />
+                                <span className="text-sm font-medium">RGPD · Protection des Données</span>
+                            </div>
+                            <h1 className="text-3xl font-extrabold tracking-tight">Politique de Confidentialité</h1>
+                        </div>
                     </div>
 
                     <div className="p-8 sm:p-12 prose prose-slate max-w-none">
                         <p className="text-lg text-gray-600 leading-relaxed">
-                            Chez <strong>MemoHub</strong>, nous prenons la protection de vos données personnelles très au sérieux. Cette politique détaille comment nous collectons, utilisons et protégeons vos informations lors de votre utilisation de notre bibliothèque numérique.
+                            Chez <strong>MemoHub</strong>, nous prenons la protection de vos données personnelles très au sérieux.
+                            Cette politique détaille comment nous collectons, utilisons et protégeons vos informations lors de votre utilisation de notre bibliothèque numérique.
                         </p>
 
                         <div className="space-y-10 mt-10">
+
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-50 text-teal-600 text-sm">01</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">01</span>
                                     Responsable du Traitement
                                 </h2>
                                 <p>
@@ -27,7 +50,7 @@ export default function Privacy() {
 
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-50 text-teal-600 text-sm">02</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">02</span>
                                     Données Collectées et Finalité
                                 </h2>
                                 <p>
@@ -44,7 +67,7 @@ export default function Privacy() {
 
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-50 text-teal-600 text-sm">03</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">03</span>
                                     Base Légale du Traitement
                                 </h2>
                                 <p>
@@ -54,7 +77,7 @@ export default function Privacy() {
 
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-50 text-teal-600 text-sm">04</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">04</span>
                                     Conservation et Destinataires
                                 </h2>
                                 <p>
@@ -67,7 +90,7 @@ export default function Privacy() {
 
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-50 text-teal-600 text-sm">05</span>
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">05</span>
                                     Vos Droits (RGPD)
                                 </h2>
                                 <p>
@@ -83,15 +106,19 @@ export default function Privacy() {
                             </section>
 
                             <section className="pt-8 border-t border-gray-100">
-                                <h2 className="text-xl font-bold text-gray-900">Sécurité</h2>
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">06</span>
+                                    Sécurité
+                                </h2>
                                 <p>
-                                    MemoHub utilise des protocoles de chiffrement standards (SSL/TLS) pour protéger vos données lors des transferts. Aucun mot de passe n'est stocké localement sur nos serveurs.
+                                    MemoHub utilise des protocoles de chiffrement standards (SSL/TLS) pour protéger vos données lors des transferts. Aucun mot de passe n'est stocké localement sur nos serveurs. Nos tokens d'authentification sont signés par JWT avec une expiration courte et un mécanisme de révocation (blacklist).
                                 </p>
                             </section>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
