@@ -126,7 +126,7 @@ export default function Upload() {
         <p className="text-gray-600 font-medium text-lg">Veuillez vous connecter pour publier un manuscrit.</p>
         <a 
           href="/login"
-          className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md text-white px-8 py-3 rounded-full text-sm font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all"
+          className="inline-block bg-linear-to-r from-blue-600 to-indigo-600 shadow-md text-white px-8 py-3 rounded-full text-sm font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all"
         >
           Se connecter
         </a>
@@ -137,7 +137,7 @@ export default function Upload() {
   return (
     <div className="relative pb-24">
       {/* Decors BG */}
-      <div className="absolute top-0 left-0 w-full h-[400px] bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10" />
+      <div className="absolute top-0 left-0 w-full h-100 bg-linear-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10" />
 
       <div className="max-w-3xl mx-auto space-y-8 pt-6 px-4">
         
@@ -380,7 +380,7 @@ export default function Upload() {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isPending ? (
               <span className="flex items-center justify-center gap-3">

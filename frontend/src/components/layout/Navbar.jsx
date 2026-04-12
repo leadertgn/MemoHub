@@ -27,10 +27,10 @@ export default function Navbar() {
           
           {/* Logo */}
           <Link to="/" onClick={closeMenu} className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+            <div className="w-9 h-9 bg-linear-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-extrabold bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent">
+            <span className="text-xl font-extrabold bg-linear-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent">
               MemoHub
             </span>
           </Link>
@@ -87,7 +87,7 @@ export default function Navbar() {
                 )}
                 
                 <Link to="/profile" className="flex items-center gap-2 group">
-                  <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
+                  <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
                     {userInitial}
                   </div>
                   <span className="text-sm font-semibold text-gray-700 hidden lg:block group-hover:text-blue-600 transition-colors">
@@ -107,7 +107,7 @@ export default function Navbar() {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+                className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
               >
                 <LogIn className="w-4 h-4" />
                 Connexion
@@ -148,7 +148,7 @@ export default function Navbar() {
               </Link>
               <div className="border-t border-gray-100 pt-4 flex flex-col gap-3">
                 <div className="flex items-center gap-3 px-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-8 h-8 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
                     {user?.full_name?.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-bold text-gray-900">{user?.full_name}</span>
@@ -161,7 +161,7 @@ export default function Navbar() {
             </>
           ) : (
             <div className="border-t border-gray-100 pt-4">
-              <Link to="/login" onClick={closeMenu} className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 rounded-xl shadow-md">
+              <Link to="/login" onClick={closeMenu} className="flex items-center justify-center gap-2 w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 rounded-xl shadow-md">
                 <LogIn className="w-5 h-5" />
                 Connexion / Inscription
               </Link>

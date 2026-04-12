@@ -27,7 +27,7 @@ export default function MemoirCard({ memoir }) {
       className="block bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 p-5 space-y-4 relative overflow-hidden group"
     >
       {/* Ligne décorative en haut au hover */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       {/* En-tête */}
       <div className="flex items-start justify-between gap-3">
         <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 flex-1">

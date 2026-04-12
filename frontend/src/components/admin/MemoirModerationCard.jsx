@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useUpdateMemoirStatus } from '../../hooks/useAdmin'
 import { toast } from 'sonner'
-import { CheckCircle, XCircle, Eye, Check, X } from 'lucide-react'
+import { Eye, Check, X } from 'lucide-react'
 
 export default function MemoirModerationCard({ memoir }) {
   const [showRejectForm, setShowRejectForm] = useState(false)

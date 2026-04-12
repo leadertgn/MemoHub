@@ -1,7 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useMemoirDetail } from '../hooks/useMemoirs'
 import { useAuth } from '../context/AuthContext'
-import { useState } from 'react'
 import SecurePDFViewer from '../components/SecurePDFViewer'
 
 const DEGREE_LABELS = {
@@ -64,7 +63,7 @@ export default function MemoirDetail() {
   return (
     <div className="relative pb-24">
       {/* Decors BG */}
-      <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10" />
+      <div className="absolute top-0 left-0 w-full h-75 bg-linear-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10" />
 
       <div className="max-w-3xl mx-auto space-y-6 pt-6 px-4">
       <nav className="text-sm text-gray-400">
@@ -79,7 +78,7 @@ export default function MemoirDetail() {
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 leading-snug flex-1 tracking-tight">
             {memoir.title}
           </h1>
-          <span className="shrink-0 text-xs font-bold px-4 py-2 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-100 text-blue-800 shadow-sm">
+          <span className="shrink-0 text-xs font-bold px-4 py-2 rounded-full bg-linear-to-tr from-blue-100 to-indigo-100 text-blue-800 shadow-sm">
             {DEGREE_LABELS[memoir.degree]}
           </span>
         </div>
@@ -120,7 +119,7 @@ export default function MemoirDetail() {
             </p>
             <Link
               to="/login"
-              className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-8 py-3 rounded-full hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              className="inline-block bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold px-8 py-3 rounded-full hover:shadow-lg hover:-translate-y-0.5 transition-all"
             >
               Se connecter
             </Link>
@@ -130,7 +129,7 @@ export default function MemoirDetail() {
             <div className="flex justify-end">
               <button
                 onClick={handleDownload}
-                className="flex items-center gap-2 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
+                className="flex items-center gap-2 bg-linear-to-r from-gray-800 to-gray-900 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
               >
                 <span className="text-lg">⬇️</span> 
                 Télécharger (avec filigrane)

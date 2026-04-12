@@ -4,7 +4,7 @@ export default function Terms() {
             <div className="container mx-auto max-w-4xl">
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                     {/* Header avec dégradé subtil */}
-                    <div className="bg-gradient-to-r from-indigo-600 to-blue-600 px-8 py-10 text-white">
+                    <div className="bg-linear-to-r from-indigo-600 to-blue-600 px-8 py-10 text-white">
                         <h1 className="text-3xl font-extrabold tracking-tight">Conditions Générales d'Utilisation</h1>
                         <p className="mt-2 text-indigo-100 opacity-90">Dernière mise à jour : 10 Avril 2026</p>
                     </div>
