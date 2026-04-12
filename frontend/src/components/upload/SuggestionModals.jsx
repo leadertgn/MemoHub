@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CheckCircle, Lightbulb, X } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '../../api/client';
 import { useCountries, useDomains } from '../../hooks/useFilters';
@@ -9,7 +10,9 @@ function ModalWrapper({ title, children, onClose }) {
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
           <h3 className="font-bold text-lg text-gray-900">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <X className="w-5 h-5" />
+          </button>
         </div>
         <div className="p-6 overflow-y-auto">
           {children}
@@ -50,15 +53,20 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
     <ModalWrapper title="Suggérer une École/Institut" onClose={onClose}>
       {successMsg ? (
         <div className="text-center py-6">
-            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">✓</div>
+            <div className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <CheckCircle className="w-10 h-10" />
+            </div>
             <p className="font-bold text-gray-900">{successMsg}</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
             {error && <p className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">{error.message || 'Une erreur est survenue'}</p>}
             
-            <div className="bg-blue-50 p-4 rounded-xl text-sm text-blue-800 mb-4 border border-blue-100">
-              💡 <strong>Note :</strong> Ajoutez l'école ou institut direct (ex: INSTI) plutôt que l'université parente (ex: UNSTIM) pour éviter la confusion.
+            <div className="bg-blue-50/50 p-4 rounded-xl text-sm text-blue-800 mb-4 border border-blue-100 flex items-start gap-3">
+              <Lightbulb className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+              <p>
+                <strong>Note :</strong> Ajoutez l'école ou institut direct (ex: INSTI) plutôt que l'université parente (ex: UNSTIM) pour éviter la confusion.
+              </p>
             </div>
 
             <div className="space-y-1">

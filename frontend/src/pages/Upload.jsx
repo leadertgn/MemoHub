@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { memoirsApi } from '../api/memoirs'
 import { useCountries, useUniversities, useFieldsOfStudy } from '../hooks/useFilters'
 import { SuggestUniversityModal, SuggestFieldModal } from '../components/upload/SuggestionModals'
-import { Lock, CheckCircle, PartyPopper, FileText as FileIcon, ArrowRight } from 'lucide-react';
+import { Lock, CheckCircle, PartyPopper, FileText as FileIcon, ArrowRight, ListTodo } from 'lucide-react';
 
 const DEGREES = [
   { value: 'licence',   label: 'Licence (Bac+3)' },
@@ -142,8 +142,11 @@ export default function Upload() {
             Vous serez notifié par email une fois la décision prise.
           </p>
         </div>
-        <div className="bg-blue-50 border border-blue-100 rounded-2xl px-6 py-4 max-w-sm text-sm text-blue-800 space-y-1">
-          <p className="font-semibold">📋 Et maintenant ?</p>
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl px-6 py-5 max-w-sm text-sm text-blue-800 space-y-3">
+          <p className="font-bold flex items-center gap-2">
+            <ListTodo className="w-5 h-5" />
+            Et maintenant ?
+          </p>
           <ul className="text-left space-y-1 list-disc pl-4">
             <li>Suivez l'état dans votre <strong>profil</strong></li>
             <li>Un email vous sera envoyé lors de la validation</li>

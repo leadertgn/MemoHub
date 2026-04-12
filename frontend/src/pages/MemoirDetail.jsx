@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
+import { SearchX, FileText, Lock, Download } from 'lucide-react'
 import { useMemoirDetail } from '../hooks/useMemoirs'
 import { useAuth } from '../context/AuthContext'
 import SecurePDFViewer from '../components/SecurePDFViewer'
@@ -26,12 +27,14 @@ export default function MemoirDetail() {
 
   if (isError || !memoir) {
     return (
-      <div className="text-center py-20 space-y-3">
-        <p className="text-4xl">😕</p>
-        <p className="text-gray-500 font-medium">Mémoire introuvable</p>
-        <Link to="/search" className="text-blue-600 text-sm hover:underline">
-          Retour à la recherche
-        </Link>
+      <div className="text-center py-20 space-y-4">
+        <SearchX className="w-16 h-16 text-gray-200 mx-auto" />
+        <div>
+          <p className="text-gray-500 font-bold text-lg">Mémoire introuvable</p>
+          <Link to="/search" className="text-blue-600 text-sm hover:underline mt-2 inline-block">
+            Retour à la recherche
+          </Link>
+        </div>
       </div>
     )
   }
@@ -113,13 +116,18 @@ export default function MemoirDetail() {
 
       {/* Accès au document */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 space-y-6">
-        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-          <span>📄</span> Document Intégral
+        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
+          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+            <FileText className="w-5 h-5" />
+          </div>
+          Document Intégral
         </h2>
 
         {!isAuthenticated ? (
           <div className="text-center py-10 space-y-4 bg-gray-50/50 rounded-2xl border border-gray-100 border-dashed">
-            <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto text-xl shadow-inner">🔒</div>
+            <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
+              <Lock className="w-6 h-6" />
+            </div>
             <p className="text-gray-600 font-medium max-w-sm mx-auto">
               Veuillez vous connecter pour lire et télécharger le mémoire complet.
             </p>
@@ -137,7 +145,7 @@ export default function MemoirDetail() {
                 onClick={handleDownload}
                 className="flex items-center gap-2 bg-linear-to-r from-gray-800 to-gray-900 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
               >
-                <span className="text-lg">⬇️</span> 
+                <Download className="w-4 h-4" />
                 Télécharger (avec filigrane)
               </button>
             </div>

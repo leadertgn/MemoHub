@@ -14,7 +14,7 @@ import { apiClient } from "../../api/client";
 import { toast } from "sonner";
 import { 
    FileText, Building2, GraduationCap, Users, History,
-  BarChart3, Menu, X
+  BarChart3, Menu, X, PartyPopper
 } from "lucide-react";
 import StatCard from "../../components/admin/StatCard";
 import MemoirModerationCard from "../../components/admin/MemoirModerationCard";
@@ -181,8 +181,10 @@ function MemoirsTab() {
 
   if (!memoirs?.length)
     return (
-      <div className="text-center py-16 space-y-2">
-        <p className="text-3xl">🎉</p>
+      <div className="text-center py-16 space-y-4">
+        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
+          <PartyPopper className="w-8 h-8" />
+        </div>
         <p className="text-gray-500 font-medium">Aucun mémoire en attente</p>
       </div>
     );
@@ -209,8 +211,10 @@ function UniversitiesTab() {
 
   if (!universities?.length)
     return (
-      <div className="text-center py-16 space-y-2">
-        <p className="text-3xl">🎉</p>
+      <div className="text-center py-16 space-y-4">
+        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
+          <PartyPopper className="w-8 h-8" />
+        </div>
         <p className="text-gray-500 font-medium">
           Aucune université en attente
         </p>
@@ -240,8 +244,10 @@ function FieldsTab() {
 
   if (!fields?.length)
     return (
-      <div className="text-center py-16 space-y-2">
-        <p className="text-3xl">🎉</p>
+      <div className="text-center py-16 space-y-4">
+        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
+          <PartyPopper className="w-8 h-8" />
+        </div>
         <p className="text-gray-500 font-medium">Aucune filière en attente</p>
       </div>
     );

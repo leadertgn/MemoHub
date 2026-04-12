@@ -1,4 +1,4 @@
-import { BookOpen, Mail } from "lucide-react";
+import { BookOpen, Mail, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const FOOTER_LINKS = {
@@ -62,7 +62,9 @@ export default function Footer() {
                 {/* Bas de footer */}
                 <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
                     <p>© {current_year} MemoHub — Tous droits réservés.</p>
-                    <p>Fait avec ❤️ pour les étudiants du monde entier.</p>
+                    <p className="flex items-center gap-1">
+                        Fait avec <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> pour les étudiants du monde entier.
+                    </p>
                 </div>
             </div>
         </footer>
