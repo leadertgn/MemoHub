@@ -16,6 +16,13 @@ export const adminApi = {
     })
   },
 
+  preValidateMemoir: async (publicId) => {
+    return apiClient(`/memoirs/${publicId}/pre-validate`, {
+      method: 'PATCH'
+    })
+  },
+
+
   updateUniversityStatus: async (id, status, rejection_reason = null) => {
     return apiClient(`/universities/${id}/status`, {
       method: 'PATCH',
