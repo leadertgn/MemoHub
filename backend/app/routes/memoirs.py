@@ -299,6 +299,54 @@ def update_memoir(
     return memoir
 
 
+
+# --------------------------------------------------
+# PATCH /memoirs/{public_id}/pre-validate  — ambassadeur seulement
+# --------------------------------------------------
+@router.patch("/{public_id}/pre-validate", response_model=MemoirRead)
+def pre_validate_memoir(
+    public_id: uuid.UUID,
+    background_tasks: BackgroundTasks,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(require_ambassador)
+):
+    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
+    if not memoir:
+        raise HTTPException(status_code=404, detail="Mémoire introuvable")
+
+    # Sécurité : un ambassadeur ne peut pré-valider que les mémoires de son université
+    if current_user.role == UserRole.ambassador:
+        if memoir.university_id != current_user.university_id:
+            raise HTTPException(status_code=403, detail="Accès refusé : ce mémoire ne provient pas de votre université.")
+
+    if memoir.status != MemoirStatus.pending:
+        # Si c'est déjà pré-validé ou approuvé, rien à faire (ou message informatif)
+        return memoir
+
+    # Mise à jour du statut
+    memoir.status = MemoirStatus.pre_validated
+    memoir.moderated_by = current_user.id
+    memoir.moderated_at = datetime.now(timezone.utc)
+
+    session.add(memoir)
+    session.commit()
+    session.refresh(memoir)
+
+    # Notification à l'équipe (modérateurs pays et admins)
+    # L'ambassadeur signale que le document est prêt pour la validation finale
+    notify_team_for_action(
+        session=session,
+        background_tasks=background_tasks,
+        resource_type="Mémoire (Pré-validé)",
+        resource_name=memoir.title,
+        action="Nouvelle pré-validation",
+        country_id=memoir.university.country_id if memoir.university else None,
+        details=f"Pré-validé par l'ambassadeur {current_user.full_name} ({memoir.university.name if memoir.university else 'Univ inconnue'})"
+    )
+
+    return memoir
+
+
 # --------------------------------------------------
 # PATCH /memoirs/{id}/status  — ambassadeur/modérateur/admin
 # --------------------------------------------------

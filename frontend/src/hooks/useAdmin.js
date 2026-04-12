@@ -51,6 +51,19 @@ export function useUpdateMemoirStatus() {
   })
 }
 
+export function usePreValidateMemoir() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (publicId) => adminApi.preValidateMemoir(publicId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pending-memoirs'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['moderation-history'] })
+    }
+  })
+}
+
+
 export function useUpdateUniversityStatus() {
   const queryClient = useQueryClient()
   return useMutation({

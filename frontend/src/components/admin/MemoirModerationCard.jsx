@@ -1,18 +1,35 @@
 import { useState } from 'react'
-import { useUpdateMemoirStatus } from '../../hooks/useAdmin'
+import { useUpdateMemoirStatus, usePreValidateMemoir } from '../../hooks/useAdmin'
+import { useAuth } from '../../context/AuthContext'
 import { toast } from 'sonner'
 import { Eye, Check, X, Phone, Mail } from 'lucide-react'
 
 export default function MemoirModerationCard({ memoir }) {
+  const { user } = useAuth()
   const [showRejectForm, setShowRejectForm] = useState(false)
   const [reason, setReason] = useState('')
-  const { mutate: updateStatus, isPending } = useUpdateMemoirStatus()
+  
+  const { mutate: updateStatus, isPending: isUpdating } = useUpdateMemoirStatus()
+  const { mutate: preValidate, isPending: isPreValidating } = usePreValidateMemoir()
+  
+  const isPending = isUpdating || isPreValidating
+  const isAmbassador = user?.role === 'ambassador'
+  const isAlreadyPreValidated = memoir.status === 'pre_validated'
 
-  const handleApprove = () => {
-    updateStatus({ id: memoir.id, status: 'approved' }, {
+  const handleAction = () => {
+    if (isAmbassador) {
+      // Action de pré-validation (utilise public_id pour la sécurité)
+      preValidate(memoir.public_id, {
+        onSuccess: () => toast.success("Mémoire pré-validé avec succès !"),
+        onError: (err) => toast.error(`Erreur: ${err.message}`)
+      })
+    } else {
+      // Action d'approbation finale (Admin/Modo)
+      updateStatus({ id: memoir.id, status: 'approved' }, {
         onSuccess: () => toast.success("Mémoire approuvé avec succès !"),
         onError: (err) => toast.error(`Erreur: ${err.message}`)
-    })
+      })
+    }
   }
 
   const handleReject = () => {
@@ -23,6 +40,7 @@ export default function MemoirModerationCard({ memoir }) {
     })
     setShowRejectForm(false)
   }
+
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-3">
@@ -67,14 +85,21 @@ export default function MemoirModerationCard({ memoir }) {
       {/* Actions */}
       {!showRejectForm ? (
         <div className="flex gap-2 pt-1">
-          <button
-            onClick={handleApprove}
-            disabled={isPending}
-            className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white text-xs py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-          >
-            <Check className="w-3.5 h-3.5" />
-            Approuver
-          </button>
+          {(!isAmbassador || !isAlreadyPreValidated) && (
+            <button
+              onClick={handleAction}
+              disabled={isPending}
+              className={`flex-1 flex items-center justify-center gap-2 text-white text-xs py-2 rounded-lg disabled:opacity-50 transition-colors ${
+                isAmbassador 
+                  ? 'bg-cyan-600 hover:bg-cyan-700' 
+                  : 'bg-green-600 hover:bg-green-700'
+              }`}
+            >
+              <Check className="w-3.5 h-3.5" />
+              {isAmbassador ? 'Pré-valider' : 'Approuver'}
+            </button>
+          )}
+
           <button
             onClick={() => setShowRejectForm(true)}
             disabled={isPending}
