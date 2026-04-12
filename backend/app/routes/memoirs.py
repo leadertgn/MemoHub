@@ -1,10 +1,10 @@
 # app/routes/memoirs.py
 from typing import List, Optional
-from datetime import datetime
 import uuid
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, BackgroundTasks, Request
-from sqlmodel import Session, select
-from sqlalchemy import  func
+from sqlmodel import Session, select, col
+from sqlalchemy import func
 
 from app.core.dependencies import get_current_user, require_moderator, require_ambassador, get_current_user_optional
 from app.core.cloudinary_service import upload_memoir_pdf, delete_memoir_pdf
@@ -52,11 +52,12 @@ def get_memoirs(
         query = query.where(Memoir.degree == degree)
     if year:
         query = query.where(Memoir.year == year)
+    search_pattern = None
     if search:
         search_pattern = f"%{search}%"
         query = query.where(
-            Memoir.title.ilike(search_pattern) |
-            Memoir.author_name.ilike(search_pattern)
+            col(Memoir.title).ilike(search_pattern) |
+            col(Memoir.author_name).ilike(search_pattern)
         )
     if domain_id:
         query = query.join(FieldOfStudy).where(FieldOfStudy.domain_id == domain_id)
@@ -68,9 +69,9 @@ def get_memoirs(
     if field_of_study_id: count_query = count_query.where(Memoir.field_of_study_id == field_of_study_id)
     if degree: count_query = count_query.where(Memoir.degree == degree)
     if year: count_query = count_query.where(Memoir.year == year)
-    if search:
+    if search and search_pattern:
         count_query = count_query.where(
-            Memoir.title.ilike(search_pattern) | Memoir.author_name.ilike(search_pattern)
+            col(Memoir.title).ilike(search_pattern) | col(Memoir.author_name).ilike(search_pattern)
         )
     if domain_id: count_query = count_query.join(FieldOfStudy).where(FieldOfStudy.domain_id == domain_id)
 
@@ -101,7 +102,7 @@ def get_my_memoirs(
     current_user: User = Depends(get_current_user)
 ):
     # order by id desc pour avoir les plus récents en premier
-    query = select(Memoir).where(Memoir.author_id == current_user.id).order_by(Memoir.id.desc())
+    query = select(Memoir).where(Memoir.author_id == current_user.id).order_by(col(Memoir.id).desc())
     return session.exec(query).all()
 
 # --------------------------------------------------
@@ -198,7 +199,7 @@ async def submit_memoir(
     await file.seek(0) # IMPORTANT: Rembobine le fichier pour que Cloudinary puisse le lire
 
     # Upload le PDF sur Cloudinary
-    file_url = await upload_memoir_pdf(file, title)
+    file_url = await upload_memoir_pdf(file)
 
     memoir = Memoir(
         title=title,
@@ -302,7 +303,7 @@ def update_memoir_status(
     if old_status != status_data.status:
         memoir.status = status_data.status
         memoir.moderated_by = current_user.id
-        memoir.moderated_at = datetime.utcnow()
+        memoir.moderated_at = datetime.now(timezone.utc)
         if status_data.rejection_reason:
             memoir.rejection_reason = status_data.rejection_reason
         elif status_data.status == MemoirStatus.approved:

@@ -1,9 +1,9 @@
 # app/routes/universities.py
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 from sqlalchemy import  func
 from sqlalchemy.orm import joinedload
 
@@ -36,7 +36,7 @@ def get_universities(
     if search:
         search_pattern = f"%{search}%"
         query = query.where(
-            University.name.ilike(search_pattern)
+            col(University.name).ilike(search_pattern)
         )
 
     query = query.options(joinedload(University.submitted_by_user))
@@ -138,7 +138,7 @@ def update_university_status(
     if old_status != status_data.status:
         university.status = status_data.status
         university.moderated_by = current_user.id
-        university.moderated_at = datetime.utcnow()
+        university.moderated_at = datetime.now(timezone.utc)
         session.add(university)
     session.commit()
     session.refresh(university)

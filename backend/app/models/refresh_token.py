@@ -1,5 +1,5 @@
 # backend/app/models/refresh_token.py
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from sqlmodel import SQLModel, Field
 
@@ -11,4 +11,4 @@ class RefreshTokenBlacklist(SQLModel, table=True):
     jti: str = Field(index=True, unique=True, max_length=36)  # JWT ID unique
     user_id: int = Field(foreign_key="user.id")
     expires_at: datetime   # quand le token aurait expiré naturellement
-    revoked_at: datetime = Field(default_factory=datetime.utcnow)
+    revoked_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

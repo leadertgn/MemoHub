@@ -1,7 +1,7 @@
 # app/routes/countries.py
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 
 
 from app.database import get_session
@@ -23,7 +23,7 @@ def get_countries(
     if search:
         search_pattern = f"%{search}%"
         query = query.where(
-            Country.name.ilike(search_pattern)
+            col(Country.name).ilike(search_pattern)
         )
 
     return session.exec(query.order_by(Country.name)).all()

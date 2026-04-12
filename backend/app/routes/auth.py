@@ -2,7 +2,7 @@
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from datetime import datetime
+from datetime import datetime, timezone
 from app.models.refresh_token import RefreshTokenBlacklist
 from app.core.security import create_access_token, create_refresh_token, decode_access_token
 from app.database import get_session
@@ -145,11 +145,11 @@ def logout(
             select(RefreshTokenBlacklist).where(RefreshTokenBlacklist.jti == jti)
         ).first()
         if not already_revoked:
-            expires_at = datetime.utcfromtimestamp(decoded.get("exp", 0))
+            expires_at = datetime.fromtimestamp(decoded.get("exp", 0), tz=timezone.utc)
             session.add(RefreshTokenBlacklist(
                 jti=jti,
                 user_id=int(decoded.get("sub", 0)),
                 expires_at=expires_at,
-                revoked_at=datetime.utcnow()
+                revoked_at=datetime.now(timezone.utc)
             ))
             session.commit()

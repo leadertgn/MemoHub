@@ -1,10 +1,10 @@
 # app/main.py
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, Request
-from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select, func
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 from app.database import engine
 from app.database import get_session
@@ -54,7 +54,7 @@ async def lifespan(app: FastAPI):
     # Nettoyage des refresh tokens expirés au démarrage
     try:
         with Session(engine) as session:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             expired_tokens = session.exec(
                 select(RefreshTokenBlacklist)
                 .where(RefreshTokenBlacklist.expires_at < now)
@@ -153,8 +153,22 @@ def get_public_stats(session: Session = Depends(get_session)):
         select(func.count()).select_from(User)
     ).one()
 
+    memoirs_pending = session.exec(
+        select(func.count()).select_from(Memoir)
+        .where(Memoir.status == MemoirStatus.pending)
+    ).one()
+
+    memoirs_pre_validated = session.exec(
+        select(func.count()).select_from(Memoir)
+        .where(Memoir.status == MemoirStatus.pre_validated)
+    ).one()
+
     return {
-        "memoirs": {"total": total_memoirs},
+        "memoirs": {
+            "total": total_memoirs,
+            "pending": memoirs_pending,
+            "pre_validated": memoirs_pre_validated,
+        },
         "universities": {"total": total_universities},
         "users": {"total": total_users}
     }

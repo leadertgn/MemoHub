@@ -18,7 +18,7 @@ MAX_FILE_SIZE_MB = 20
 ALLOWED_TYPES = ["application/pdf"]
 
 
-async def upload_memoir_pdf(file: UploadFile, memoir_title: str) -> str:
+async def upload_memoir_pdf(file: UploadFile) -> str:
     """
     Upload un PDF de mémoire sur Cloudinary.
     Retourne l'URL sécurisée du fichier.
