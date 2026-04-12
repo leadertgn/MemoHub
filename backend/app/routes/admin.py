@@ -3,12 +3,11 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select, func
 from sqlalchemy.orm import joinedload
-
-from app.core.dependencies import require_admin, require_moderator, require_ambassador
+from app.core.dependencies import  require_moderator, require_ambassador
 from app.database import get_session
 from app.models import Memoir, University, User, FieldOfStudy
 from app.models.enums import UserRole, MemoirStatus, UniversityStatus, FieldStatus
-from app.schemas.memoir import MemoirRead, MemoirModeratorRead
+from app.schemas.memoir import MemoirModeratorRead
 from app.schemas.university import UniversityRead
 from app.schemas.field_of_study import FieldOfStudyRead
 
@@ -141,46 +140,68 @@ def get_pending_fields(
 # Modérateur = voit tout l'historique de son pays
 # Ambassadeur = voit uniquement ses propres actions
 # --------------------------------------------------
+
 @router.get("/moderation-history")
 def get_moderation_history(
     limit: int = 50,
     session: Session = Depends(get_session),
     current_user: User = Depends(require_ambassador)
 ):
-    # Construire les requêtes de base
-    memoir_query = select(Memoir).where(Memoir.moderated_by != None)
-    university_query = select(University).where(University.moderated_by != None)
-    field_query = select(FieldOfStudy).where(FieldOfStudy.moderated_by != None)
-    
-    # Filtrer selon le rôle
+    # --- Requêtes avec joinedload ---
+    # On charge toutes les relations nécessaires EN UNE SEULE requête SQL
+    # au lieu de déclencher 1 requête par accès à un attribut de relation
+
+    memoir_query = (
+        select(Memoir)
+        .where(Memoir.moderated_by is not None)
+        .options(
+            joinedload(Memoir.moderator),    # m.moderator.full_name → 0 requête supplémentaire
+            joinedload(Memoir.university),   # m.university.name → 0 requête supplémentaire
+            joinedload(Memoir.author),       # m.author.full_name → 0 requête supplémentaire
+        )
+    )
+
+    university_query = (
+        select(University)
+        .where(University.moderated_by is not None)
+        .options(
+            joinedload(University.moderator),          # u.moderator.full_name
+            joinedload(University.submitted_by_user),  # u.submitted_by_user.full_name
+        )
+    )
+
+    field_query = (
+        select(FieldOfStudy)
+        .where(FieldOfStudy.moderated_by is not None)
+        .options(
+            joinedload(FieldOfStudy.moderator),          # f.moderator.full_name
+            joinedload(FieldOfStudy.submitted_by_user),  # f.submitted_by_user.full_name
+            joinedload(FieldOfStudy.university),         # f.university.name
+        )
+    )
+
+    # Filtres par rôle (inchangés)
     if current_user.role == UserRole.ambassador:
-        # Ambassadeur = voit uniquement ses propres actions
         memoir_query = memoir_query.where(Memoir.moderated_by == current_user.id)
         university_query = university_query.where(University.moderated_by == current_user.id)
         field_query = field_query.where(FieldOfStudy.moderated_by == current_user.id)
     elif current_user.role == UserRole.moderator and current_user.country_id:
-        # Modérateur = voit tout l'historique de son pays
         memoir_query = memoir_query.join(University).where(University.country_id == current_user.country_id)
         university_query = university_query.where(University.country_id == current_user.country_id)
         field_query = field_query.join(University).where(University.country_id == current_user.country_id)
-    # Admin voit tout, pas de filtre supplémentaire
-    
+
     memoir_query = memoir_query.order_by(Memoir.moderated_at.desc()).limit(limit)
     university_query = university_query.order_by(University.moderated_at.desc()).limit(limit)
     field_query = field_query.order_by(FieldOfStudy.moderated_at.desc()).limit(limit)
-    
-    memoirs = session.exec(memoir_query).all()
-    universities = session.exec(university_query).all()
-    fields = session.exec(field_query).all()
-    
+
+    # Ces 3 lignes = 3 requêtes SQL en tout (au lieu de potentiellement 400+)
+    memoirs = session.exec(memoir_query).unique().all()      # .unique() obligatoire avec joinedload
+    universities = session.exec(university_query).unique().all()
+    fields = session.exec(field_query).unique().all()
+
     history = []
-    
+
     for m in memoirs:
-        # Ajouter le nom de l'ambassadeur qui a submit si applicable
-        submitted_by_name = None
-        if m.author:
-            submitted_by_name = m.author.full_name
-        
         history.append({
             "id": f"m_{m.id}",
             "type": "Mémoire",
@@ -188,11 +209,11 @@ def get_moderation_history(
             "status": m.status,
             "moderated_at": m.moderated_at,
             "moderator_name": m.moderator.full_name if m.moderator else "Inconnu",
-            "submitted_by_name": submitted_by_name,
+            "submitted_by_name": m.author.full_name if m.author else None,
             "rejection_reason": m.rejection_reason,
             "university_name": m.university.name if m.university else None
         })
-        
+
     for u in universities:
         history.append({
             "id": f"u_{u.id}",
@@ -204,7 +225,7 @@ def get_moderation_history(
             "submitted_by_name": u.submitted_by_user.full_name if u.submitted_by_user else None,
             "rejection_reason": None
         })
-        
+
     for f in fields:
         history.append({
             "id": f"f_{f.id}",
@@ -217,6 +238,10 @@ def get_moderation_history(
             "rejection_reason": None,
             "university_name": f.university.name if f.university else None
         })
-        
-    history.sort(key=lambda x: x["moderated_at"] if x["moderated_at"] else "", reverse=True)
+    from datetime import datetime
+    history.sort(
+        key=lambda x: x["moderated_at"] if x["moderated_at"] else datetime.min,
+        reverse=True
+    )
+
     return history[:limit]

@@ -13,8 +13,8 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../api/client";
 import { toast } from "sonner";
 import { 
-  LayoutDashboard, FileText, Building2, GraduationCap, Users, History, 
-  BarChart3, Menu, X, ChevronRight
+   FileText, Building2, GraduationCap, Users, History,
+  BarChart3, Menu, X
 } from "lucide-react";
 import StatCard from "../../components/admin/StatCard";
 import MemoirModerationCard from "../../components/admin/MemoirModerationCard";
@@ -42,11 +42,11 @@ export default function Dashboard() {
   const visibleTabs = TABS.filter((tab) => {
     if (currentUser?.role === "ambassador") return tab.id === "memoirs" || tab.id === "history";
     if (currentUser?.role === "moderator") {
-      if (tab.id === "users") return false;
-      return true;
+      return tab.id !== "users";
+
     }
-    if (currentUser?.role !== "admin" && tab.id === "users") return false;
-    return true;
+    return !(currentUser?.role !== "admin" && tab.id === "users");
+
   });
 
   // Redirige si pas le droit
@@ -254,7 +254,7 @@ function FieldsTab() {
           <div key={f.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
               <div>
                   <h3 className="font-bold text-gray-900">{f.label}</h3>
-                  <p className="text-xs text-gray-500 mt-1 mt-1">Suggérée par l'utilisateur {f.submitted_by ? `#${f.submitted_by}` : 'Inconnu'}</p>
+                  <p className="text-xs text-gray-500  mt-1">Suggérée par l'utilisateur {f.submitted_by ? `#${f.submitted_by}` : 'Inconnu'}</p>
               </div>
               <div className="flex gap-2 mt-4">
                   <button onClick={() => updateField({ id: f.public_id || f.id, status: 'approved' }, {

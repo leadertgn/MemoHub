@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from app.models import User, University, FieldOfStudy, Memoir
+from app.models import User
 from app.models.enums import UserRole
 from app.services.email_service import send_email_async, get_base_layout
 from fastapi import BackgroundTasks

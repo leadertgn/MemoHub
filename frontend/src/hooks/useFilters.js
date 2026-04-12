@@ -1,4 +1,5 @@
 // src/hooks/useFilters.js
+import { apiClient } from '../api/client'
 import { useQuery } from '@tanstack/react-query'
 import { filtersApi } from '../api/filters'
 

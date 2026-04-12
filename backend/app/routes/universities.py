@@ -7,12 +7,12 @@ from sqlmodel import Session, select
 from sqlalchemy import  func
 from sqlalchemy.orm import joinedload
 
-from app.core.dependencies import get_current_user, require_admin, require_moderator
+from app.core.dependencies import get_current_user, require_moderator
 from app.database import get_session
 from app.models import University, User
 from app.models.enums import UniversityStatus
 from app.schemas.university import (
-    UniversityRead, UniversityCreate, UniversityUpdate, UniversityStatusUpdate
+    UniversityRead, UniversityCreate, UniversityStatusUpdate
 )
 from app.services.email_service import send_email_async, get_suggestion_approved_html, get_suggestion_rejected_html
 from app.services.team_notification_service import notify_team_for_action
@@ -147,14 +147,10 @@ def update_university_status(
         if status_data.status == UniversityStatus.approved:
             if university.submitted_by_user and university.submitted_by_user.email:
                 # Récupérer les détails pour l'email
-                country_name = university.country.name if university.country else None
                 html = get_suggestion_approved_html(
                     university.submitted_by_user.full_name, 
                     "university", 
                     university.name,
-                    country_name=country_name,
-                    acronym=university.acronym,
-                    website=university.website
                 )
                 background_tasks.add_task(
                     send_email_async,
@@ -167,15 +163,11 @@ def update_university_status(
             if university.submitted_by_user and university.submitted_by_user.email:
                 reason = status_data.rejection_reason or "Ne correspond pas à nos critères de référencement."
                 # Récupérer les détails pour l'email
-                country_name = university.country.name if university.country else None
                 html = get_suggestion_rejected_html(
                     university.submitted_by_user.full_name, 
                     "university", 
                     university.name, 
                     reason,
-                    country_name=country_name,
-                    acronym=university.acronym,
-                    website=university.website
                 )
                 background_tasks.add_task(
                     send_email_async,

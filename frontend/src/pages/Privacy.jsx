@@ -4,7 +4,7 @@ export default function Privacy() {
             <div className="container mx-auto max-w-4xl">
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                     {/* Header avec dégradé subtil */}
-                    <div className="bg-gradient-to-r from-teal-600 to-blue-600 px-8 py-10 text-white">
+                    <div className="bg-linear-to-r from-teal-600 to-blue-600 px-8 py-10 text-white">
                         <h1 className="text-3xl font-extrabold tracking-tight">Politique de Confidentialité</h1>
                         <p className="mt-2 text-teal-50 opacity-90">Conformité RGPD & Protection des Données</p>
                     </div>

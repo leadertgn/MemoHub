@@ -2,7 +2,8 @@
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-
+from datetime import datetime
+from app.models.refresh_token import RefreshTokenBlacklist
 from app.core.security import create_access_token, create_refresh_token, decode_access_token
 from app.database import get_session
 from app.models import User
@@ -81,7 +82,8 @@ async def google_auth(payload: GoogleAuthRequest, session: Session = Depends(get
 
     # 4. Génère et retourne les JWTs MemoHub
     access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
-    refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    refresh_token, jti = create_refresh_token(data={"sub": str(user.id)})
+    # Note : on ne stocke PAS le jti ici — le token est neuf, pas encore révoqué
 
     return TokenResponse(
         access_token=access_token,
@@ -92,7 +94,6 @@ async def google_auth(payload: GoogleAuthRequest, session: Session = Depends(get
         full_name=user.full_name,
         avatar_url=user.avatar_url
     )
-
 @router.post("/refresh", response_model=TokenResponse)
 def refresh_session(payload: RefreshTokenRequest, session: Session = Depends(get_session)):
     """
@@ -123,3 +124,32 @@ def refresh_session(payload: RefreshTokenRequest, session: Session = Depends(get
         full_name=user.full_name,
         avatar_url=user.avatar_url
     )
+
+# Nouvel endpoint — permet de déconnecter une session depuis le frontend
+@router.post("/logout", status_code=204)
+def logout(
+    payload: RefreshTokenRequest,
+    session: Session = Depends(get_session)
+):
+    """
+    Révoque le refresh token côté serveur.
+    Le frontend doit appeler cet endpoint avant de vider le localStorage.
+    """
+    decoded = decode_access_token(payload.refresh_token)
+    if not decoded:
+        return  # Token déjà expiré ou invalide — pas grave, on retourne 204
+
+    jti = decoded.get("jti")
+    if jti:
+        already_revoked = session.exec(
+            select(RefreshTokenBlacklist).where(RefreshTokenBlacklist.jti == jti)
+        ).first()
+        if not already_revoked:
+            expires_at = datetime.utcfromtimestamp(decoded.get("exp", 0))
+            session.add(RefreshTokenBlacklist(
+                jti=jti,
+                user_id=int(decoded.get("sub", 0)),
+                expires_at=expires_at,
+                revoked_at=datetime.utcnow()
+            ))
+            session.commit()

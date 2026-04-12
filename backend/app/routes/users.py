@@ -6,7 +6,7 @@ import uuid
 from app.core.dependencies import get_current_user, require_admin
 from app.database import get_session
 from app.models import User, University
-from app.models.enums import UserRole, UniversityStatus
+from app.models.enums import  UniversityStatus
 from app.schemas.user import UserRead, UserReadPrivate, UserUpdateMe, UserUpdateRole, UserRole
 from app.services.email_service import send_email_async, get_role_promotion_html
 

@@ -1,6 +1,6 @@
 import { useUpdateUniversityStatus } from '../../hooks/useAdmin'
 import { toast } from 'sonner'
-import { CheckCircle, XCircle, Check, X, ExternalLink, User } from 'lucide-react'
+import { Check, X, ExternalLink, User } from 'lucide-react'
 
 export default function UniversityModerationCard({ university }) {
   const { mutate: updateStatus, isPending } = useUpdateUniversityStatus()

@@ -2,34 +2,45 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { apiClient } from '../api/client';
 import { Link } from 'react-router-dom';
-import { User, FileText, AlertTriangle, CheckCircle } from 'lucide-react';
+import { User, FileText, AlertTriangle } from 'lucide-react';
 
 export default function Profile() {
-  const { user, token, login } = useAuth();
+  const { user, login } = useAuth();
   const [memoirs, setMemoirs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // On ne met PAS login ni token dans les dépendances
+    // On capture token via une ref pour éviter la boucle
+    let cancelled = false; // évite les race conditions si le composant démonte
+
     async function fetchMyData() {
       try {
-        // 1. Récupérer les infos fraîches de l'utilisateur (pour mettre à jour son rôle si changé)
-        const userData = await apiClient('/users/me');
-        if (userData && token) {
-            login(userData, token); // Met à jour le contexte global et le localStorage
-        }
+        const currentToken = localStorage.getItem('token');
+        if (!currentToken) return;
 
-        // 2. Fetch de l'historique des mémoires
+        const userData = await apiClient('/users/me');
+        if (cancelled) return;
+
+        // On utilise une fonction stable pour la mise à jour
+        // On passe le token depuis localStorage, pas depuis le state
+        login(userData, currentToken);
+
         const memoirsData = await apiClient('/memoirs/me');
+        if (cancelled) return;
+
         setMemoirs(memoirsData);
       } catch (error) {
         console.error("Erreur de récupération du profil:", error);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     }
-    fetchMyData();
-  }, [token, login]);
 
+    fetchMyData();
+
+    return () => { cancelled = true; }; // cleanup
+  }, []); // ← tableau vide : s'exécute UNE seule fois au montage
   const getStatusBadge = (status) => {
     switch(status) {
       case 'approved':
@@ -49,7 +60,7 @@ export default function Profile() {
       {/* Header Profil */}
       <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-gray-100 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] p-8">
         <div className="flex items-center gap-6">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+          <div className="w-20 h-20 bg-linear-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
             <User className="w-10 h-10" />
           </div>
           <div>

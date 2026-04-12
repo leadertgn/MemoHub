@@ -36,15 +36,15 @@ export default function Login() {
   return (
     <div className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Background Decoratif */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-100/40 rounded-full blur-3xl -z-10" />
+      <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-blue-100/40 rounded-full blur-3xl -z-10" />
 
       <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] p-10 w-full max-w-sm space-y-8 text-center relative z-10 transform transition-all">
         <div className="space-y-3">
-          <div className="w-16 h-16 bg-gradient-to-tr from-blue-100 to-indigo-100 rounded-2xl mx-auto flex items-center justify-center shadow-inner">
+          <div className="w-16 h-16 bg-linear-to-tr from-blue-100 to-indigo-100 rounded-2xl mx-auto flex items-center justify-center shadow-inner">
             <BookOpen className="w-8 h-8 text-indigo-600" />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900 bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-extrabold text-gray-900 bg-linear-to-r from-blue-700 to-indigo-600 bg-clip-text">
             MemoHub
           </h1>
           <p className="text-sm font-medium text-gray-500">

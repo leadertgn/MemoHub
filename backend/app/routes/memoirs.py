@@ -9,20 +9,17 @@ from sqlalchemy import  func
 from app.core.dependencies import get_current_user, require_moderator, require_ambassador, get_current_user_optional
 from app.core.cloudinary_service import upload_memoir_pdf, delete_memoir_pdf
 from app.database import get_session
-from app.models import Memoir, User, FieldOfStudy, University
-from app.models.enums import UserRole, MemoirStatus, DegreeLevel, UniversityStatus
+from app.models import Memoir, User, FieldOfStudy
+from app.models.enums import UserRole, MemoirStatus, DegreeLevel
 from app.schemas.memoir import (
-    MemoirRead, MemoirReadWithAccess, MemoirCreate, MemoirUpdate, MemoirStatusUpdate, PaginatedMemoirsResponse
+    MemoirRead, MemoirReadWithAccess, MemoirUpdate, MemoirStatusUpdate, PaginatedMemoirsResponse
 )
 
-from app.core.cloudinary_service import generate_signed_url
-from app.schemas.memoir import MemoirDownloadResponse
 from app.core.pdf_service import fetch_pdf, add_watermark
 from app.services.email_service import send_email_async, get_approval_email_html, get_rejection_email_html
 from app.services.team_notification_service import notify_team_for_action
 from fastapi.responses import Response, StreamingResponse
 from fastapi.concurrency import run_in_threadpool
-import io
 import logging
 
 logger = logging.getLogger(__name__)
@@ -108,7 +105,7 @@ def get_my_memoirs(
     return session.exec(query).all()
 
 # --------------------------------------------------
-# GET /memoirs/{id}  — public
+# GET /memoirs/{public_id}  — public
 # Incrémente le view_count à chaque consultation
 # --------------------------------------------------
 @router.get("/{public_id}", response_model=MemoirRead)
@@ -149,7 +146,6 @@ def get_memoir(
 def get_memoir_with_access(
     memoir_id: int,
     session: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user)
 ):
     memoir = session.get(Memoir, memoir_id)
     if not memoir or memoir.status != MemoirStatus.approved:
@@ -193,9 +189,9 @@ async def submit_memoir(
         )
 
     # Récupérer et limiter le poids du fichier (Sécurité)
-    MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB limit
+    max_file_size = 20 * 1024 * 1024  # 20 MB limit
     file_bytes = await file.read()
-    if len(file_bytes) > MAX_FILE_SIZE:
+    if len(file_bytes) > max_file_size:
         raise HTTPException(status_code=400, detail="Fichier trop volumineux (Maximum 20 MB)")
     if len(file_bytes) == 0:
         raise HTTPException(status_code=400, detail="Fichier vide invalide")
@@ -347,9 +343,7 @@ def update_memoir_status(
                 memoir.title,
                 status_data.rejection_reason or "Non spécifié",
                 university_name=university_name,
-                field_name=field_name,
-                year=year,
-                degree=degree
+                field_name=field_name
             )
             background_tasks.add_task(
                 send_email_async, 

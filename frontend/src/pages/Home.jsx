@@ -86,15 +86,15 @@ export default function Home() {
   return (
     <div className="space-y-24 pb-20 overflow-hidden">
       {/* Background Decoratif */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10 pointer-events-none" />
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 -z-10 pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-125 bg-linear-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-150 h-150 bg-blue-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 -z-10 pointer-events-none" />
 
       {/* Hero Section */}
       <section className="text-center pt-24 pb-10 px-4 space-y-8 max-w-4xl mx-auto">
         <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight">
           La bibliothèque universelle <br className="hidden md:block" />
           des mémoires{" "}
-          <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             académiques
           </span>
         </h1>
@@ -106,7 +106,7 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
           <Link
             to="/search"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full font-bold text-shadow-sm hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full font-bold text-shadow-sm hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
           >
             <Search className="w-5 h-5" />
             Découvrir les travaux
@@ -178,7 +178,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {/* Ligne de connexion visuelle (desktop) */}
-          <div className="hidden md:block absolute top-12 left-24 right-24 h-0.5 bg-gradient-to-r from-blue-100 via-indigo-200 to-blue-100 -z-10" />
+          <div className="hidden md:block absolute top-12 left-24 right-24 h-0.5 bg-linear-to-r from-blue-100 via-indigo-200 to-blue-100 -z-10" />
 
           {[
             {
@@ -201,7 +201,7 @@ export default function Home() {
               key={item.step}
               className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100/50 hover:shadow-lg transition-shadow duration-300 group"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-bold text-lg mb-6 shadow-md group-hover:rotate-6 transition-transform" aria-hidden="true">
+              <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-bold text-lg mb-6 shadow-md group-hover:rotate-6 transition-transform" aria-hidden="true">
                 {item.step}
               </div>
               <h3 className="font-bold text-xl text-gray-900 mb-3">
@@ -215,7 +215,7 @@ export default function Home() {
 
       {/* Devenir Ambassadeur ou Modérateur */}
       <section className="px-4 max-w-6xl mx-auto">
-        <div className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 text-white relative overflow-hidden">
+        <div className="bg-linear-to-br from-indigo-600 to-blue-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 text-white relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -384,7 +384,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={submitApplication.isPending}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-3 px-6 rounded-xl font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-indigo-600 to-blue-600 text-white py-3 px-6 rounded-xl font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitApplication.isPending ? (
                     <>
