@@ -51,7 +51,7 @@ function StatCard({ label, rawValue, icon: Icon, color, bg, gradient, subtitle }
   return (
     <div
       ref={ref}
-      className="group relative bg-white/70 backdrop-blur-xl rounded-2xl p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] border border-white hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-300"
+      className="group relative bg-white/70 backdrop-blur-xl rounded-2xl p-5 sm:p-7 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] border border-white hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-300"
     >
       <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${gradient}`} />
       <div className="relative z-10">

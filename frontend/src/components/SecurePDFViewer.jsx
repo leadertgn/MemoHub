@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -12,6 +12,21 @@ export default function SecurePDFViewer({ memoirId }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [pdfData, setPdfData] = useState(null);
   const [errorLoading, setErrorLoading] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(null);
+  const containerRef = useRef(null);
+
+  // Mesure dynamique de la largeur du conteneur via ResizeObserver
+  // Cela évite tout rognage du PDF sur les bords, quelle que soit la taille d'écran
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        setContainerWidth(Math.floor(entry.contentRect.width) - 2);
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     try {
@@ -20,7 +35,7 @@ export default function SecurePDFViewer({ memoirId }) {
       const url = `${apiUrl}/memoirs/${memoirId}/stream`;
       
       // On passe directement l'URL avec les Headers à react-pdf
-      // Cela permet à pdf.js de faire des `Range requests` (téléchargement par morceaux)
+      // Cela permet à pdf.js de faire des Range requests (téléchargement par morceaux)
       setPdfData({
         url: url,
         httpHeaders: { 
@@ -45,11 +60,11 @@ export default function SecurePDFViewer({ memoirId }) {
 
   return (
     <div 
-      className="flex flex-col items-center bg-gray-50 border border-gray-200 rounded-xl p-4 overflow-hidden relative" 
+      className="flex flex-col items-center bg-gray-50 border border-gray-200 rounded-xl p-2 sm:p-4 overflow-hidden relative" 
       onContextMenu={handleContextMenu}
     >
       {/* Contrôles de pagination */}
-      <div className="flex items-center gap-4 mb-4 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200">
+      <div className="flex items-center gap-3 sm:gap-4 mb-4 bg-white px-3 sm:px-4 py-2 rounded-lg shadow-sm border border-gray-200 w-full justify-center">
         <button 
           onClick={() => setPageNumber(p => Math.max(1, p - 1))}
           disabled={pageNumber <= 1}
@@ -70,7 +85,10 @@ export default function SecurePDFViewer({ memoirId }) {
       </div>
 
       {/* Le PDF (rendu en Canvas protégé) avec Overlay Filigrane */}
-      <div className="shadow-2xl border border-gray-300 bg-white select-none relative overflow-hidden group">
+      <div 
+        ref={containerRef} 
+        className="w-full shadow-2xl border border-gray-300 bg-white select-none relative overflow-hidden group"
+      >
         {errorLoading ? (
            <div className="p-20 text-red-500 font-medium bg-red-50 rounded-lg m-4 flex items-center gap-2">
              <AlertTriangle className="w-6 h-6" /> Erreur ou document inaccessible.
@@ -99,10 +117,10 @@ export default function SecurePDFViewer({ memoirId }) {
             >
               <Page 
                 pageNumber={pageNumber} 
-                renderTextLayer={false}       // Empêche la sélection directe du texte (sécurité)
+                renderTextLayer={false}        // Empêche la sélection directe du texte (sécurité)
                 renderAnnotationLayer={false} 
-                width={Math.min(window.innerWidth - 64, 800)} // Responsive max width
-                className="pointer-events-none" // Empêche le drag & drop de l'image du canvas
+                width={containerWidth || undefined} // Largeur mesurée dynamiquement — plus de rognage sur mobile
+                className="pointer-events-none"    // Empêche le drag & drop de l'image du canvas
               />
             </Document>
 

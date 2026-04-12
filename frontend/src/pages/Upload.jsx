@@ -211,7 +211,7 @@ export default function Upload() {
           </div>
         )}
 
-        <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-gray-100 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] p-8 md:p-10">
+        <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-gray-100 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] p-5 sm:p-8 md:p-10">
           <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* Titre */}
