@@ -20,7 +20,7 @@ function ModalWrapper({ title, children, onClose }) {
 }
 
 export function SuggestUniversityModal({ isOpen, onClose }) {
-  const [form, setForm] = useState({ name: '', acronym: '', country_id: '', website: '' });
+  const [form, setForm] = useState({ name: '', acronym: '', country_id: null, website: '' });
   const { data: countries } = useCountries();
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -34,7 +34,7 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
       setTimeout(() => {
         onClose();
         setSuccessMsg('');
-        setForm({ name: '', acronym: '', country_id: '', website: '' });
+        setForm({ name: '', acronym: '', country_id: null, website: '' });
       }, 3000);
     }
   });
@@ -84,7 +84,7 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
                 <input type="url" className="w-full border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://..." value={form.website} onChange={e => setForm({...form, website: e.target.value})} />
             </div>
 
-            <button disabled={isPending || !form.name || !form.country_id} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
+            <button disabled={isPending || !form.name || form.country_id === null} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
                 {isPending ? 'Envoi...' : 'Soumettre la suggestion'}
             </button>
         </form>
@@ -94,7 +94,7 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
 }
 
 export function SuggestFieldModal({ isOpen, onClose, universityId, universityName }) {
-    const [form, setForm] = useState({ label: '', domain_id: '' });
+    const [form, setForm] = useState({ label: '', domain_id: null });
     const { data: domains } = useDomains();
     const [successMsg, setSuccessMsg] = useState('');
   
@@ -108,7 +108,7 @@ export function SuggestFieldModal({ isOpen, onClose, universityId, universityNam
         setTimeout(() => {
           onClose();
           setSuccessMsg('');
-          setForm({ label: '', domain_id: '' });
+          setForm({ label: '', domain_id: null });
         }, 3000);
       }
     });
@@ -148,7 +148,7 @@ export function SuggestFieldModal({ isOpen, onClose, universityId, universityNam
                   </select>
               </div>
   
-              <button disabled={isPending || !form.label || !form.domain_id} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
+              <button disabled={isPending || !form.label || form.domain_id === null} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
                   {isPending ? 'Envoi...' : 'Soumettre la suggestion'}
               </button>
           </form>

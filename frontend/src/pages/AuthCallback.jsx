@@ -41,7 +41,7 @@ export default function AuthCallback() {
         navigate("/");
       })
       .catch(() => navigate("/login"));
-  }, []);
+  }, [login, navigate, searchParams]);
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center">

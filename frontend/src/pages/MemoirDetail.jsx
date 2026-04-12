@@ -55,7 +55,7 @@ export default function MemoirDetail() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(objUrl);
-    } catch (err) {
+    } catch (_err) {
       alert("Impossible de télécharger le document. Il n'est peut-être pas disponible.");
     }
   }

@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
 
     if (savedToken) setToken(savedToken);
     if (savedUser) setUser(JSON.parse(savedUser));
-  }, []);
+  }, [queryClient]);
 
   // Écoute de l'événement global de déconnexion (depuis apiClient)
   useEffect(() => {

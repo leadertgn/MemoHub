@@ -93,9 +93,12 @@ export default function Upload() {
     if (!validate()) return
 
     // Construit le FormData pour l'envoi multipart
+    // Conversion explicite en String pour chaque champ (FormData n'accepte que string/Blob)
     const formData = new FormData()
     Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, value)
+      if (value !== null && value !== undefined) {
+        formData.append(key, String(value))
+      }
     })
     formData.append('file', file)
 
