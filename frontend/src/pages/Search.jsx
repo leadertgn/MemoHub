@@ -47,15 +47,13 @@ export default function Search() {
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Colonne filtres (Sticky on desktop) */}
-        <aside className={`w-full md:w-72 shrink-0 ${showFiltersMobile ? 'block' : 'hidden md:block'}`}>
-          <div className="md:sticky md:top-24">
-            <MemoirFilters filters={filters} onChange={handleFiltersChange} />
-          </div>
+      <div className="flex flex-col gap-8">
+        {/* Barre de filtres (En haut sur desktop, stack sur mobile) */}
+        <aside className={`w-full ${showFiltersMobile ? 'block' : 'hidden md:block'}`}>
+          <MemoirFilters filters={filters} onChange={handleFiltersChange} />
         </aside>
 
-        {/* Colonne résultats */}
+        {/* Section résultats */}
         <div className="flex-1 space-y-6">
 
         {/* En-tête résultats */}
@@ -71,9 +69,9 @@ export default function Search() {
 
         {/* États */}
         {isLoading && (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 h-36 animate-pulse shadow-sm" />
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 h-48 animate-pulse shadow-sm" />
             ))}
           </div>
         )}
@@ -94,7 +92,7 @@ export default function Search() {
 
         {!isLoading && !isError && memoirs?.items?.length > 0 && (
           <>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {memoirs.items.map(memoir => (
                 <MemoirCard key={memoir.id} memoir={memoir} />
               ))}
