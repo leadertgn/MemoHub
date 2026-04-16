@@ -13,12 +13,15 @@ export function AuthProvider({ children }) {
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
 
-    // Si token existe dans le state mais pas dans localStorage → déconnexion (largage volontaire)
+    // Si on a pas de token dans le localStorage, l'utilisateur n'est pas connecté
     if (!savedToken) {
-      setToken(null);
-      setUser(null);
-      localStorage.removeItem("user");
-      queryClient.clear();
+      // On ne vide le cache que si l'utilisateur était connecté en mémoire mais plus dans le localStorage
+      if (token) {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem("user");
+        queryClient.clear();
+      }
       return;
     }
 
