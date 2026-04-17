@@ -24,7 +24,7 @@ export default function MemoirCard({ memoir }) {
   return (
     <Link
       to={`/memoirs/${memoir.public_id}`}
-      className="block bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 p-5 space-y-4 relative overflow-hidden group"
+      className="flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 p-5 gap-4 relative overflow-hidden group"
     >
       {/* Ligne décorative en haut au hover */}
       <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -52,7 +52,7 @@ export default function MemoirCard({ memoir }) {
       )}
 
       {/* Métadonnées */}
-      <div className="flex items-center justify-between text-xs text-gray-400 pt-1 border-t border-gray-50">
+      <div className="mt-auto flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-50">
         <span className="font-medium text-gray-600">{memoir.author_name}</span>
         <div className="flex items-center gap-3">
           <span>{memoir.year}</span>
