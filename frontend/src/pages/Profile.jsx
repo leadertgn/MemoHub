@@ -42,7 +42,7 @@ export default function Profile() {
     });
 
     return () => { cancelled = true; }; // cleanup
-  }, []); // ← tableau vide : s'exécute UNE seule fois au montage
+  }, [login]);
   const getStatusBadge = (status) => {
     switch(status) {
       case 'approved':

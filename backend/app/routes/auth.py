@@ -113,7 +113,7 @@ def refresh_session(payload: RefreshTokenRequest, session: Session = Depends(get
 
     # Génère de nouveaux tokens
     access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
-    refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    refresh_token, _ = create_refresh_token(data={"sub": str(user.id)})
 
     return TokenResponse(
         access_token=access_token,
