@@ -1,9 +1,10 @@
 import argparse
 import sys
 import httpx
-from sqlmodel import Session, select, SQLModel
+from sqlmodel import Session, select, SQLModel, delete
+from sqlalchemy import func
 from app.database import engine, create_db_and_tables
-from app.models import Country, Domain, University, FieldOfStudy, User
+from app.models import Country, Domain, University, FieldOfStudy, User, Memoir, TeamApplication
 from app.models.enums import UniversityStatus, UserRole
 
 
@@ -77,7 +78,7 @@ def seed_domains(session: Session):
     added = 0
     for d_data in domains_to_add:
         existing = session.exec(
-            select(Domain).where(Domain.label == d_data["label"])
+            select(Domain).where(func.upper(Domain.label) == d_data["label"].upper())
         ).first()
         if not existing:
             session.add(Domain(**d_data))
@@ -93,6 +94,10 @@ def seed_insti(session: Session, admin_id: int | None = None):
     rattaché à l'UNSTIM - Abomey, Bénin.
 
     Source : Guide d'orientation universitaire 2024-2025, page 43-45
+
+    NOTE : Cette fonction est conservée pour la rétrocompatibilité.
+    Le seed complet de l'INSTI est désormais géré dans seed_universities_benin.py
+    via seed_unstim() qui détecte si l'INSTI est déjà présent.
     """
     print("\n🏫 Seed INSTI (UNSTIM)...")
 
@@ -107,9 +112,9 @@ def seed_insti(session: Session, admin_id: int | None = None):
     # 2. Crée l'INSTI directement comme une Université autonome
     insti_name = "Institut National Supérieur de Technologie Industrielle (INSTI)".upper()
     insti_acronym = "INSTI"
-    
+
     insti = session.exec(
-        select(University).where(University.name == insti_name)
+        select(University).where(func.upper(University.name) == insti_name)
     ).first()
 
     if not insti:
@@ -135,52 +140,24 @@ def seed_insti(session: Session, admin_id: int | None = None):
         ).first()
 
     # 4. Filières de l'INSTI selon le guide officiel 2024-2025 (pages 43-45)
-    # Format : (label exact selon le guide, domaine normalisé)
     fields_to_add = [
-        # --- Génie Civil ---
-        (
-            "Génie Civil",
-            "Génie Civil & Construction",
-            "Techniciens de travaux, experts géomètres, cabinets d'architecture"
-        ),
-        # --- Génie Électrique & Informatique ---
+        ("Génie Civil", "Génie Civil & Construction", ""),
         (
             "Génie Électrique et Informatique (Informatique et Télécommunications)",
-            "Informatique & Numérique",
-            "Service informatique d'entreprise, maintenance informatique, développement d'applications"
+            "Informatique & Numérique", ""
         ),
         (
             "Génie Électrique et Informatique (Électronique et Électrotechnique)",
-            "Génie Électrique & Énergie",
-            "Électricité industrielle, commande automatique, contrôle qualité"
+            "Génie Électrique & Énergie", ""
         ),
-        # --- Génie Énergétique ---
         (
             "Génie Énergétique (Énergies Renouvelables et Systèmes Énergétiques)",
-            "Génie Électrique & Énergie",
-            "Techniciens en industrie électrique, bâtiment, énergies renouvelables"
+            "Génie Électrique & Énergie", ""
         ),
-        (
-            "Génie Énergétique (Froid et Climatisation)",
-            "Génie Électrique & Énergie",
-            "Techniciens en froid et climatisation de bâtiment et automobile"
-        ),
-        # --- Génie Mécanique ---
-        (
-            "Génie Mécanique et Productique",
-            "Génie Mécanique & Industriel",
-            "Maintenance industrielle, fabrication mécanique, mécanisation agricole"
-        ),
-        (
-            "Maintenance des Systèmes (Maintenance Industrielle)",
-            "Génie Mécanique & Industriel",
-            "Techniciens des industries de transformation, auditeurs/conseils"
-        ),
-        (
-            "Maintenance des Systèmes (Maintenance Automobile)",
-            "Génie Mécanique & Industriel",
-            "Parcs automobiles, concessionnaires, usines de production"
-        ),
+        ("Génie Énergétique (Froid et Climatisation)", "Génie Électrique & Énergie", ""),
+        ("Génie Mécanique et Productique", "Génie Mécanique & Industriel", ""),
+        ("Maintenance des Systèmes (Maintenance Industrielle)", "Génie Mécanique & Industriel", ""),
+        ("Maintenance des Systèmes (Maintenance Automobile)", "Génie Mécanique & Industriel", ""),
     ]
 
     added = 0
@@ -192,7 +169,7 @@ def seed_insti(session: Session, admin_id: int | None = None):
 
         existing = session.exec(
             select(FieldOfStudy).where(
-                FieldOfStudy.label == label,
+                func.upper(FieldOfStudy.label) == label.upper(),
                 FieldOfStudy.university_id == insti.id
             )
         ).first()
@@ -214,12 +191,19 @@ def seed_data():
     parser = argparse.ArgumentParser(description="Peupler la base de données MemoHub")
     parser.add_argument("--reset", action="store_true", help="Supprime toutes les données avant de commencer")
     parser.add_argument("--admin-email", type=str, help="L'email du compte admin qui sera désigné comme auteur du seed")
+    parser.add_argument(
+        "--skip-universities", action="store_true",
+        help="Ne pas lancer le seed des universités béninoises (seed_universities_benin.py)"
+    )
+    parser.add_argument(
+        "--clear-academic", action="store_true",
+        help="Supprime toutes les universités et filières de la base avant de lancer le seed actuel"
+    )
     args = parser.parse_args()
 
     if args.reset:
         print("🧨 MODE RESET ACTIVÉ : Suppression de toutes les données existantes...")
-        
-        # Astuce contournement circular dependency Foreign Keys
+
         if engine.name == "postgresql":
             from sqlalchemy import text
             with engine.begin() as conn:
@@ -239,8 +223,32 @@ def seed_data():
     print("🔧 Création et Vérification des tables...")
     create_db_and_tables()
 
-    # 1. On télécharge la volumineuse API AVANT d'ouvrir une session SQL 
-    # (Neon ferme agressivement les connexions inactives)
+    if args.clear_academic and not args.reset:
+        print("🧹 Nettoyage des données académiques existantes (Memoirs, Filières, Universités)...")
+        with Session(engine) as session:
+            try:
+                # 1. Détacher les universités de toute candidature ou utilisateur (Ambassadeurs)
+                # (Évite les erreurs de Foreign Key sans avoir à détruire les utilisateurs)
+                from sqlalchemy import text
+                session.exec(text('UPDATE "user" SET university_id = NULL'))
+                
+                # 2. Supprimer les éléments dépendants des universités/filières
+                session.exec(delete(TeamApplication))
+                session.exec(delete(Memoir))
+                
+                # 3. Supprimer les filières (dépendances des universités)
+                session.exec(delete(FieldOfStudy))
+                
+                # 4. Enfin, supprimer les universités
+                session.exec(delete(University))
+                
+                session.commit()
+                print("  ✅ Données académiques purgées avec succès.")
+            except Exception as e:
+                session.rollback()
+                print(f"  ❌ Erreur lors du nettoyage académique : {e}")
+
+    # 1. On télécharge la volumineuse API AVANT d'ouvrir une session SQL
     api_data = None
     try:
         print("\n🌍 Préchauffage HTTP : chargement depuis restcountries.com...")
@@ -259,13 +267,12 @@ def seed_data():
             if admin_user:
                 admin_id = admin_user.id
                 print(f"👑 Utilisateur trouvé : {admin_user.full_name} ({admin_user.email})")
-                
-                # Vérification stricte du rôle
+
                 if admin_user.role != UserRole.admin:
                     print(f"❌ ERREUR: Cet utilisateur n'a pas le rôle 'admin'.")
-                    print(f"💡 Astuce : Allez dans l'interface de NeonDB, trouvez l'utilisateur et changez son rôle à 'admin' avant de lancer le seed.")
+                    print(f"💡 Astuce : Changez son rôle à 'admin' avant de lancer le seed.")
                     sys.exit(1)
-                    
+
                 print("✅ Rôle administrateur confirmé.")
             else:
                 print(f"⚠️ Email {args.admin_email} introuvable en DB. Connectez-vous d'abord à l'application.")
@@ -276,6 +283,24 @@ def seed_data():
         seed_domains(session)
         seed_insti(session, admin_id=admin_id)
         session.commit()
+
+    # ── Seed des universités béninoises ───────────────────────────
+    # Séparé en session propre pour éviter les timeouts Neon DB
+    if not args.skip_universities:
+        print("\n" + "─" * 50)
+        print("🏛️  Lancement du seed des universités béninoises...")
+        print("─" * 50)
+        try:
+            from seed_universities_benin import seed_all_universities
+            seed_all_universities(admin_id=admin_id)
+        except ImportError:
+            print("  ⚠️  seed_universities_benin.py introuvable dans le répertoire courant.")
+            print("     Lance manuellement : python seed_universities_benin.py --admin-email <email>")
+        except Exception as e:
+            print(f"  ❌ Erreur lors du seed des universités : {e}")
+            raise
+    else:
+        print("\n  ⏭️  Seed des universités ignoré (--skip-universities)")
 
     print("\n🚀 Seed terminé avec succès !")
 
