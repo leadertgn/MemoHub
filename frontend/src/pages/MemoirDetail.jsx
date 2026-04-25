@@ -60,7 +60,7 @@ export default function MemoirDetail() {
       a.remove();
       window.URL.revokeObjectURL(objUrl);
     } catch (_err) {
-      alert("Impossible de télécharger le document. Il n'est peut-être pas disponible.");
+      alert("Le téléchargement a échoué. Assurez-vous d'avoir les droits nécessaires ou réessayez plus tard.");
     }
   }
 
@@ -141,13 +141,20 @@ export default function MemoirDetail() {
         ) : (
           <div className="space-y-6">
             <div className="flex justify-end">
-              <button
-                onClick={handleDownload}
-                className="flex items-center gap-2 bg-linear-to-r from-gray-800 to-gray-900 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
-              >
-                <Download className="w-4 h-4" />
-                Télécharger (avec filigrane)
-              </button>
+              {memoir.allow_download ? (
+                <button
+                  onClick={handleDownload}
+                  className="flex items-center gap-2 bg-linear-to-r from-gray-800 to-gray-900 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  Télécharger (avec filigrane)
+                </button>
+              ) : (
+                <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 font-medium text-sm px-5 py-2.5 rounded-xl">
+                  <Lock className="w-4 h-4 text-amber-600" />
+                  Lecture en ligne uniquement (téléchargement non autorisé par l'auteur)
+                </div>
+              )}
             </div>
             
             {/* Lecteur PDF */}

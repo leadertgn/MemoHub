@@ -195,6 +195,7 @@ async def submit_memoir(
     field_of_study_id: int = Form(...),
     university_id:     int = Form(...),
     accepted_terms:    bool = Form(...),
+    allow_download:    bool = Form(default=True),
     # Fichier PDF
     file: UploadFile = File(...),
     background_tasks: BackgroundTasks = BackgroundTasks(),
@@ -250,7 +251,8 @@ async def submit_memoir(
         file_url=file_url,
         author_id=current_user.id,
         status=MemoirStatus.pending,
-        accepted_terms=accepted_terms
+        accepted_terms=accepted_terms,
+        allow_download=allow_download
     )
     session.add(memoir)
     session.commit()
@@ -348,17 +350,17 @@ def pre_validate_memoir(
 
 
 # --------------------------------------------------
-# PATCH /memoirs/{id}/status  — ambassadeur/modérateur/admin
+# PATCH /memoirs/{public_id}/status  — ambassadeur/modérateur/admin
 # --------------------------------------------------
-@router.patch("/{memoir_id}/status", response_model=MemoirRead)
+@router.patch("/{public_id}/status", response_model=MemoirRead)
 def update_memoir_status(
-    memoir_id: int,
+    public_id: uuid.UUID,
     status_data: MemoirStatusUpdate,
     background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
     current_user: User = Depends(require_ambassador)
 ):
-    memoir = session.get(Memoir, memoir_id)
+    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 
@@ -441,15 +443,15 @@ def update_memoir_status(
 
 
 # --------------------------------------------------
-# DELETE /memoirs/{id}  — admin seulement
+# DELETE /memoirs/{public_id}  — admin seulement
 # --------------------------------------------------
-@router.delete("/{memoir_id}", status_code=204)
+@router.delete("/{public_id}", status_code=204)
 def delete_memoir(
-    memoir_id: int,
+    public_id: uuid.UUID,
     session: Session = Depends(get_session),
-    _: User = Depends(require_moderator)
+    current_user: User = Depends(require_moderator)
 ):
-    memoir = session.get(Memoir, memoir_id)
+    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 

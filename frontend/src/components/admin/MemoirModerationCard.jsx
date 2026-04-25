@@ -25,7 +25,7 @@ export default function MemoirModerationCard({ memoir }) {
       })
     } else {
       // Action d'approbation finale (Admin/Modo)
-      updateStatus({ id: memoir.id, status: 'approved' }, {
+      updateStatus({ id: memoir.public_id, status: 'approved' }, {
         onSuccess: () => toast.success("Mémoire approuvé avec succès !"),
         onError: (err) => toast.error(`Erreur: ${err.message}`)
       })
@@ -34,7 +34,7 @@ export default function MemoirModerationCard({ memoir }) {
 
   const handleReject = () => {
     if (!reason.trim()) return
-    updateStatus({ id: memoir.id, status: 'rejected', rejection_reason: reason }, {
+    updateStatus({ id: memoir.public_id, status: 'rejected', rejection_reason: reason }, {
         onSuccess: () => toast.success("Mémoire rejeté, l'auteur a été notifié."),
         onError: (err) => toast.error(`Erreur: ${err.message}`)
     })

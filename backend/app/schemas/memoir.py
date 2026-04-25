@@ -10,7 +10,6 @@ import uuid
 
 class MemoirRead(SQLModel):
     """Ce que l'API retourne — jamais le file_url direct."""
-    id: int
     public_id: uuid.UUID
     title: str
     abstract: str
@@ -18,14 +17,11 @@ class MemoirRead(SQLModel):
     year: int
     degree: DegreeLevel
     language: str
-    field_of_study_id: int
-    university_id: int
     status: MemoirStatus
     rejection_reason: Optional[str] = None  # Raison du rejet si applicable
     view_count: int
     allow_download: bool
     accepted_terms: bool
-    author_id: int
     university: Optional[UniversityRead] = None
     field_of_study: Optional[FieldOfStudyRead] = None
 

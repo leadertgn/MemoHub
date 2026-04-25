@@ -16,7 +16,6 @@ class UniversityRead(SQLModel):
     country_id: int
     country: Optional[CountryRead] = None
     status: UniversityStatus
-    submitted_by: Optional[int] = None  # ID du'utilisateur qui a soumis
     submitted_by_name: Optional[str] = None  # Nom de l'utilisateur qui a soumis
 
 
