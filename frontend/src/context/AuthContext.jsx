@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const AuthContext = createContext(null);
 
@@ -50,6 +51,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", accessToken);
     if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
     localStorage.setItem("user", JSON.stringify(userData));
+    toast.success(`Heureux de vous revoir, ${userData.full_name || 'Utilisateur'} !`);
   }, []); // Stable — ne change jamais de référence
 
 const logout = useCallback(async () => {
@@ -73,6 +75,7 @@ const logout = useCallback(async () => {
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
     queryClient.clear();
+    toast.info("Déconnexion réussie. À bientôt !");
 }, [queryClient]);
   return (
     <AuthContext.Provider

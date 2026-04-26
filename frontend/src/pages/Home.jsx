@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "../api/client";
 import { applicationsApi } from "../api/applications";
@@ -6,6 +6,7 @@ import { Search, Upload, FileText, Building2, Scale, Users, Shield, Heart, Arrow
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { useCountries, useUniversities } from "../hooks/useFilters";
+import { Button } from "../components/ui/Button";
 
 // Hook personnalisé : compteur animé qui s'incrémente au scroll (IntersectionObserver)
 function useCountUp(target, duration = 1200) {
@@ -61,9 +62,9 @@ function StatCard({ label, rawValue, icon: Icon, color, bg, gradient, subtitle }
         <div className="text-4xl font-black text-gray-900 mb-1 tabular-nums">
           {displayValue}
         </div>
-        <div className="text-sm font-medium text-gray-500 leading-snug">{label}</div>
+        <div className="text-sm font-bold text-gray-900 leading-snug">{label}</div>
         {subtitle && (
-          <div className="mt-3 text-xs text-gray-400 font-medium">
+          <div className="mt-3 text-xs text-gray-500 font-semibold italic">
             {subtitle}
           </div>
         )}
@@ -73,6 +74,7 @@ function StatCard({ label, rawValue, icon: Icon, color, bg, gradient, subtitle }
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const { data: stats } = useQuery({
     queryKey: ["stats"],
     queryFn: () => apiClient("/public/stats"),
@@ -169,20 +171,24 @@ export default function Home() {
           pour vos propres travaux de recherche.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-          <Link
+          <Button 
+            variant="primary" 
+            size="lg" 
             to="/search"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full font-bold text-shadow-sm hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+            className="w-full sm:w-auto"
           >
             <Search className="w-5 h-5" />
             Découvrir les travaux
-          </Link>
-          <Link
+          </Button>
+          <Button 
+            variant="secondary" 
+            size="lg" 
             to="/upload"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white border-2 border-gray-200 text-gray-800 px-8 py-4 rounded-full font-bold shadow-sm hover:border-blue-200 hover:bg-blue-50/50 hover:text-blue-700 hover:-translate-y-1 transition-all duration-300"
+            className="w-full sm:w-auto"
           >
             <Upload className="w-5 h-5" />
             Contribuer
-          </Link>
+          </Button>
         </div>
       </section>
 
@@ -451,23 +457,16 @@ export default function Home() {
                   </select>
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  disabled={submitApplication.isPending}
-                  className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-indigo-600 to-blue-600 text-white py-3 px-6 rounded-xl font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  variant="primary"
+                  size="lg"
+                  loading={submitApplication.isPending}
+                  className="w-full"
                 >
-                  {submitApplication.isPending ? (
-                    <>
-                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Envoi en cours...
-                    </>
-                  ) : (
-                    <>
-                      Soumettre ma candidature
-                      <ArrowRight className="w-5 h-5" />
-                    </>
-                  )}
-                </button>
+                  {submitApplication.isPending ? "Envoi en cours..." : "Soumettre ma candidature"}
+                  {!submitApplication.isPending && <ArrowRight className="w-5 h-5" />}
+                </Button>
 
                 <p className="text-xs text-center text-gray-500">
                   Votre demande sera examinée par notre équipe. Nous vous contacterons sous 48-72h.

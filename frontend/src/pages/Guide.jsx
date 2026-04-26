@@ -70,7 +70,7 @@ const FAQS = [
   },
   {
     q: "Comment puis-je faire retirer mon mémoire ?",
-    a: "Contactez-nous à legal@memohub.com avec votre demande. Tout retrait volontaire sera traité dans les meilleurs délais.",
+    a: "Contactez-nous via les canaux officiels pour votre demande. Tout retrait volontaire sera traité dans les meilleurs délais.",
   },
   {
     q: "Mon université n'est pas dans la liste. Que faire ?",
@@ -264,12 +264,9 @@ export default function Guide() {
         {/* CTA bas de page */}
         <div className="text-center py-4">
           <p className="text-gray-400 text-sm mb-4">Vous avez encore des questions ?</p>
-          <a
-            href="mailto:legal@memohub.com"
-            className="inline-flex items-center gap-2 text-indigo-600 font-semibold text-sm hover:underline"
-          >
-            Contactez-nous → legal@memohub.com
-          </a>
+          <p className="inline-flex items-center gap-2 text-gray-500 font-semibold text-sm">
+            Contactez-nous via les réseaux sociaux (en attendant notre e-mail dédié)
+          </p>
         </div>
       </div>
     </div>

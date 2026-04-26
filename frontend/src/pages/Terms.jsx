@@ -100,7 +100,7 @@ export default function Terms() {
                                     Contact Juridique
                                 </h2>
                                 <p>
-                                    Pour tout signalement relatif à la propriété intellectuelle (DMCA/Droit d'Auteur), veuillez nous contacter à l'adresse suivante : <span className="text-indigo-600 font-medium">legal@memohub.com</span>.
+                                    Pour tout signalement relatif à la propriété intellectuelle (DMCA/Droit d'Auteur), veuillez nous contacter. L'adresse email dédiée sera communiquée prochainement.
                                 </p>
                             </section>
                         </div>

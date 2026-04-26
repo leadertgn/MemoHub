@@ -102,7 +102,7 @@ export default function Privacy() {
                                     <li>Droit à la limitation du traitement.</li>
                                     <li>Droit à la portabilité de vos données.</li>
                                 </ul>
-                                <p>Pour exercer ces droits, contactez-nous par e-mail.</p>
+                                <p>Pour exercer ces droits, vous pouvez nous contacter. Notre adresse e-mail dédiée à la protection des données sera disponible très prochainement.</p>
                             </section>
 
                             <section className="pt-8 border-t border-gray-100">
