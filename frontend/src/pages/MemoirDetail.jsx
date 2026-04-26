@@ -7,6 +7,7 @@ import CitationBlock from '../components/memoir/CitationBlock'
 import { Button } from '../components/ui/Button'
 import { toast } from 'sonner'
 import { DEGREE_LABELS } from '../utils/constants'
+import SEO from '../components/layout/SEO'
 
 
 export default function MemoirDetail() {

@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { useCountries, useUniversities } from "../hooks/useFilters";
 import { Button } from "../components/ui/Button";
+import SEO from '../components/layout/SEO';
 
 // Hook personnalisé : compteur animé qui s'incrémente au scroll (IntersectionObserver)
 function useCountUp(target, duration = 1200) {
