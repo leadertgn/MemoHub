@@ -1,14 +1,10 @@
 // src/components/memoir/MemoirFilters.jsx
 import { useDomains, useUniversities, useFieldsOfStudy, useCountries } from '../../hooks/useFilters'
+import { DEGREE_LABELS } from '../../utils/constants'
 
 const DEGREES = [
   { value: '', label: 'Tous les niveaux' },
-  { value: 'licence', label: 'Licence' },
-  { value: 'master', label: 'Master' },
-  { value: 'doctorat', label: 'Doctorat' },
-  { value: 'ingenieur', label: 'Ingénieur' },
-  { value: 'bts', label: 'BTS' },
-  { value: 'dut', label: 'DUT' },
+  ...Object.entries(DEGREE_LABELS).map(([value, label]) => ({ value, label }))
 ]
 
 export default function MemoirFilters({ filters, onChange }) {

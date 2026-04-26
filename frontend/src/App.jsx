@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/layout/Layout'
+import ScrollToTop from './components/layout/ScrollToTop'
 import Home from './pages/Home'
 import Search from './pages/Search'
 import MemoirDetail from './pages/MemoirDetail'
@@ -17,6 +18,7 @@ import Guide from './pages/Guide'
 export default function App() {
   return (
       <AuthProvider>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />

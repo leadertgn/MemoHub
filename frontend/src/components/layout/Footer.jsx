@@ -30,13 +30,10 @@ export default function Footer() {
                         <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
                             La bibliothèque ouverte des mémoires académiques — libre d'accès, pour tous, partout.
                         </p>
-                        <a
-                            href="mailto:legal@memohub.com"
-                            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors font-medium"
-                        >
+                        <div className="flex items-center gap-2 text-sm text-gray-400 font-medium">
                             <Mail className="w-4 h-4" />
-                            legal@memohub.com
-                        </a>
+                            <span>Contact bientôt disponible</span>
+                        </div>
                     </div>
 
                     {/* Colonnes de liens */}

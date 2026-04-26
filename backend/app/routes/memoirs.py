@@ -13,6 +13,7 @@ from app.core.cloudinary_service import upload_memoir_pdf, delete_memoir_pdf
 from app.database import get_session
 from app.models import Memoir, User, FieldOfStudy
 from app.models.enums import UserRole, MemoirStatus, DegreeLevel
+from app.core.rate_limit import rate_limiter
 from app.schemas.memoir import (
     MemoirRead, MemoirReadWithAccess, MemoirUpdate, MemoirStatusUpdate, PaginatedMemoirsResponse
 )
@@ -32,7 +33,7 @@ router = APIRouter(prefix="/memoirs", tags=["Memoirs"])
 # --------------------------------------------------
 # GET /memoirs  — public, filtres avancés + pagination
 # --------------------------------------------------
-@router.get("", response_model=PaginatedMemoirsResponse)
+@router.get("", response_model=PaginatedMemoirsResponse, dependencies=[Depends(rate_limiter(30, 60))])
 def get_memoirs(
     domain_id:           Optional[int] = Query(default=None),
     university_id:       Optional[int] = Query(default=None),
@@ -181,7 +182,7 @@ def get_memoir_with_access(
 # POST /memoirs  — auth requise
 # Upload avec métadonnées
 # --------------------------------------------------
-@router.post("", response_model=MemoirRead, status_code=201)
+@router.post("", response_model=MemoirRead, status_code=201, dependencies=[Depends(rate_limiter(3, 60))])
 async def submit_memoir(
     # Métadonnées envoyées en Form (multipart)
     title:             str = Form(...),
@@ -195,6 +196,7 @@ async def submit_memoir(
     field_of_study_id: int = Form(...),
     university_id:     int = Form(...),
     accepted_terms:    bool = Form(...),
+    allow_download:    bool = Form(default=True),
     # Fichier PDF
     file: UploadFile = File(...),
     background_tasks: BackgroundTasks = BackgroundTasks(),
@@ -250,7 +252,8 @@ async def submit_memoir(
         file_url=file_url,
         author_id=current_user.id,
         status=MemoirStatus.pending,
-        accepted_terms=accepted_terms
+        accepted_terms=accepted_terms,
+        allow_download=allow_download
     )
     session.add(memoir)
     session.commit()
@@ -348,17 +351,17 @@ def pre_validate_memoir(
 
 
 # --------------------------------------------------
-# PATCH /memoirs/{id}/status  — ambassadeur/modérateur/admin
+# PATCH /memoirs/{public_id}/status  — ambassadeur/modérateur/admin
 # --------------------------------------------------
-@router.patch("/{memoir_id}/status", response_model=MemoirRead)
+@router.patch("/{public_id}/status", response_model=MemoirRead)
 def update_memoir_status(
-    memoir_id: int,
+    public_id: uuid.UUID,
     status_data: MemoirStatusUpdate,
     background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
     current_user: User = Depends(require_ambassador)
 ):
-    memoir = session.get(Memoir, memoir_id)
+    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 
@@ -441,15 +444,15 @@ def update_memoir_status(
 
 
 # --------------------------------------------------
-# DELETE /memoirs/{id}  — admin seulement
+# DELETE /memoirs/{public_id}  — admin seulement
 # --------------------------------------------------
-@router.delete("/{memoir_id}", status_code=204)
+@router.delete("/{public_id}", status_code=204)
 def delete_memoir(
-    memoir_id: int,
+    public_id: uuid.UUID,
     session: Session = Depends(get_session),
-    _: User = Depends(require_moderator)
+    current_user: User = Depends(require_moderator)
 ):
-    memoir = session.get(Memoir, memoir_id)
+    memoir = session.exec(select(Memoir).where(Memoir.public_id == public_id)).first()
     if not memoir:
         raise HTTPException(status_code=404, detail="Mémoire introuvable")
 
@@ -464,7 +467,7 @@ def delete_memoir(
 # GET /memoirs/{id}/download  — tout le monde (connecté)
 # Téléchargement d'un mémoire AVEC filigrane
 # --------------------------------------------------
-@router.get("/{public_id}/download")
+@router.get("/{public_id}/download", dependencies=[Depends(rate_limiter(5, 60))])
 async def download_memoir(
     public_id: uuid.UUID,
     session: Session = Depends(get_session),

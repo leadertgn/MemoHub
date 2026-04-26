@@ -4,7 +4,8 @@ import { useSearchParams } from 'react-router-dom'
 import { useMemoirs } from '../hooks/useMemoirs'
 import MemoirCard from '../components/memoir/MemoirCard'
 import MemoirFilters from '../components/memoir/MemoirFilters'
-import { SearchX } from 'lucide-react'
+import { SearchX, Filter } from 'lucide-react'
+import { Button } from '../components/ui/Button'
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -38,13 +39,14 @@ export default function Search() {
       {/* Bouton Filtre Mobile */}
       <div className="md:hidden flex justify-between items-center mb-6">
         <h1 className="text-xl font-bold text-gray-900">Catalogue</h1>
-        <button 
+        <Button 
+          variant="secondary" 
+          size="sm"
           onClick={() => setShowFiltersMobile(!showFiltersMobile)}
-          className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center gap-2"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+          <Filter className="w-4 h-4" />
           {showFiltersMobile ? 'Masquer' : 'Filtres'}
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col gap-8">
@@ -104,20 +106,22 @@ export default function Search() {
                 Page <span className="text-gray-900 font-bold">{memoirs.page}</span> sur {memoirs.total_pages} ({memoirs.total} résultats)
               </span>
               <div className="flex gap-2">
-                  <button
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={memoirs.page === 1}
-                    className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm disabled:opacity-40 hover:bg-gray-50 hover:text-blue-600 transition-all"
                   >
                     ← Précédent
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => setPage(p => p + 1)}
                     disabled={memoirs.page >= memoirs.total_pages}
-                    className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm disabled:opacity-40 hover:bg-gray-50 hover:text-blue-600 transition-all"
                   >
                     Suivant →
-                  </button>
+                  </Button>
               </div>
             </div>
           </>

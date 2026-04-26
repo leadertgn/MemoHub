@@ -1,15 +1,8 @@
 // src/components/memoir/MemoirCard.jsx
 import { Link } from 'react-router-dom'
 import { Eye, Building2 } from 'lucide-react'
+import { DEGREE_LABELS } from '../../utils/constants'
 
-const DEGREE_LABELS = {
-  licence:   'Licence',
-  master:    'Master',
-  doctorat:  'Doctorat',
-  ingenieur: 'Ingénieur',
-  bts:       'BTS',
-  dut:       'DUT',
-}
 
 const DEGREE_COLORS = {
   licence:   'bg-blue-100 text-blue-700',
@@ -59,11 +52,7 @@ export default function MemoirCard({ memoir }) {
           <span className="flex items-center gap-1">
             <Eye className="w-3.5 h-3.5" /> {memoir.view_count}
           </span>
-          {!memoir.allow_download && (
-            <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">
-              Sur Demande
-            </span>
-          )}
+
         </div>
       </div>
     </Link>

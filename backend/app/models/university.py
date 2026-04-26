@@ -20,7 +20,7 @@ class UniversityBase(SQLModel):
         }
     )
     name: str = Field(index=True)
-    country_id: int = Field(foreign_key="country.id")
+    country_id: int = Field(foreign_key="country.id", index=True)
     acronym: Optional[str] = None          # Acronyme de l'université (ex: UAC, ENEAM)
     website: Optional[str] = None          # Site officiel de l'université
 

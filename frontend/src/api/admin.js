@@ -6,6 +6,7 @@ export const adminApi = {
   getPendingMemoirs:    () => apiClient('/admin/memoirs/pending'),
   getPendingUniversities: async () => apiClient('/admin/universities/pending'),
   getPendingFields: async () => apiClient('/admin/fields/pending'),
+  getPendingApplications: () => apiClient('/applications/admin/pending'),
   getUsers:             () => apiClient('/users'),
   getModerationHistory: () => apiClient('/admin/moderation-history'),
 
@@ -42,4 +43,14 @@ export const adminApi = {
       method: 'PATCH',
       body: JSON.stringify(payload)
     }),
+
+  updateApplicationStatus: async (id, status, admin_notes = null) => {
+    let url = `/applications/admin/${id}/status?status=${encodeURIComponent(status)}`;
+    if (admin_notes) {
+      url += `&admin_notes=${encodeURIComponent(admin_notes)}`;
+    }
+    return apiClient(url, {
+      method: 'PATCH'
+    })
+  },
 }

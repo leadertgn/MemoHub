@@ -7,14 +7,16 @@ import {
   usePendingUniversities,
   usePendingFields,
   useUpdateFieldStatus,
-  useModerationHistory
+  useModerationHistory,
+  usePendingApplications,
+  useUpdateApplicationStatus
 } from "../../hooks/useAdmin";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../api/client";
 import { toast } from "sonner";
 import { 
    FileText, Building2, GraduationCap, Users, History,
-  BarChart3, Menu, X, PartyPopper
+  BarChart3, Menu, X, PartyPopper, UserPlus, Info, Check, XCircle
 } from "lucide-react";
 import StatCard from "../../components/admin/StatCard";
 import MemoirModerationCard from "../../components/admin/MemoirModerationCard";
@@ -29,6 +31,7 @@ const TABS = [
   { id: "universities", label: "Universités", icon: Building2 },
   { id: "fields", label: "Filières", icon: GraduationCap },
   { id: "users", label: "Utilisateurs", icon: Users },
+  { id: "applications", label: "Candidatures", icon: UserPlus },
   { id: "history", label: "Historique", icon: History },
 ];
 
@@ -125,6 +128,7 @@ export default function Dashboard() {
       {activeTab === "universities" && <UniversitiesTab />}
       {activeTab === "fields" && <FieldsTab />}
       {activeTab === "users" && <UsersTab />}
+      {activeTab === "applications" && <ApplicationsTab />}
       {activeTab === "history" && <HistoryTab />}
     </div>
   );
@@ -427,6 +431,103 @@ function HistoryTab() {
              </li>
           ))}
         </ul>
+      </div>
+    </div>
+  );
+}
+
+// ---- Tab Candidatures ----
+function ApplicationsTab() {
+  const { data: apps, isLoading } = usePendingApplications();
+  const { mutate: updateStatus, isPending: isUpdating } = useUpdateApplicationStatus();
+
+  if (isLoading) return <p className="text-sm text-gray-500">Chargement...</p>;
+
+  if (!apps?.length)
+    return (
+      <div className="text-center py-16 space-y-4">
+        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
+          <PartyPopper className="w-8 h-8" />
+        </div>
+        <p className="text-gray-500 font-medium">Aucune candidature en attente</p>
+      </div>
+    );
+
+  const handleAction = (id, status) => {
+    const notes = status === 'rejected' ? window.prompt("Motif du refus ?") : null;
+    if (status === 'rejected' && notes === null) return;
+
+    updateStatus({ id, status, admin_notes: notes }, {
+      onSuccess: () => toast.success(`Candidature ${status === 'approved' ? 'approuvée' : 'rejetée'} !`),
+      onError: (err) => toast.error(`Erreur: ${err.message}`)
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-gray-500">{apps.length} candidature(s) à examiner</p>
+      <div className="grid grid-cols-1 gap-4">
+        {apps.map((app) => (
+          <div key={app.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between gap-6">
+            <div className="flex-1 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  app.role === 'moderator' ? 'bg-purple-100 text-purple-700' : 'bg-cyan-100 text-cyan-700'
+                }`}>
+                  {app.role === 'moderator' ? 'Modérateur' : 'Ambassadeur'}
+                </div>
+                <span className="text-xs text-gray-400">Soumis le {new Date(app.created_at).toLocaleDateString()}</span>
+              </div>
+              
+              <div>
+                <h3 className="font-bold text-gray-900 text-lg">{app.user_full_name}</h3>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-gray-600">
+                  <p className="flex items-center gap-1.5"><Building2 className="w-4 h-4" /> {app.country_name}</p>
+                  {app.university_name && (
+                    <p className="flex items-center gap-1.5"><GraduationCap className="w-4 h-4" /> {app.university_name}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <Info className="w-3.5 h-3.5" /> Motivation
+                </p>
+                <p className="text-sm text-gray-700 italic leading-relaxed">"{app.motivation}"</p>
+              </div>
+
+              <div className="flex flex-wrap gap-4 text-xs font-medium">
+                <div className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg">
+                  <span className="text-blue-400 mr-2">Preuve:</span> {app.student_proof}
+                </div>
+                {app.availability && (
+                  <div className="bg-indigo-50 text-indigo-700 px-3 py-2 rounded-lg">
+                    <span className="text-indigo-400 mr-2">Dispo:</span> {app.availability}h/semaine
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex md:flex-col gap-2 justify-center shrink-0 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
+              <button 
+                onClick={() => handleAction(app.id, 'approved')}
+                disabled={isUpdating}
+                className="flex-1 md:w-32 flex items-center justify-center gap-2 bg-green-600 text-white font-bold py-2.5 rounded-xl hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50"
+              >
+                <Check className="w-4 h-4" />
+                Approuver
+              </button>
+              <button 
+                onClick={() => handleAction(app.id, 'rejected')}
+                disabled={isUpdating}
+                className="flex-1 md:w-32 flex items-center justify-center gap-2 bg-white border border-red-200 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-50 transition-colors disabled:opacity-50"
+              >
+                <XCircle className="w-4 h-4" />
+                Rejeter
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
