@@ -39,8 +39,8 @@ class FieldOfStudyBase(SQLModel):
         }
     )
     label: str = Field(index=True)                   # "Génie Informatique" (nom exact dans l'université)
-    university_id: int = Field(foreign_key="university.id")
-    domain_id: int = Field(foreign_key="domain.id")  # Domaine normalisé auquel elle appartient
+    university_id: int = Field(foreign_key="university.id", index=True)
+    domain_id: int = Field(foreign_key="domain.id", index=True)  # Domaine normalisé auquel elle appartient
 
 
 class FieldOfStudyCreate(FieldOfStudyBase):

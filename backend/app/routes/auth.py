@@ -9,6 +9,7 @@ from app.database import get_session
 from app.models import User
 from app.models.enums import UserRole
 from app.schemas.auth import GoogleAuthRequest, TokenResponse, RefreshTokenRequest
+from app.core.rate_limit import rate_limiter
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -16,7 +17,7 @@ GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 
 
-@router.post("/google", response_model=TokenResponse)
+@router.post("/google", response_model=TokenResponse, dependencies=[Depends(rate_limiter(5, 60))])
 async def google_auth(payload: GoogleAuthRequest, session: Session = Depends(get_session)):
     """
     Reçoit le code d'autorisation Google depuis le frontend.

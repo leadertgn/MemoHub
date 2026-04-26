@@ -23,7 +23,7 @@ class TeamApplicationUpdate(BaseModel):
 import uuid
 
 class TeamApplicationResponse(TeamApplicationBase):
-    """Schema pour la réponse API"""
+    """Schema pour la réponse API de base"""
     id: int
     public_id: uuid.UUID
     user_id: int
@@ -36,3 +36,9 @@ class TeamApplicationResponse(TeamApplicationBase):
 
     class Config:
         from_attributes = True
+
+class TeamApplicationAdminRead(TeamApplicationResponse):
+    """Schema détaillé pour le dashboard admin"""
+    user_full_name: Optional[str] = None
+    country_name: Optional[str] = None
+    university_name: Optional[str] = None

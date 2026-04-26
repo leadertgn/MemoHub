@@ -373,7 +373,7 @@ export default function Home() {
                   <select
                     value={applicationCountry}
                     onChange={(e) => setApplicationCountry(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
                     required
                   >
                     <option value="">Sélectionner un pays...</option>
@@ -392,7 +392,7 @@ export default function Home() {
                     <select
                       value={applicationUniversity}
                       onChange={(e) => setApplicationUniversity(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
                       required={showUniversityField}
                       disabled={!applicationCountry}
                     >
@@ -400,6 +400,9 @@ export default function Home() {
                       {universities?.map(u => (
                         <option key={u.id} value={u.id}>{u.name}</option>
                       ))}
+                      {applicationCountry && universities?.length === 0 && (
+                        <option disabled>Aucun établissement répertorié pour ce pays</option>
+                      )}
                     </select>
                     {!applicationCountry && (
                       <p className="text-xs text-gray-400 mt-1">Sélectionnez d'abord un pays</p>
@@ -417,7 +420,7 @@ export default function Home() {
                     value={applicationStudentProof}
                     onChange={(e) => setApplicationStudentProof(e.target.value)}
                     placeholder="Numéro étudiant ou email universitaire (ex: john@univ-benin.bj)"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
                     required
                   />
                   <p className="text-xs text-gray-400 mt-1">
@@ -434,7 +437,7 @@ export default function Home() {
                     value={applicationMotivation}
                     onChange={(e) => setApplicationMotivation(e.target.value)}
                     placeholder="Expliquez pourquoi vous voulez rejoindre MemoHub et ce que vous apporterez..."
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
                     rows={3}
                     required
                   />
@@ -448,7 +451,7 @@ export default function Home() {
                   <select
                     value={applicationAvailability}
                     onChange={(e) => setApplicationAvailability(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
                   >
                     <option value="">Sélectionner...</option>
                     <option value="2-4">2 à 4 heures</option>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../context/AuthContext'
 import { memoirsApi } from '../api/memoirs'
+import { toast } from 'sonner'
 import { useCountries, useUniversities, useFieldsOfStudy } from '../hooks/useFilters'
 import { SuggestUniversityModal, SuggestFieldModal } from '../components/upload/SuggestionModals'
 import { 
@@ -19,22 +20,11 @@ import {
   Info
 } from 'lucide-react';
 import { Button } from '../components/ui/Button'
+import { DEGREE_LABELS, LANGUAGES } from '../utils/constants'
 
-const DEGREES = [
-  { value: 'licence',   label: 'Licence (Bac+3)' },
-  { value: 'master',    label: 'Master (Bac+5)' },
-  { value: 'doctorat',  label: 'Doctorat (Bac+8)' },
-  { value: 'ingenieur', label: 'Diplôme Ingénieur' },
-  { value: 'bts',       label: 'BTS' },
-  { value: 'dut',       label: 'DUT' },
-]
+const DEGREES = Object.entries(DEGREE_LABELS).map(([value, label]) => ({ value, label }))
 
-const LANGUAGES = [
-  { value: 'fr', label: 'Français' },
-  { value: 'en', label: 'Anglais' },
-  { value: 'es', label: 'Espagnol' },
-  { value: 'pt', label: 'Portugais' },
-]
+const LANGUAGES_LIST = Object.entries(LANGUAGES).map(([value, label]) => ({ value, label }))
 
 export default function Upload() {
   const navigate = useNavigate()
@@ -82,14 +72,16 @@ export default function Upload() {
     
     if (currentStep === 1) {
       if (!form.author_name.trim()) newErrors.author_name = "Le nom de l'auteur est obligatoire"
-      if (!form.author_email.trim()) newErrors.author_email = "L'email est obligatoire"
+      if (!form.author_email.trim()) {
+        newErrors.author_email = "L'email est obligatoire"
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.author_email)) {
+        newErrors.author_email = "Format d'email invalide"
+      }
+
       if (!form.author_phone.trim()) {
         newErrors.author_phone = "Le téléphone est obligatoire"
-      } else {
-        const phoneDigits = form.author_phone.replace(/\D/g, '')
-        if (phoneDigits.length < 8 || phoneDigits.length > 15) {
-          newErrors.author_phone = "Format invalide (8-15 chiffres)"
-        }
+      } else if (!/^\+?[0-9\s-]{8,20}$/.test(form.author_phone)) {
+        newErrors.author_phone = "Format invalide (ex: +229 ...)"
       }
       if (!form.country_id) newErrors.country_id = 'Le pays est obligatoire'
       if (!form.university_id) newErrors.university_id = "L'établissement est obligatoire"
@@ -118,6 +110,8 @@ export default function Upload() {
     if (validateStep(step)) {
       setStep(s => s + 1)
       window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      toast.error("Veuillez corriger les erreurs avant de passer à l'étape suivante")
     }
   }
 
@@ -128,7 +122,10 @@ export default function Upload() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!validateStep(3)) return
+    if (!validateStep(3)) {
+      toast.error("Veuillez corriger les erreurs avant de soumettre")
+      return
+    }
 
     const formData = new FormData()
     Object.entries(form).forEach(([key, value]) => {
@@ -334,6 +331,9 @@ export default function Upload() {
                         >
                           <option value="">Sélectionner...</option>
                           {universities?.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                          {form.country_id && universities?.length === 0 && (
+                            <option disabled>Aucun établissement répertorié</option>
+                          )}
                         </select>
                       </Field>
                       <button type="button" onClick={() => setIsUniModalOpen(true)} className="text-[10px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 uppercase tracking-tighter">
@@ -353,6 +353,9 @@ export default function Upload() {
                       >
                         <option value="">Sélectionner une filière...</option>
                         {fields?.map(f => <option key={f.id} value={f.id}>{f.label}</option>)}
+                        {form.university_id && fields?.length === 0 && (
+                          <option disabled>Aucune filière répertoriée</option>
+                        )}
                       </select>
                     </Field>
                     <button type="button" onClick={() => setIsFieldModalOpen(true)} className="text-[10px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 uppercase tracking-tighter">
@@ -423,7 +426,7 @@ export default function Upload() {
                     onChange={e => handleChange('language', e.target.value)}
                     className={inputClass()}
                   >
-                    {LANGUAGES.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
+                    {LANGUAGES_LIST.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
                   </select>
                 </Field>
               </div>
@@ -577,7 +580,7 @@ function Field({ label, error, hint, children }) {
 }
 
 function inputClass(error) {
-  return `w-full text-sm border bg-gray-50/30 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 ${
+  return `w-full text-sm border bg-gray-50/30 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 ${
     error ? 'border-red-300 bg-red-50/30 focus:ring-red-500' : 'border-gray-100'
   }`
 }

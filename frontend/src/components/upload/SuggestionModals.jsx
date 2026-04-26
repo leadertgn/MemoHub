@@ -3,6 +3,8 @@ import { CheckCircle, Lightbulb, X } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '../../api/client';
 import { useCountries, useDomains } from '../../hooks/useFilters';
+import { Button } from '../ui/Button';
+import { toast } from 'sonner';
 
 function ModalWrapper({ title, children, onClose }) {
   return (
@@ -33,12 +35,9 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
         body: JSON.stringify(data),
     }),
     onSuccess: () => {
-      setSuccessMsg("Votre suggestion a été envoyée ! Elle sera validée par l'équipe.");
-      setTimeout(() => {
-        onClose();
-        setSuccessMsg('');
-        setForm({ name: '', acronym: '', country_id: null, website: '' });
-      }, 3000);
+      toast.success("Votre suggestion a été envoyée ! Elle sera validée par l'équipe.");
+      onClose();
+      setForm({ name: '', acronym: '', country_id: null, website: '' });
     }
   });
 
@@ -92,9 +91,14 @@ export function SuggestUniversityModal({ isOpen, onClose }) {
                 <input type="url" className="w-full border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://..." value={form.website} onChange={e => setForm({...form, website: e.target.value})} />
             </div>
 
-            <button disabled={isPending || !form.name || form.country_id === null} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
-                {isPending ? 'Envoi...' : 'Soumettre la suggestion'}
-            </button>
+            <Button 
+              disabled={isPending || !form.name || form.country_id === null} 
+              type="submit" 
+              className="w-full mt-4"
+              loading={isPending}
+            >
+              Soumettre la suggestion
+            </Button>
         </form>
       )}
     </ModalWrapper>
@@ -112,12 +116,9 @@ export function SuggestFieldModal({ isOpen, onClose, universityId, universityNam
           body: JSON.stringify({...data, university_id: universityId}),
       }),
       onSuccess: () => {
-        setSuccessMsg("Votre suggestion a été envoyée ! Elle sera validée par l'équipe.");
-        setTimeout(() => {
-          onClose();
-          setSuccessMsg('');
-          setForm({ label: '', domain_id: null });
-        }, 3000);
+        toast.success("Votre suggestion a été envoyée ! Elle sera validée par l'équipe.");
+        onClose();
+        setForm({ label: '', domain_id: null });
       }
     });
   
@@ -156,9 +157,14 @@ export function SuggestFieldModal({ isOpen, onClose, universityId, universityNam
                   </select>
               </div>
   
-              <button disabled={isPending || !form.label || form.domain_id === null} type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 disabled:opacity-50 mt-4 transition-colors">
-                  {isPending ? 'Envoi...' : 'Soumettre la suggestion'}
-              </button>
+              <Button 
+                disabled={isPending || !form.label || form.domain_id === null} 
+                type="submit" 
+                className="w-full mt-4"
+                loading={isPending}
+              >
+                Soumettre la suggestion
+              </Button>
           </form>
         )}
       </ModalWrapper>

@@ -4,11 +4,10 @@ import { useMemoirDetail } from '../hooks/useMemoirs'
 import { useAuth } from '../context/AuthContext'
 import SecurePDFViewer from '../components/SecurePDFViewer'
 import CitationBlock from '../components/memoir/CitationBlock'
+import { Button } from '../components/ui/Button'
+import { toast } from 'sonner'
+import { DEGREE_LABELS } from '../utils/constants'
 
-const DEGREE_LABELS = {
-  licence: 'Licence', master: 'Master', doctorat: 'Doctorat',
-  ingenieur: 'Ingénieur', bts: 'BTS', dut: 'DUT',
-}
 
 export default function MemoirDetail() {
   const { id } = useParams()
@@ -60,7 +59,7 @@ export default function MemoirDetail() {
       a.remove();
       window.URL.revokeObjectURL(objUrl);
     } catch (_err) {
-      alert("Le téléchargement a échoué. Assurez-vous d'avoir les droits nécessaires ou réessayez plus tard.");
+      toast.error("Le téléchargement a échoué. Assurez-vous d'avoir les droits nécessaires ou réessayez plus tard.");
     }
   }
 
@@ -131,24 +130,27 @@ export default function MemoirDetail() {
             <p className="text-gray-600 font-medium max-w-sm mx-auto">
               Veuillez vous connecter pour lire et télécharger le mémoire complet.
             </p>
-            <Link
+            <Button
               to="/login"
-              className="inline-block bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold px-8 py-3 rounded-full hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              variant="primary"
+              size="lg"
+              className="rounded-full shadow-lg"
             >
               Se connecter
-            </Link>
+            </Button>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="flex justify-end">
               {memoir.allow_download ? (
-                <button
+                <Button
                   onClick={handleDownload}
-                  className="flex items-center gap-2 bg-linear-to-r from-gray-800 to-gray-900 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
+                  variant="primary"
+                  className="bg-linear-to-r from-gray-800 to-gray-900"
                 >
                   <Download className="w-4 h-4" />
                   Télécharger (avec filigrane)
-                </button>
+                </Button>
               ) : (
                 <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 font-medium text-sm px-5 py-2.5 rounded-xl">
                   <Lock className="w-4 h-4 text-amber-600" />

@@ -13,6 +13,7 @@ from app.core.cloudinary_service import upload_memoir_pdf, delete_memoir_pdf
 from app.database import get_session
 from app.models import Memoir, User, FieldOfStudy
 from app.models.enums import UserRole, MemoirStatus, DegreeLevel
+from app.core.rate_limit import rate_limiter
 from app.schemas.memoir import (
     MemoirRead, MemoirReadWithAccess, MemoirUpdate, MemoirStatusUpdate, PaginatedMemoirsResponse
 )
@@ -32,7 +33,7 @@ router = APIRouter(prefix="/memoirs", tags=["Memoirs"])
 # --------------------------------------------------
 # GET /memoirs  — public, filtres avancés + pagination
 # --------------------------------------------------
-@router.get("", response_model=PaginatedMemoirsResponse)
+@router.get("", response_model=PaginatedMemoirsResponse, dependencies=[Depends(rate_limiter(30, 60))])
 def get_memoirs(
     domain_id:           Optional[int] = Query(default=None),
     university_id:       Optional[int] = Query(default=None),
@@ -181,7 +182,7 @@ def get_memoir_with_access(
 # POST /memoirs  — auth requise
 # Upload avec métadonnées
 # --------------------------------------------------
-@router.post("", response_model=MemoirRead, status_code=201)
+@router.post("", response_model=MemoirRead, status_code=201, dependencies=[Depends(rate_limiter(3, 60))])
 async def submit_memoir(
     # Métadonnées envoyées en Form (multipart)
     title:             str = Form(...),
@@ -466,7 +467,7 @@ def delete_memoir(
 # GET /memoirs/{id}/download  — tout le monde (connecté)
 # Téléchargement d'un mémoire AVEC filigrane
 # --------------------------------------------------
-@router.get("/{public_id}/download")
+@router.get("/{public_id}/download", dependencies=[Depends(rate_limiter(5, 60))])
 async def download_memoir(
     public_id: uuid.UUID,
     session: Session = Depends(get_session),

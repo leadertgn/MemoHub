@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { apiClient } from "../../api/client";
 import { toast } from "sonner";
 import { Globe, Building2, X } from "lucide-react";
+import { Button } from "../ui/Button";
+import { ROLE_LABELS } from "../../utils/constants";
 
 export default function RoleEditModal({ user, onClose, onSave }) {
   const [selectedRole, setSelectedRole] = useState(user.role);
@@ -73,10 +75,10 @@ export default function RoleEditModal({ user, onClose, onSave }) {
               onChange={(e) => setSelectedRole(e.target.value)}
               className="w-full text-sm border border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="student">student</option>
-              <option value="ambassador">ambassador</option>
-              <option value="moderator">moderator</option>
-              <option value="admin">admin</option>
+              {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+              <option value="student">Étudiant (Par défaut)</option>
             </select>
           </div>
 
@@ -127,18 +129,17 @@ export default function RoleEditModal({ user, onClose, onSave }) {
 
         {/* Footer */}
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex gap-3 justify-end">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
           >
             Annuler
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
           >
             Enregistrer
-          </button>
+          </Button>
         </div>
       </div>
     </div>

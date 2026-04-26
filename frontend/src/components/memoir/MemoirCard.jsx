@@ -1,15 +1,8 @@
 // src/components/memoir/MemoirCard.jsx
 import { Link } from 'react-router-dom'
 import { Eye, Building2 } from 'lucide-react'
+import { DEGREE_LABELS } from '../../utils/constants'
 
-const DEGREE_LABELS = {
-  licence:   'Licence',
-  master:    'Master',
-  doctorat:  'Doctorat',
-  ingenieur: 'Ingénieur',
-  bts:       'BTS',
-  dut:       'DUT',
-}
 
 const DEGREE_COLORS = {
   licence:   'bg-blue-100 text-blue-700',

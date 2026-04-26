@@ -30,6 +30,13 @@ export function usePendingFields() {
   })
 }
 
+export function usePendingApplications() {
+  return useQuery({
+    queryKey: ['pending-applications'],
+    queryFn: adminApi.getPendingApplications,
+  })
+}
+
 export function useModerationHistory() {
   return useQuery({
     queryKey: ['moderation-history'],
@@ -98,6 +105,19 @@ export function useUpdateUserRole() {
     mutationFn: (payload) => adminApi.updateUserRole(payload.id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+    }
+  })
+}
+
+export function useUpdateApplicationStatus() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, status, admin_notes }) =>
+      adminApi.updateApplicationStatus(id, status, admin_notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pending-applications'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
     }
   })
 }

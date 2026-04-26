@@ -36,8 +36,8 @@ class MemoirBase(SQLModel):
     language: str = Field(default="fr", max_length=5)   # Langue du document (fr, en, etc.)
 
     # --- Liens vers d'autres entités ---
-    field_of_study_id: int = Field(foreign_key="fieldofstudy.id")   # Filière exacte
-    university_id: int = Field(foreign_key="university.id")          # Université
+    field_of_study_id: int = Field(foreign_key="fieldofstudy.id", index=True)   # Filière exacte
+    university_id: int = Field(foreign_key="university.id", index=True)          # Université
     # ... champs existants ...
     accepted_terms: bool = Field(default=False)
     allow_download: bool = Field(default=True)
@@ -67,18 +67,18 @@ class Memoir(MemoirBase, TimestampMixin, table=True):
     file_url: str   # URL du PDF stocké sur le cloud (jamais exposée directement en front)
 
     # Modération
-    status: MemoirStatus = Field(default=MemoirStatus.pending)
+    status: MemoirStatus = Field(default=MemoirStatus.pending, index=True)
     rejection_reason: Optional[str] = Field(default=None)  # Raison du rejet (null si approuvé)
     
     # Traçabilité de modération
-    moderated_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    moderated_by: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
     moderated_at: Optional[datetime] = Field(default=None)
 
     # Statistiques
     view_count: int = Field(default=0)   # Nombre de consultations
 
     # Qui a soumis ce mémoire sur la plateforme ?
-    author_id: int = Field(foreign_key="user.id")
+    author_id: int = Field(foreign_key="user.id", index=True)
 
     # Relations
     author: Optional["User"] = Relationship(

@@ -1,5 +1,4 @@
 # app/core/config.py
-import os
 from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import field_validator
@@ -50,6 +49,7 @@ class Settings(BaseSettings):
     # Environment
     ENVIRONMENT: str = "development"
     FRONTEND_URL: str = "http://localhost:5173"
+    REDIS_URL: str = "redis://localhost:6379/0"
 
     class Config:
         env_file = ".env"

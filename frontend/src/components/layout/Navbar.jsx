@@ -156,18 +156,26 @@ export default function Navbar() {
                   </div>
                   <span className="text-sm font-bold text-gray-900">{user?.full_name}</span>
                 </div>
-                <button onClick={() => { logout(); closeMenu(); }} className="mt-2 flex items-center justify-center gap-2 w-full bg-red-50 text-red-600 font-semibold py-2.5 rounded-xl hover:bg-red-100">
+                <Button 
+                  variant="danger" 
+                  onClick={() => { logout(); closeMenu(); }} 
+                  className="mt-2 w-full"
+                >
                   <LogOut className="w-4 h-4" />
                   Déconnexion
-                </button>
+                </Button>
               </div>
             </>
           ) : (
             <div className="border-t border-gray-100 pt-4">
-              <Link to="/login" onClick={closeMenu} className="flex items-center justify-center gap-2 w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 rounded-xl shadow-md">
+              <Button 
+                to="/login" 
+                onClick={closeMenu} 
+                className="w-full shadow-md"
+              >
                 <LogIn className="w-5 h-5" />
                 Connexion / Inscription
-              </Link>
+              </Button>
             </div>
           )}
         </div>

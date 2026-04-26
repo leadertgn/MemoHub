@@ -2,17 +2,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import BackgroundTasks
 from sqlmodel import Session, select, col
-
-from app.core.dependencies import get_current_user
+from typing import Optional
+from app.core.dependencies import get_current_user, require_admin
 from app.database import get_session
 from app.models import User, Country, University
 from app.models.application import TeamApplication
-from app.schemas.application import TeamApplicationCreate, TeamApplicationResponse
+from app.models.enums import UserRole
+from app.schemas.application import TeamApplicationCreate, TeamApplicationResponse, TeamApplicationAdminRead
 from app.services.team_notification_service import notify_team_for_action
+from datetime import datetime
+from app.core.rate_limit import rate_limiter
 
 router = APIRouter(prefix="/applications", tags=["applications"])
 
-@router.post("/team", response_model=TeamApplicationResponse, status_code=201)
+@router.post("/team", response_model=TeamApplicationResponse, status_code=201, dependencies=[Depends(rate_limiter(2, 3600))])
 def create_team_application(
     application: TeamApplicationCreate,
     background_tasks: BackgroundTasks,
@@ -126,3 +129,68 @@ def get_my_applications(
     ).all()
     
     return applications
+
+@router.get("/admin/pending", response_model=list[TeamApplicationAdminRead])
+def get_pending_applications(
+    current_user: User = Depends(require_admin),
+    session: Session = Depends(get_session)
+):
+    """
+    Liste toutes les candidatures en attente (réservé aux admins).
+    """
+    applications = session.exec(
+        select(TeamApplication)
+        .where(TeamApplication.status == "pending")
+        .order_by(col(TeamApplication.created_at).asc())
+    ).all()
+    
+    result = []
+    for app in applications:
+        app_dict = app.model_dump()
+        app_dict["user_full_name"] = app.user.full_name if app.user else "Inconnu"
+        app_dict["country_name"] = app.country.name if app.country else "Inconnu"
+        app_dict["university_name"] = app.university.name if app.university else None
+        result.append(app_dict)
+    
+    return result
+
+@router.patch("/admin/{app_id}/status", response_model=TeamApplicationResponse)
+def update_application_status(
+    app_id: int,
+    status: str,
+    admin_notes: Optional[str] = None,
+    current_user: User = Depends(require_admin),
+    session: Session = Depends(get_session)
+):
+    """
+    Approuve ou rejette une candidature (réservé aux admins).
+    """
+    application = session.get(TeamApplication, app_id)
+    if not application:
+        raise HTTPException(status_code=404, detail="Candidature introuvable")
+    
+    if status not in ["approved", "rejected"]:
+        raise HTTPException(status_code=400, detail="Statut invalide")
+    
+    application.status = status
+    application.admin_notes = admin_notes
+    application.reviewed_at = datetime.utcnow()
+    application.reviewed_by = current_user.id
+    
+    # Si approuvée, changer le rôle de l'utilisateur
+    if status == "approved":
+        user = application.user
+        if application.role == "ambassador":
+            user.role = UserRole.ambassador
+            user.university_id = application.university_id
+        elif application.role == "moderator":
+            user.role = UserRole.moderator
+        
+        user.country_id = application.country_id
+        session.add(user)
+    
+    session.add(application)
+    session.commit()
+    session.refresh(application)
+    
+    return application
