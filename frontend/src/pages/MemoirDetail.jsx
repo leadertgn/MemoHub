@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
-import { SearchX, FileText, Lock, Download } from 'lucide-react'
+import { useState } from 'react'
+import { SearchX, FileText, Lock, Download, CheckCircle } from 'lucide-react'
 import { useMemoirDetail } from '../hooks/useMemoirs'
 import { useAuth } from '../context/AuthContext'
 import SecurePDFViewer from '../components/SecurePDFViewer'
@@ -14,6 +15,7 @@ export default function MemoirDetail() {
   const { id } = useParams()
   const { isAuthenticated } = useAuth()
   const { data: memoir, isLoading, isError } = useMemoirDetail(id)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   if (isLoading) {
     return (
@@ -40,6 +42,14 @@ export default function MemoirDetail() {
   }
 
   const handleDownload = async () => {
+    if (isDownloading) return
+    setIsDownloading(true)
+    
+    // Toast de progression
+    const toastId = toast.loading('Préparation de votre document...', {
+      description: 'Le fichier est en cours de téléchargement, merci de patienter.',
+    })
+
     try {
       const url = `${import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1"}/memoirs/${memoir.public_id}/download`;
       const res = await fetch(url, {
@@ -59,8 +69,21 @@ export default function MemoirDetail() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(objUrl);
+
+      // Remplace le toast de chargement par un toast de succès
+      toast.success('Téléchargement réussi !', {
+        id: toastId,
+        description: `"${memoir.title}" a été enregistré dans votre dossier de téléchargements.`,
+        icon: <CheckCircle className="w-4 h-4 text-green-500" />,
+        duration: 5000,
+      })
     } catch (_err) {
-      toast.error("Le téléchargement a échoué. Assurez-vous d'avoir les droits nécessaires ou réessayez plus tard.");
+      toast.error("Le téléchargement a échoué.", {
+        id: toastId,
+        description: "Vérifiez votre connexion ou réessayez plus tard.",
+      })
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -148,9 +171,11 @@ export default function MemoirDetail() {
                   onClick={handleDownload}
                   variant="primary"
                   className="bg-linear-to-r from-gray-800 to-gray-900"
+                  disabled={isDownloading}
+                  loading={isDownloading}
                 >
-                  <Download className="w-4 h-4" />
-                  Télécharger (avec filigrane)
+                  {!isDownloading && <Download className="w-4 h-4" />}
+                  {isDownloading ? 'Téléchargement...' : 'Télécharger (avec filigrane)'}
                 </Button>
               ) : (
                 <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 font-medium text-sm px-5 py-2.5 rounded-xl">
