@@ -98,7 +98,7 @@ export default function Upload() {
     if (currentStep === 3) {
       if (!file) newErrors.file = 'Le fichier PDF est obligatoire'
       if (file && file.type !== 'application/pdf') newErrors.file = 'Format PDF requis'
-      if (file && file.size > 20 * 1024 * 1024) newErrors.file = 'Maximum 20 MB'
+      if (file && file.size > 10 * 1024 * 1024) newErrors.file = 'Fichier trop volumineux. Maximum : 10 MB'
       if (!form.accepted_terms) newErrors.accepted_terms = 'Vous devez accepter les conditions'
     }
 
@@ -467,7 +467,7 @@ export default function Upload() {
                         {file ? file.name : "Cliquez ou glissez votre PDF"}
                       </p>
                       <p className="text-xs text-gray-400 font-medium mt-1">
-                        {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : "Format PDF uniquement, max 20 MB"}
+                        {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : "Format PDF uniquement, max 10 MB"}
                       </p>
                     </div>
                   </div>

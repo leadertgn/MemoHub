@@ -14,7 +14,8 @@ cloudinary.config(
 )
 
 # Contraintes sur les fichiers
-MAX_FILE_SIZE_MB = 20
+# Note: Cloudinary plan gratuit limite à 10 MB par fichier
+MAX_FILE_SIZE_MB = 10
 ALLOWED_TYPES = ["application/pdf"]
 
 
@@ -57,7 +58,14 @@ async def upload_memoir_pdf(file: UploadFile) -> str:
         return result["secure_url"]     # URL HTTPS permanente
 
     except Exception as e:
-        # Mask error details in production to prevent information disclosure
+        error_msg = str(e).lower()
+        # Détecter spécifiquement les erreurs de taille Cloudinary
+        if "file size too large" in error_msg or "maximum is" in error_msg:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Fichier trop volumineux pour être stocké. La limite maximale est de {MAX_FILE_SIZE_MB} MB."
+            )
+        # Erreur générique (masquée pour la sécurité)
         raise HTTPException(
             status_code=500,
             detail="Une erreur est survenue lors de l'upload. Veuillez réessayer."
