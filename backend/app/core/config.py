@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:5173"
     REDIS_URL: str = "redis://localhost:6379/0"
 
+    # Auto-ping (Render anti-sleep) — laisser vide en local
+    BACKEND_URL: str = ""
+
     class Config:
         env_file = ".env"
         extra = "allow"
