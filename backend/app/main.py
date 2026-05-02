@@ -4,6 +4,8 @@ from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select, func
 import time
+import asyncio
+import httpx
 from datetime import datetime, timezone
 import logging
 from app.database import engine
@@ -40,6 +42,26 @@ class Colors:
     BG_BLUE = "\033[44m"
 
 
+async def self_ping_task():
+    """Tâche en arrière-plan pour garder le serveur éveillé sur Render."""
+    if not getattr(settings, "BACKEND_URL", None):
+        return
+        
+    ping_url = f"{settings.BACKEND_URL.rstrip('/')}/api/v1/ping"
+    logger.info(f"{Colors.CYAN}⏰ Auto-ping configuré sur : {ping_url} (toutes les 14 minutes){Colors.RESET}")
+    
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        while True:
+            await asyncio.sleep(14 * 60)  # 14 minutes
+            try:
+                response = await client.get(ping_url)
+                if response.status_code == 200:
+                    logger.info(f"{Colors.GREEN}✅ Self-ping réussi : Maintien en éveil !{Colors.RESET}")
+                else:
+                    logger.warning(f"{Colors.YELLOW}⚠️ Self-ping a retourné le code : {response.status_code}{Colors.RESET}")
+            except Exception as e:
+                logger.error(f"{Colors.RED}❌ Erreur lors du self-ping : {e}{Colors.RESET}")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -73,9 +95,13 @@ async def lifespan(app: FastAPI):
 
     # create_db_and_tables()  # temporaire, sera remplacé par Alembic
 
+    # Lancement de la tâche d'auto-ping
+    ping_task = asyncio.create_task(self_ping_task())
+
     yield  # L'application tourne ici
 
     # --- ARRÊT ---
+    ping_task.cancel()
     logger.info(f"{Colors.YELLOW}🛑 Arrêt de l'API{Colors.RESET}")
 app = FastAPI(
     title="MemoHub API",
@@ -136,6 +162,11 @@ app.include_router(applications.router, prefix="/api/v1")
 @app.get("/")
 def read_root():
     return {"message": "Bienvenue sur MemoHub API v1.0"}
+
+@app.get("/api/v1/ping")
+def ping_server():
+    """Route légère pour le cron job afin d'éviter la mise en veille sur les hébergeurs gratuits."""
+    return {"status": "ok", "message": "pong"}
 
 @app.get("/api/v1/public/stats")
 def get_public_stats(session: Session = Depends(get_session)):
