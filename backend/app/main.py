@@ -73,6 +73,16 @@ async def lifespan(app: FastAPI):
     logger.info(f"{Colors.CYAN}📡 Environment:{Colors.RESET} {settings.ENVIRONMENT}")
     logger.info(f"{Colors.CYAN}🌐 CORS Origins:{Colors.RESET} {settings.allowed_origins_list}")
 
+    # URL de l'API — utile pour configurer le frontend
+    API_PREFIX = "/api/v1"
+    if settings.BACKEND_URL:
+        full_api_url = f"{settings.BACKEND_URL.rstrip('/')}{API_PREFIX}"
+        logger.info(f"{Colors.BG_GREEN}{Colors.BOLD}🔗 API Base URL:{Colors.RESET} {Colors.GREEN}{full_api_url}{Colors.RESET}")
+        logger.info(f"{Colors.CYAN}   ↳ VITE_API_URL (Vercel) ={Colors.RESET} {Colors.BOLD}{full_api_url}{Colors.RESET}")
+    else:
+        logger.info(f"{Colors.YELLOW}🔗 API Base URL:{Colors.RESET} http://localhost:8000{API_PREFIX} (local)")
+        logger.info(f"{Colors.YELLOW}   ↳ VITE_API_URL (Vercel) = http://localhost:8000{API_PREFIX}{Colors.RESET}")
+
     # Nettoyage des refresh tokens expirés au démarrage
     try:
         with Session(engine) as session:
