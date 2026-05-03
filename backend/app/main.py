@@ -52,7 +52,7 @@ async def self_ping_task():
     
     async with httpx.AsyncClient(timeout=10.0) as client:
         while True:
-            await asyncio.sleep(14 * 60)  # 14 minutes
+            await asyncio.sleep(10 * 60)  # 14 minutes
             try:
                 response = await client.get(ping_url)
                 if response.status_code == 200:
