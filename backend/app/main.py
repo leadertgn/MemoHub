@@ -48,7 +48,7 @@ async def self_ping_task():
         return
         
     ping_url = f"{settings.BACKEND_URL.rstrip('/')}/api/v1/ping"
-    logger.info(f"{Colors.CYAN}⏰ Auto-ping configuré sur : {ping_url} (toutes les 14 minutes){Colors.RESET}")
+    logger.info(f"{Colors.CYAN}⏰ Auto-ping configuré sur : {ping_url} (toutes les 10 minutes){Colors.RESET}")
     
     async with httpx.AsyncClient(timeout=10.0) as client:
         while True:
