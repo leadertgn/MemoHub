@@ -9,7 +9,7 @@ export default function MemoirCard({ memoir }) {
       className="group relative flex flex-col h-full bg-white/50 backdrop-blur-sm border border-[var(--color-obsidian)]/10 p-8 transition-all hover:border-[var(--color-cinnabar)] hover:bg-white"
     >
       {/* Index Monospace */}
-      <div className="absolute top-4 right-6 font-mono text-[9px] uppercase tracking-widest text-[var(--color-stone)]">
+      <div className="absolute top-4 right-6 font-mono text-[9px] uppercase tracking-widest text-[var(--color-obsidian)]/50 font-bold">
         Année : {memoir.year}
       </div>
 

@@ -24,8 +24,8 @@ export default function MemoirFilters({ filters, onChange }) {
     }
   }
 
-  const selectClass = "w-full bg-transparent border-b border-[var(--color-obsidian)]/20 py-2 font-serif italic text-sm focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors appearance-none cursor-pointer";
-  const labelClass = "font-mono text-[9px] uppercase tracking-[0.2em] opacity-40 block mb-1";
+  const selectClass = "w-full bg-transparent border-b border-[var(--color-obsidian)]/30 py-2 font-serif italic text-sm focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors appearance-none cursor-pointer text-[var(--color-obsidian)]";
+  const labelClass = "font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--color-obsidian)]/70 font-bold block mb-1";
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
@@ -37,7 +37,7 @@ export default function MemoirFilters({ filters, onChange }) {
           placeholder="TITRE, AUTEUR..."
           value={filters.search || ''}
           onChange={e => handleChange('search', e.target.value)}
-          className="w-full bg-transparent border-b border-[var(--color-obsidian)]/20 py-2 font-mono text-[10px] uppercase tracking-widest focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors placeholder:opacity-20"
+          className="w-full bg-transparent border-b border-[var(--color-obsidian)]/30 py-2 font-mono text-[10px] uppercase tracking-widest focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors placeholder:text-[var(--color-obsidian)]/40 text-[var(--color-obsidian)]"
         />
       </div>
 

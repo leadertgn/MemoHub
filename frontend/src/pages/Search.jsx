@@ -62,7 +62,7 @@ export default function Search() {
         <div className="space-y-12">
           {/* Filtres Horizontaux (Design Ledger) */}
           <div className={`${showFiltersMobile ? 'block' : 'hidden md:block'} border-b border-[var(--color-obsidian)]/10 pb-12`}>
-             <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-30 mb-8">Paramètres d'Indexation</h2>
+             <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-60 mb-8">Paramètres d'Indexation</h2>
              <MemoirFilters filters={filters} onChange={handleFiltersChange} />
           </div>
 
