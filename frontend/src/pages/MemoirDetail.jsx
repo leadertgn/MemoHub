@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState } from 'react'
-import { SearchX, FileText, Lock, Download, CheckCircle } from 'lucide-react'
+import { SearchX, FileText, Lock, Download, CheckCircle, ArrowLeft } from 'lucide-react'
 import { useMemoirDetail } from '../hooks/useMemoirs'
 import { useAuth } from '../context/AuthContext'
 import SecurePDFViewer from '../components/SecurePDFViewer'
@@ -10,7 +10,6 @@ import { toast } from 'sonner'
 import { DEGREE_LABELS } from '../utils/constants'
 import SEO from '../components/layout/SEO'
 
-
 export default function MemoirDetail() {
   const { id } = useParams()
   const { isAuthenticated } = useAuth()
@@ -19,24 +18,20 @@ export default function MemoirDetail() {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto space-y-4">
-        <div className="h-8 bg-gray-200 rounded animate-pulse w-3/4" />
-        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" />
-        <div className="h-40 bg-gray-200 rounded animate-pulse" />
+      <div className="max-w-4xl mx-auto py-32 space-y-12 px-6">
+        <div className="h-20 bg-[var(--color-obsidian)]/5 animate-pulse w-3/4" />
+        <div className="h-6 bg-[var(--color-obsidian)]/5 animate-pulse w-1/4" />
+        <div className="h-96 bg-[var(--color-obsidian)]/5 animate-pulse" />
       </div>
     )
   }
 
   if (isError || !memoir) {
     return (
-      <div className="text-center py-20 space-y-4">
-        <SearchX className="w-16 h-16 text-gray-200 mx-auto" />
-        <div>
-          <p className="text-gray-500 font-bold text-lg">Mémoire introuvable</p>
-          <Link to="/search" className="text-blue-600 text-sm hover:underline mt-2 inline-block">
-            Retour à la recherche
-          </Link>
-        </div>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 space-y-6">
+        <SearchX className="w-12 h-12 opacity-10" />
+        <p className="font-serif italic text-2xl opacity-40 text-center">Manuscrit introuvable dans l'archive.</p>
+        <Link to="/search" className="font-mono text-xs uppercase tracking-widest text-[var(--color-cinnabar)]">Retour au Catalogue</Link>
       </div>
     )
   }
@@ -44,166 +39,119 @@ export default function MemoirDetail() {
   const handleDownload = async () => {
     if (isDownloading) return
     setIsDownloading(true)
-    
-    // Toast de progression
-    const toastId = toast.loading('Préparation de votre document...', {
-      description: 'Le fichier est en cours de téléchargement, merci de patienter.',
-    })
-
+    const toastId = toast.loading('Extraction du document...')
     try {
       const url = `${import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1"}/memoirs/${memoir.public_id}/download`;
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      if (!res.ok) throw new Error("Erreur téléchargement");
-      
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      if (!res.ok) throw new Error("Erreur");
       const blob = await res.blob();
       const objUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = objUrl;
-      const safeTitle = memoir.title.replace(/[^a-zA-Z0-9]/g, '_');
-      a.download = `MemoHub_${safeTitle}.pdf`;
+      a.download = `MemoHub_${memoir.public_id}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      window.URL.revokeObjectURL(objUrl);
-
-      // Remplace le toast de chargement par un toast de succès
-      toast.success('Téléchargement réussi !', {
-        id: toastId,
-        description: `"${memoir.title}" a été enregistré dans votre dossier de téléchargements.`,
-        icon: <CheckCircle className="w-4 h-4 text-green-500" />,
-        duration: 5000,
-      })
+      toast.success('Archivage local réussi.', { id: toastId });
     } catch (_err) {
-      toast.error("Le téléchargement a échoué.", {
-        id: toastId,
-        description: "Vérifiez votre connexion ou réessayez plus tard.",
-      })
+      toast.error("Échec de l'extraction.", { id: toastId });
     } finally {
       setIsDownloading(false)
     }
   }
 
   return (
-    <div className="relative pb-24">
-      {/* Decors BG */}
-      <div className="absolute top-0 left-0 w-full h-75 bg-linear-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10" />
+    <div className="relative pb-32">
+      <SEO title={memoir.title} description={memoir.abstract} />
+      <div className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 gap-px bg-[var(--color-stone)]/10 -z-20 pointer-events-none" />
 
-      <div className="max-w-3xl mx-auto space-y-6 pt-6 px-4">
-      <nav className="text-sm text-gray-400">
-        <Link to="/search" className="hover:text-blue-600">Recherche</Link>
-        <span className="mx-2">›</span>
-        <span className="text-gray-600">{memoir.title}</span>
-      </nav>
-
-      {/* En-tête */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] p-8 space-y-6">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 leading-snug flex-1 tracking-tight">
-            {memoir.title}
-          </h1>
-          <span className="shrink-0 text-xs font-bold px-4 py-2 rounded-full bg-linear-to-tr from-blue-100 to-indigo-100 text-blue-800 shadow-sm">
-            {DEGREE_LABELS[memoir.degree]}
-          </span>
+      <section className="pt-24 px-6 max-w-6xl mx-auto space-y-20">
+        {/* Navigation / Metadata Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-[var(--color-obsidian)] pb-12">
+          <div className="space-y-6 flex-1">
+            <Link to="/search" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">
+               <ArrowLeft className="w-3 h-3" /> Retour au Catalogue
+            </Link>
+            <h1 className="text-4xl md:text-6xl font-serif text-[var(--color-obsidian)] leading-[1.1] tracking-tight">
+              {memoir.title}
+            </h1>
+          </div>
+          <div className="shrink-0 flex flex-col items-end gap-2">
+             <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-cinnabar)]">
+               Dossier Ref. {memoir.public_id.slice(0,8)}
+             </div>
+             <div className="font-serif italic text-2xl opacity-40">{DEGREE_LABELS[memoir.degree]}</div>
+          </div>
         </div>
 
-        {/* Métadonnées */}
-        <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
+        {/* Fiche Technique (Grid Ledger) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--color-obsidian)]/10 border border-[var(--color-obsidian)]/10">
           {[
-            { label: 'Auteur',      value: memoir.author_name },
-            { label: 'Année',       value: memoir.year },
-            { label: 'Université',  value: memoir.university?.name || 'Non renseignée' },
-            { label: 'Filière',     value: memoir.field_of_study?.label || 'Non renseignée' },
-            { label: 'Langue',      value: memoir.language?.toUpperCase() },
-            { label: 'Vues',        value: memoir.view_count },
-          ].map(item => (
-            <div key={item.label} className="space-y-0.5">
-              <p className="text-xs text-gray-400 font-medium">{item.label}</p>
-              <p className="font-semibold text-gray-800">{item.value}</p>
+            { label: 'Auteur', value: memoir.author_name },
+            { label: 'Soutenance', value: memoir.year },
+            { label: 'Établissement', value: memoir.university?.name },
+            { label: 'Filière', value: memoir.field_of_study?.label },
+            { label: 'Langue', value: memoir.language?.toUpperCase() },
+            { label: 'Consultations', value: `${memoir.view_count} Vues` },
+          ].map((item, i) => (
+            <div key={i} className="bg-[var(--color-base)] p-8 space-y-2">
+              <span className="font-mono text-[9px] uppercase tracking-[0.3em] opacity-30">{item.label}</span>
+              <p className="font-serif italic text-lg text-[var(--color-obsidian)]/80 leading-tight">{item.value || 'N/A'}</p>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Résumé */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-3">
-        <h2 className="font-semibold text-gray-900">Résumé</h2>
-        <p className="text-sm text-gray-600 leading-relaxed">{memoir.abstract}</p>
-      </div>
+        {/* Résumé Editorial */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 items-start">
+           <div className="md:col-span-4 space-y-6">
+              <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-30">Abstract / Résumé</h2>
+              <p className="text-sm font-light opacity-60 leading-relaxed italic border-l-2 border-[var(--color-cinnabar)] pl-6">
+                "Cet ouvrage académique traite des problématiques fondamentales liées à {memoir.field_of_study?.label} au sein de {memoir.university?.name}."
+              </p>
+           </div>
+           <div className="md:col-span-8">
+              <p className="text-xl font-light text-[var(--color-obsidian)]/70 leading-relaxed first-letter:text-5xl first-letter:font-serif first-letter:float-left first-letter:mr-3 first-letter:mt-2">
+                {memoir.abstract}
+              </p>
+           </div>
+        </div>
 
-      {/* Citation */}
-      <CitationBlock memoir={memoir} />
+        {/* Bloc Citation */}
+        <div className="pt-12">
+          <CitationBlock memoir={memoir} />
+        </div>
 
-      {/* Accès au document */}
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 space-y-6">
-        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
-            <FileText className="w-5 h-5" />
+        {/* Consultation du Document */}
+        <div className="space-y-12 pt-20 border-t border-[var(--color-obsidian)]">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+             <h2 className="text-4xl font-serif italic">Lecture du Manuscrit.</h2>
+             {isAuthenticated && memoir.allow_download && (
+               <Button variant="primary" size="xl" onClick={handleDownload} disabled={isDownloading} className="rounded-none px-12">
+                 Archiver le PDF
+               </Button>
+             )}
           </div>
-          Document Intégral
-        </h2>
 
-        {!isAuthenticated ? (
-          <div className="text-center py-10 space-y-4 bg-gray-50/50 rounded-2xl border border-gray-100 border-dashed">
-            <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
-              <Lock className="w-6 h-6" />
+          {!isAuthenticated ? (
+            <div className="bg-[var(--color-obsidian)] text-white p-16 text-center space-y-8 rounded-[var(--radius-premium)]">
+               <Lock className="w-12 h-12 mx-auto opacity-20" />
+               <p className="font-serif italic text-2xl max-w-sm mx-auto opacity-80">L'accès intégral au manuscrit nécessite une authentification académique.</p>
+               <Button variant="outline" size="xl" to="/login" className="rounded-none border-white text-white hover:bg-white hover:text-[var(--color-obsidian)] px-12">
+                 S'identifier
+               </Button>
             </div>
-            <p className="text-gray-600 font-medium max-w-sm mx-auto">
-              Veuillez vous connecter pour lire et télécharger le mémoire complet.
-            </p>
-            <Button
-              to="/login"
-              variant="primary"
-              size="lg"
-              className="rounded-full shadow-lg"
-            >
-              Se connecter
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div className="flex justify-end">
-              {memoir.allow_download ? (
-                <Button
-                  onClick={handleDownload}
-                  variant="primary"
-                  className="bg-linear-to-r from-gray-800 to-gray-900"
-                  disabled={isDownloading}
-                  loading={isDownloading}
-                >
-                  {!isDownloading && <Download className="w-4 h-4" />}
-                  {isDownloading ? 'Téléchargement...' : 'Télécharger (avec filigrane)'}
-                </Button>
-              ) : (
-                <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 font-medium text-sm px-5 py-2.5 rounded-xl">
-                  <Lock className="w-4 h-4 text-amber-600" />
-                  Lecture en ligne uniquement (téléchargement non autorisé par l'auteur)
-                </div>
-              )}
+          ) : (
+            <div className="bg-white border border-[var(--color-obsidian)] shadow-2xl">
+               {!memoir.allow_download && (
+                 <div className="bg-amber-50 p-4 font-mono text-[9px] uppercase tracking-widest text-center border-b border-amber-100 opacity-60">
+                   Note : Lecture en ligne uniquement / Téléchargement restreint par l'auteur.
+                 </div>
+               )}
+               <SecurePDFViewer memoirId={memoir.public_id} />
             </div>
-            
-            {/* Lecteur PDF */}
-            <div className="rounded-xl overflow-hidden shadow-inner border border-gray-200">
-                <SecurePDFViewer memoirId={memoir.public_id} />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Retour */}
-      <div className="pt-4 text-center">
-        <Link
-            to="/search"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-blue-600 hover:-translate-x-1 transition-all"
-        >
-            ← Retour aux recherches
-        </Link>
-      </div>
-
-    </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

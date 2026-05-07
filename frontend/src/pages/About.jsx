@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Globe, BookOpen, Users, Shield, ArrowRight, Heart, Lightbulb, Network } from "lucide-react";
+import { Button } from "../components/ui/Button";
 
 const VALUES = [
   {
@@ -55,133 +56,109 @@ const ROLES = [
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto max-w-4xl space-y-8">
+    <div className="relative pb-32">
+      {/* Background Decor */}
+      <div className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 gap-px bg-[var(--color-stone)]/10 -z-20 pointer-events-none" />
 
-        {/* Retour */}
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 transition-colors group"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          Retour à l'accueil
-        </Link>
-
-        {/* Hero */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="bg-linear-to-r from-indigo-600 to-blue-600 px-8 py-12 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-56 h-56 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4" />
-            <div className="relative z-10 max-w-2xl">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full mb-5">
-                <BookOpen className="w-4 h-4" />
-                <span className="text-sm font-medium">À propos de MemoHub</span>
-              </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-                La bibliothèque académique commune que chaque étudiant mérite
-              </h1>
-              <p className="mt-4 text-indigo-100 text-lg leading-relaxed">
-                MemoHub est une plateforme ouverte qui centralise les mémoires académiques de toutes les universités. 
-                Elle existe pour que s'inspirer du travail de ses pairs soit simple, gratuit et accessible depuis n'importe où.
-              </p>
+      <section className="pt-32 px-6 max-w-7xl mx-auto space-y-24">
+        {/* Header Manifeste */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div className="lg:col-span-8 space-y-10">
+            <div className="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[var(--color-cinnabar)] mb-4">
+              <span className="w-8 h-px bg-[var(--color-cinnabar)]" />
+              Manifeste / MemoHub 2026
             </div>
+            <h1 className="text-6xl md:text-8xl font-serif text-editorial leading-[0.85] text-[var(--color-obsidian)]">
+              Le Savoir <br /> 
+              <span className="italic pl-12 md:pl-24 text-[var(--color-cinnabar)]">Commun</span> <br />
+              est un Droit.
+            </h1>
+            <p className="text-xl md:text-3xl text-[var(--color-obsidian)]/70 max-w-2xl font-light leading-relaxed">
+              MemoHub n'est pas une simple plateforme technique. C'est une institution numérique dédiée à la libération du patrimoine académique africain et mondial.
+            </p>
           </div>
-
-          {/* Problème résolu */}
-          <div className="p-8 sm:p-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Pourquoi MemoHub existe</h2>
-            <div className="prose prose-slate max-w-none text-gray-600 space-y-4">
-              <p>
-                Chaque année, des milliers d'étudiants rédigent des mémoires de qualité. Ces travaux sont soumis, évalués, archivés —
-                puis souvent oubliés dans un système interne d'université que personne en dehors de l'établissement ne peut consulter.
-              </p>
-              <p>
-                Un étudiant au Sénégal ne peut pas savoir ce qu'un étudiant au Bénin a déjà exploré sur le même sujet.
-                Un chercheur indépendant ne sait pas par où chercher. Un futur diplômé passe des semaines à formuler un thème
-                qui existe déjà, traité sous un angle différent, dans une autre université.
-              </p>
-              <p className="font-medium text-gray-900">
-                MemoHub veut résoudre ce problème : relier les mémoires des universités africaines et au-delà, 
-                sous une interface commune, libre d'accès et sans intermédiaire.
+          
+          <div className="lg:col-span-4 pt-12">
+            <div className="border-l-2 border-[var(--color-cinnabar)] pl-8 space-y-6">
+              <p className="font-mono text-xs uppercase tracking-widest opacity-40">La Vision</p>
+              <p className="text-lg font-serif italic opacity-60">
+                "Chaque université possède son propre système d'archivage — souvent cloisonné. Nous créons le pont manquant."
               </p>
             </div>
           </div>
         </div>
 
-        {/* Valeurs */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sm:p-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Ce qui guide MemoHub</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {VALUES.map((v) => (
-              <div key={v.title} className="flex gap-4">
-                <div className={`w-11 h-11 rounded-xl ${v.bg} ${v.color} flex items-center justify-center shrink-0 shadow-sm`}>
-                  <v.icon className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 mb-1">{v.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{v.desc}</p>
-                </div>
-              </div>
-            ))}
+        {/* L'Origine - Asymmetric Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 py-20 border-t border-[var(--color-obsidian)]/10">
+          <div className="md:col-span-5">
+            <h2 className="text-4xl font-serif text-[var(--color-obsidian)] leading-tight">
+              Pourquoi nous <br /> <span className="italic opacity-30">existons.</span>
+            </h2>
+          </div>
+          <div className="md:col-span-7 space-y-8 text-xl font-light text-[var(--color-obsidian)]/80 leading-relaxed">
+            <p>
+              Chaque année, des milliers d'étudiants rédigent des mémoires de qualité. Ces travaux sont soumis, évalués, archivés —
+              puis souvent oubliés dans un système interne que personne ne peut consulter.
+            </p>
+            <p>
+              Un étudiant au Sénégal ne peut pas savoir ce qu'un chercheur au Bénin a déjà exploré. Un futur diplômé passe des semaines à formuler un thème qui existe déjà, traité sous un angle différent, dans une autre institution.
+            </p>
+            <p className="font-serif italic text-2xl text-[var(--color-obsidian)]">
+              MemoHub relie ces consciences académiques sous une interface commune, libre et souveraine.
+            </p>
           </div>
         </div>
 
-        {/* Système de modération */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sm:p-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Un système de confiance multi-niveaux</h2>
-          <p className="text-gray-500 mb-8 leading-relaxed">
-            La qualité du contenu est garantie par une chaîne de modération humaine. Chaque mémoire est relu 
-            et validé avant d'être publié. Cette vérification repose sur une communauté de bénévoles engagés.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {ROLES.map((r) => (
-              <div key={r.title} className="border border-gray-100 rounded-2xl p-5 space-y-3 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-xl ${r.badge} flex items-center justify-center`}>
-                    <r.icon className="w-4 h-4" />
-                  </div>
-                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${r.badge}`}>{r.title}</span>
+        {/* Les Valeurs - Ledger Style */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 py-20 border-t border-b border-[var(--color-obsidian)]">
+          {VALUES.map((v, i) => (
+            <div key={i} className="space-y-6">
+              <div className="flex items-center justify-between">
+                <v.icon className="w-5 h-5 opacity-30" />
+                <span className="font-mono text-[10px] text-[var(--color-cinnabar)]">0{i + 1}</span>
+              </div>
+              <h3 className="text-xl font-bold uppercase tracking-tight">{v.title}</h3>
+              <p className="text-sm opacity-60 leading-relaxed">{v.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Modération & Confiance */}
+        <div className="space-y-16">
+          <div className="max-w-3xl">
+            <h2 className="text-4xl font-serif mb-6 italic">Un système de confiance multi-niveaux</h2>
+            <p className="text-lg font-light opacity-60 leading-relaxed">
+              La qualité du contenu est garantie par une chaîne de modération humaine. Chaque mémoire est relu 
+              et validé avant d'être publié. Cette vérification repose sur une communauté de bénévoles engagés.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {ROLES.map((r, idx) => (
+              <div key={idx} className="group border border-[var(--color-obsidian)]/10 p-8 space-y-6 bg-white/50 backdrop-blur-sm transition-all hover:border-[var(--color-cinnabar)]">
+                <div className="flex justify-between items-start">
+                   <r.icon className="w-8 h-8 opacity-20 group-hover:opacity-100 group-hover:text-[var(--color-cinnabar)] transition-all" />
+                   <div className="font-mono text-[10px] uppercase opacity-30 tracking-[0.2em]">{r.title}</div>
                 </div>
-                <p className="text-sm text-gray-500 leading-relaxed">{r.desc}</p>
+                <p className="text-sm font-light leading-relaxed">{r.desc}</p>
               </div>
             ))}
-          </div>
-          <div className="mt-8 bg-indigo-50 border border-indigo-100 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <p className="font-semibold text-indigo-900">Vous voulez contribuer à la communauté ?</p>
-              <p className="text-sm text-indigo-700 mt-0.5">Devenez ambassadeur de votre université ou modérateur pour votre pays.</p>
-            </div>
-            <Link
-              to="/#rejoindre"
-              className="inline-flex items-center gap-2 bg-indigo-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all shrink-0"
-            >
-              Postuler
-              <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
 
         {/* CTA final */}
-        <div className="text-center py-6">
-          <p className="text-gray-400 text-sm mb-4">Prêt à explorer ou à contribuer ?</p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              to="/search"
-              className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-full font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
-            >
-              <BookOpen className="w-4 h-4" />
-              Explorer les mémoires
-            </Link>
-            <Link
-              to="/guide"
-              className="flex items-center gap-2 bg-white border-2 border-gray-200 text-gray-700 px-6 py-3 rounded-full font-bold text-sm hover:border-indigo-200 hover:text-indigo-700 transition-all"
-            >
-              Voir le guide d'utilisation
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+        <div className="bg-[var(--color-obsidian)] text-white p-12 md:p-24 rounded-[var(--radius-premium)] text-center space-y-10">
+          <h2 className="text-4xl md:text-5xl font-serif italic">Contribuez à l'Archive.</h2>
+          <div className="flex flex-wrap justify-center gap-6">
+            <Button variant="primary" size="xl" to="/search" className="rounded-none px-12">
+              Exploration
+            </Button>
+            <Button variant="outline" size="xl" to="/upload" className="rounded-none px-12 border-white text-white !hover:bg-white !hover:text-[var(--color-obsidian)] transition-colors">
+              Dépôt d'œuvre
+            </Button>
           </div>
         </div>
-
-      </div>
+      </section>
     </div>
   );
 }

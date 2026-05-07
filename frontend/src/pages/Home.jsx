@@ -132,7 +132,7 @@ export default function Home() {
       return;
     }
 
-    // Pour ambassadeur, universidad obligatoire
+    // Pour ambassadeur, université obligatoire
     if (applicationType === "ambassador" && !applicationUniversity) {
       toast.error("Veuillez sélectionner votre université.");
       return;
@@ -149,332 +149,274 @@ export default function Home() {
   };
 
   // Déterminer si le champ université doit être affiché
-  const showUniversityField = applicationType === "ambassador";
+  const showUniversityField = applicationType === 'ambassador';
 
   return (
-    <div className="space-y-24 pb-20 overflow-hidden">
-      {/* Background Decoratif */}
-      <div className="absolute top-0 left-0 w-full h-125 bg-linear-to-br from-blue-50/80 via-indigo-50/50 to-white -z-10 pointer-events-none" />
-      <div className="absolute top-0 right-0 w-150 h-150 bg-blue-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 -z-10 pointer-events-none" />
+    <div className="space-y-32 pb-20 relative">
+      {/* Avant-Garde Grid background */}
+      <div className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 gap-px bg-[var(--color-stone)]/10 -z-20 pointer-events-none" />
 
-      {/* Hero Section */}
-      <section className="text-center pt-24 pb-10 px-4 space-y-8 max-w-4xl mx-auto">
-        <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight">
-          La bibliothèque universelle <br className="hidden md:block" />
-          des mémoires{" "}
-          <span className="bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            académiques
-          </span>
-        </h1>
-        <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Accédez librement à des milliers de thèses, licences et masters
-          authentifiés. Développez vos idées et trouvez l'inspiration idéale
-          pour vos propres travaux de recherche.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-          <Button 
-            variant="primary" 
-            size="lg" 
-            to="/search"
-            className="w-full sm:w-auto"
-          >
-            <Search className="w-5 h-5" />
-            Découvrir les travaux
-          </Button>
-          <Button 
-            variant="secondary" 
-            size="lg" 
-            to="/upload"
-            className="w-full sm:w-auto"
-          >
-            <Upload className="w-5 h-5" />
-            Contribuer
-          </Button>
-        </div>
-      </section>
-
-      {/* Stats Section enrichie */}
-      <section className="px-4 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-800">La plateforme en chiffres</h2>
-          <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-200">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            En direct
-          </span>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          <StatCard
-            label="Mémoires validés et certifiés"
-            rawValue={stats?.memoirs?.total}
-            icon={FileText}
-            color="text-blue-600"
-            bg="bg-blue-50"
-            gradient="bg-linear-to-br from-blue-50/60 to-transparent"
-            subtitle={stats?.memoirs?.pre_validated ? `dont ${stats.memoirs.pre_validated} en cours de validation finale` : "Vérifiés et accessibles librement"}
-          />
-          <StatCard
-            label="Documents sous revue"
-            rawValue={stats?.memoirs?.pending}
-            icon={Scale}
-            color="text-amber-600"
-            bg="bg-amber-50"
-            gradient="bg-linear-to-br from-amber-50/60 to-transparent"
-            subtitle="En attente de validation par l'équipe"
-          />
-          <StatCard
-            label="Universités et Grandes Écoles"
-            rawValue={stats?.universities?.total}
-            icon={Building2}
-            color="text-indigo-600"
-            bg="bg-indigo-50"
-            gradient="bg-linear-to-br from-indigo-50/60 to-transparent"
-            subtitle="Institutions référencées et validées"
-          />
-          <StatCard
-            label="Membres de la communauté"
-            rawValue={stats?.users?.total}
-            icon={Users}
-            color="text-violet-600"
-            bg="bg-violet-50"
-            gradient="bg-linear-to-br from-violet-50/60 to-transparent"
-            subtitle="Étudiants, auteurs et lecteurs"
-          />
-        </div>
-      </section>
-
-      {/* Comment ça marche */}
-      <section className="space-y-12 px-4 max-w-6xl mx-auto">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Le Savoir à portée de clic
-          </h2>
-          <p className="text-gray-500">
-            Un système pensé pour les institutions, par des étudiants.
+      {/* Hero Section: Asymmetric & Bold */}
+      <section className="pt-32 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+        <div className="lg:col-span-8 space-y-10">
+          <div className="inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-[var(--color-cinnabar)] mb-4">
+            <span className="w-8 h-px bg-[var(--color-cinnabar)]" />
+            01 / Archive Universelle
+          </div>
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif text-editorial leading-[0.85] text-[var(--color-obsidian)]">
+            L'Héritage <br /> 
+            <span className="italic pl-12 md:pl-24 text-[var(--color-cinnabar)]">Académique</span> <br />
+            Sans Limites.
+          </h1>
+          <p className="text-xl md:text-2xl text-[var(--color-obsidian)]/90 max-w-xl font-light leading-relaxed">
+            Une bibliothèque souveraine. Des milliers de mémoires certifiés, 
+            exposés pour l'inspiration et la préservation du savoir.
           </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Ligne de connexion visuelle (desktop) */}
-          <div className="hidden md:block absolute top-12 left-24 right-24 h-0.5 bg-linear-to-r from-blue-100 via-indigo-200 to-blue-100 -z-10" />
-
-          {[
-            {
-              step: "1",
-              title: "Explorez la base",
-              desc: "Parcourez des milliers de sujets avec des filtres ultra-précis par Université, pays et niveau d'étude.",
-            },
-            {
-              step: "2",
-              title: "Lisez instantanément",
-              desc: "Consultez l'intégralité du mémoire directement depuis votre navigateur avec une liseuse rapide et sécurisée.",
-            },
-            {
-              step: "3",
-              title: "Publiez votre œuvre",
-              desc: "Protégez vos rédactions sous un filigrane numérique inviolable et transmettez votre héritage.",
-            },
-          ].map((item) => (
-            <div
-              key={item.step}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100/50 hover:shadow-lg transition-shadow duration-300 group"
+          <div className="flex flex-wrap gap-6 pt-6">
+            <Button 
+              variant="primary" 
+              size="xl" 
+              to="/search"
+              className="rounded-none px-12 group"
             >
-              <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-bold text-lg mb-6 shadow-md group-hover:rotate-6 transition-transform" aria-hidden="true">
-                {item.step}
+              Exploration
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="xl" 
+              to="/upload"
+              className="rounded-none px-12"
+            >
+              Dépôt d'œuvre
+            </Button>
+          </div>
+        </div>
+        
+        {/* Floating Abstract Element */}
+        <div className="hidden lg:block lg:col-span-4 relative h-[400px]">
+          <div className="absolute inset-0 glass-advanced border-[var(--color-obsidian)]/10 rotate-3 translate-x-4 translate-y-4" />
+          <div className="absolute inset-0 border border-[var(--color-obsidian)] p-8 flex flex-col justify-between bg-[var(--color-base)]">
+            <FileText className="w-12 h-12 text-[var(--color-obsidian)]" />
+            <div className="space-y-4">
+              <div className="h-px bg-[var(--color-obsidian)]/20 w-full" />
+              <p className="font-mono text-xs text-[var(--color-obsidian)]/40 leading-relaxed uppercase">
+                Certifié par institutions souveraines. <br />
+                Accès libre & permanent.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section: Minimalist Ledger */}
+      <section className="px-6 max-w-7xl mx-auto">
+        <div className="border-t border-b border-[var(--color-obsidian)] py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-0">
+          {[
+            { label: "Travaux Certifiés", val: stats?.memoirs?.total, icon: FileText },
+            { label: "Sous Revue", val: stats?.memoirs?.pending, icon: Scale },
+            { label: "Institutions", val: stats?.universities?.total, icon: Building2 },
+            { label: "Chercheurs", val: stats?.users?.total, icon: Users }
+          ].map((s, idx) => (
+            <div key={idx} className={`lg:px-8 space-y-6 ${idx !== 3 ? 'lg:border-r lg:border-[var(--color-obsidian)]/10' : ''}`}>
+              <div className="flex items-center justify-between">
+                <s.icon className="w-5 h-5 opacity-50" />
+                <span className="font-mono text-[11px] text-[var(--color-cinnabar)] font-bold">0{idx + 1}</span>
               </div>
-              <h3 className="font-bold text-xl text-gray-900 mb-3">
-                {item.title}
-              </h3>
-              <p className="text-gray-600 leading-relaxed">{item.desc}</p>
+              <div>
+                <div className="text-5xl font-mono tracking-tighter leading-none mb-2">
+                   <CountUp end={s.val} />
+                </div>
+                <div className="font-serif text-lg italic text-[var(--color-obsidian)]">
+                  {s.label}
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Devenir Ambassadeur ou Modérateur */}
-      <section className="px-4 max-w-6xl mx-auto">
-        <div className="bg-linear-to-br from-indigo-600 to-blue-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 text-white relative overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-          
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Texte explicatif */}
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                <Heart className="w-4 h-4" />
-                <span className="text-sm font-medium">Ensemble pour l'excellence académique</span>
+      {/* Comment ça marche: Editorial Flow */}
+      <section className="px-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16">
+        <div className="md:col-span-4 sticky top-32 h-fit space-y-6">
+          <h2 className="text-5xl font-serif leading-none text-[var(--color-obsidian)]">
+            La Sagesse <br /> <span className="italic opacity-30">Organisée.</span>
+          </h2>
+          <p className="text-lg opacity-60 font-light">
+            Un protocole rigoureux pour transformer le manuscrit en héritage numérique accessible à tous.
+          </p>
+        </div>
+
+        <div className="md:col-span-8 space-y-24">
+          {[
+            {
+              step: "01",
+              title: "Exploration de l'Archive",
+              desc: "Parcourez des milliers de sujets avec des filtres ultra-précis par institution, géographie et discipline.",
+            },
+            {
+              step: "02",
+              title: "Lecture Instantanée",
+              desc: "Accédez à l'intégralité du savoir directement via notre liseuse sécurisée haute performance.",
+            },
+            {
+              step: "03",
+              title: "Préservation du Patrimoine",
+              desc: "Protégez vos travaux sous un filigrane numérique inviolable et transmettez votre recherche aux générations futures.",
+            },
+          ].map((item, i) => (
+            <div key={i} className="group grid grid-cols-1 md:grid-cols-6 gap-8 items-start">
+              <div className="font-mono text-4xl text-[var(--color-stone)] group-hover:text-[var(--color-cinnabar)] transition-colors duration-500">
+                {item.step}
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold">
-                Rejoignez l'équipe MemoHub
+              <div className="md:col-span-5 space-y-4">
+                <h3 className="text-2xl font-bold uppercase tracking-tight">{item.title}</h3>
+                <p className="text-xl opacity-60 font-light leading-relaxed">{item.desc}</p>
+                <div className="h-px bg-[var(--color-obsidian)]/10 w-0 group-hover:w-full transition-all duration-1000" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Join the Team: High Contrast Action */}
+      <section className="px-6 max-w-7xl mx-auto pb-32">
+        <div className="bg-[var(--color-obsidian)] rounded-[var(--radius-premium)] p-8 md:p-20 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-bl from-[var(--color-cinnabar)]/20 to-transparent opacity-50" />
+          
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-8">
+              <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-[var(--color-cinnabar)] font-bold">
+                Recrutement / Archive {new Date().getFullYear()}
+              </div>
+              <h2 className="text-5xl md:text-6xl font-serif italic leading-none">
+                Rejoignez le <br /> Cercle MemoHub
               </h2>
-              <p className="text-white/80 text-lg leading-relaxed">
-                Vous êtes un étudiant engagé, voulez contribuer à la qualité du contenu 
-                académique et représenter votre établissement ?
+              <p className="text-xl text-white/90 font-light leading-relaxed">
+                Devenez ambassadeur ou modérateur et participez activement à l'excellence académique de votre institution.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-xl">
-                  <Users className="w-6 h-6 text-white/90 shrink-0" />
-                  <div>
-                    <h3 className="font-bold">Ambassadeur</h3>
-                    <p className="text-sm text-white/70">Promouvoir et modérer les mémoires de votre université</p>
-                  </div>
+              <div className="flex items-center gap-12 pt-4">
+                <div className="space-y-2">
+                  <div className="text-3xl font-mono">01.</div>
+                  <div className="text-sm uppercase tracking-widest opacity-50">Ambassadeur</div>
                 </div>
-                <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-xl">
-                  <Shield className="w-6 h-6 text-white/90 shrink-0" />
-                  <div>
-                    <h3 className="font-bold">Modérateur</h3>
-                    <p className="text-sm text-white/70">Valider les contenus pour un pays entier</p>
-                  </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-mono">02.</div>
+                  <div className="text-sm uppercase tracking-widest opacity-50">Modérateur</div>
                 </div>
               </div>
             </div>
 
-            {/* Formulaire de candidature */}
-            <div className="bg-white rounded-2xl p-5 sm:p-6 md:p-8 text-gray-900">
-              <h3 className="text-xl font-bold mb-6">Postuler maintenant</h3>
-              <form onSubmit={handleAmbassadorSubmit} className="space-y-4">
-                {/* Type de candidature */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Type de candidature
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setApplicationType('ambassador')}
-                      className={`p-3 rounded-xl border-2 font-medium text-sm transition-all ${
-                        applicationType === 'ambassador'
-                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <Users className="w-5 h-5 mx-auto mb-1" />
-                      Ambassadeur
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setApplicationType('moderator')}
-                      className={`p-3 rounded-xl border-2 font-medium text-sm transition-all ${
-                        applicationType === 'moderator'
-                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <Shield className="w-5 h-5 mx-auto mb-1" />
-                      Modérateur
-                    </button>
-                  </div>
-                </div>
-
-                {/* Pays (obligatoire pour les deux) */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Pays <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={applicationCountry}
-                    onChange={(e) => setApplicationCountry(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
-                    required
+            <div className="bg-[var(--color-base)] rounded-[var(--radius-soft)] p-8 md:p-12 text-[var(--color-obsidian)]">
+              <h3 className="text-2xl font-serif mb-8">Postuler à l'Archive</h3>
+              <form onSubmit={handleAmbassadorSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setApplicationType('ambassador')}
+                    className={`py-4 border-b-2 font-mono text-xs uppercase tracking-widest transition-all ${
+                      applicationType === 'ambassador'
+                        ? 'border-[var(--color-cinnabar)] text-[var(--color-cinnabar)]'
+                        : 'border-transparent opacity-40 hover:opacity-100'
+                    }`}
                   >
-                    <option value="">Sélectionner un pays...</option>
-                    {countries?.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
+                    Ambassadeur
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setApplicationType('moderator')}
+                    className={`py-4 border-b-2 font-mono text-xs uppercase tracking-widest transition-all ${
+                      applicationType === 'moderator'
+                        ? 'border-[var(--color-cinnabar)] text-[var(--color-cinnabar)]'
+                        : 'border-transparent opacity-40 hover:opacity-100'
+                    }`}
+                  >
+                    Modérateur
+                  </button>
                 </div>
 
-                {/* Université (obligatoire pour ambassadeur seulement) */}
-                {showUniversityField && (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Université <span className="text-red-500">*</span>
-                    </label>
+                <div className="space-y-6">
+                  <div className="relative">
+                    <label className="font-mono text-[10px] uppercase opacity-40 mb-2 block">Territoire d'action</label>
                     <select
-                      value={applicationUniversity}
-                      onChange={(e) => setApplicationUniversity(e.target.value)}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
-                      required={showUniversityField}
-                      disabled={!applicationCountry}
+                      value={applicationCountry}
+                      onChange={(e) => setApplicationCountry(e.target.value)}
+                      className="w-full bg-transparent border-b border-[var(--color-obsidian)] py-3 focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors text-lg"
+                      required
                     >
-                      <option value="">Sélectionner une université...</option>
-                      {universities?.map(u => (
-                        <option key={u.id} value={u.id}>{u.name}</option>
+                      <option value="">Sélectionner Pays...</option>
+                      {countries?.map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
-                      {applicationCountry && universities?.length === 0 && (
-                        <option disabled>Aucun établissement répertorié pour ce pays</option>
-                      )}
                     </select>
-                    {!applicationCountry && (
-                      <p className="text-xs text-gray-400 mt-1">Sélectionnez d'abord un pays</p>
-                    )}
                   </div>
-                )}
 
-                {/* Preuve étudiant (obligatoire pour les deux) */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Preuve d'inscription <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={applicationStudentProof}
-                    onChange={(e) => setApplicationStudentProof(e.target.value)}
-                    placeholder="Numéro étudiant ou email universitaire (ex: john@univ-benin.bj)"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
-                    required
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    Votre numéro d'étudiant ou adresse email universitaire
-                  </p>
-                </div>
+                  {showUniversityField && (
+                    <div className="relative">
+                      <label className="font-mono text-[10px] uppercase opacity-40 mb-2 block">Institution d'origine</label>
+                      <select
+                        value={applicationUniversity}
+                        onChange={(e) => setApplicationUniversity(e.target.value)}
+                        className="w-full bg-transparent border-b border-[var(--color-obsidian)] py-3 focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors text-lg"
+                        required={showUniversityField}
+                        disabled={!applicationCountry}
+                      >
+                        <option value="">Institution...</option>
+                        {universities?.map(u => (
+                          <option key={u.id} value={u.id}>{u.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
-                {/* Motivation */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Motivation <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    value={applicationMotivation}
-                    onChange={(e) => setApplicationMotivation(e.target.value)}
-                    placeholder="Expliquez pourquoi vous voulez rejoindre MemoHub et ce que vous apporterez..."
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
-                    rows={3}
-                    required
-                  />
-                </div>
+                  <div className="relative">
+                    <label className="font-mono text-[10px] uppercase opacity-40 mb-2 block">Preuve d'Appartenance</label>
+                    <input
+                      type="text"
+                      value={applicationStudentProof}
+                      onChange={(e) => setApplicationStudentProof(e.target.value)}
+                      placeholder="ID étudiant ou Email .edu"
+                      className="w-full bg-transparent border-b border-[var(--color-obsidian)] py-3 focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors text-lg"
+                      required
+                    />
+                  </div>
 
-                {/* Disponibilité */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Disponibilité (heures/semaine)
-                  </label>
-                  <select
-                    value={applicationAvailability}
-                    onChange={(e) => setApplicationAvailability(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-xs"
-                  >
-                    <option value="">Sélectionner...</option>
-                    <option value="2-4">2 à 4 heures</option>
-                    <option value="5-8">5 à 8 heures</option>
-                    <option value="10+">10 heures et plus</option>
-                  </select>
+                  <div className="relative">
+                    <label className="font-mono text-[10px] uppercase opacity-40 mb-2 block">Ma Motivation</label>
+                    <textarea
+                      value={applicationMotivation}
+                      onChange={(e) => setApplicationMotivation(e.target.value)}
+                      placeholder="Pourquoi souhaitez-vous nous rejoindre ?"
+                      className="w-full bg-transparent border-b border-[var(--color-obsidian)] py-3 focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors text-lg resize-none"
+                      rows={2}
+                      required
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <label className="font-mono text-[10px] uppercase opacity-40 mb-2 block">Disponibilité Hebdomadaire</label>
+                    <select
+                      value={applicationAvailability}
+                      onChange={(e) => setApplicationAvailability(e.target.value)}
+                      className="w-full bg-transparent border-b border-[var(--color-obsidian)] py-3 focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors text-lg"
+                    >
+                      <option value="">Sélectionner...</option>
+                      <option value="2-4">2 à 4 heures</option>
+                      <option value="5-8">5 à 8 heures</option>
+                      <option value="10+">10 heures et plus</option>
+                    </select>
+                  </div>
                 </div>
 
                 <Button
                   type="submit"
                   variant="primary"
-                  size="lg"
+                  size="xl"
                   loading={submitApplication.isPending}
-                  className="w-full"
+                  className="w-full rounded-none mt-8"
                 >
-                  {submitApplication.isPending ? "Envoi en cours..." : "Soumettre ma candidature"}
-                  {!submitApplication.isPending && <ArrowRight className="w-5 h-5" />}
+                  Envoyer ma candidature
                 </Button>
-
-                <p className="text-xs text-center text-gray-500">
-                  Votre demande sera examinée par notre équipe. Nous vous contacterons sous 48-72h.
-                </p>
               </form>
             </div>
           </div>
@@ -482,4 +424,23 @@ export default function Home() {
       </section>
     </div>
   );
+}
+
+function CountUp({ end, duration = 2000 }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      setCount(Math.floor(progress * (end || 0)));
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    window.requestAnimationFrame(step);
+  }, [end, duration]);
+
+  return <span>{count.toLocaleString()}</span>;
 }

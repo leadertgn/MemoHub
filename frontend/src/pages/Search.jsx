@@ -1,4 +1,3 @@
-// src/pages/Search.jsx
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMemoirs } from '../hooks/useMemoirs'
@@ -12,7 +11,6 @@ export default function Search() {
   const [page, setPage] = useState(1)
   const [showFiltersMobile, setShowFiltersMobile] = useState(false)
 
-  // Initialise les filtres depuis l'URL
   const [filters, setFilters] = useState({
     search:            searchParams.get('search') || '',
     degree:            searchParams.get('degree') || '',
@@ -23,111 +21,107 @@ export default function Search() {
     year:              searchParams.get('year') || '',
   })
 
-  const { data: memoirs, isLoading, isError } = useMemoirs({ ...filters, page, limit: 20 })
+  const { data: memoirs, isLoading, isError } = useMemoirs({ ...filters, page, limit: 12 })
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters)
-    setPage(1) // reset page quand les filtres changent
-    // Met à jour l'URL pour pouvoir partager la recherche
+    setPage(1)
     const params = {}
     Object.entries(newFilters).forEach(([k, v]) => { if (v) params[k] = v })
     setSearchParams(params)
   }
 
   return (
-    <div className="pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Bouton Filtre Mobile */}
-      <div className="md:hidden flex justify-between items-center mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Catalogue</h1>
-        <Button 
-          variant="secondary" 
-          size="sm"
-          onClick={() => setShowFiltersMobile(!showFiltersMobile)}
-        >
-          <Filter className="w-4 h-4" />
-          {showFiltersMobile ? 'Masquer' : 'Filtres'}
-        </Button>
-      </div>
+    <div className="relative pb-32">
+      {/* Background Decor */}
+      <div className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 gap-px bg-[var(--color-stone)]/10 -z-20 pointer-events-none" />
 
-      <div className="flex flex-col gap-8">
-        {/* Barre de filtres (En haut sur desktop, stack sur mobile) */}
-        <aside className={`w-full ${showFiltersMobile ? 'block' : 'hidden md:block'}`}>
-          <MemoirFilters filters={filters} onChange={handleFiltersChange} />
-        </aside>
-
-        {/* Section résultats */}
-        <div className="flex-1 space-y-6">
-
-        {/* En-tête résultats */}
-        <div className="hidden md:flex items-center space-x-2">
-          <div className="h-px bg-gray-200 flex-1"></div>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider px-4">
-            {isLoading ? 'Recherche en cours...' : `${memoirs?.total ?? 0} mémoire(s) trouvé(s)`}
-          </h2>
-          <div className="h-px bg-gray-200 flex-1"></div>
+      <section className="pt-24 px-6 max-w-[1600px] mx-auto space-y-16">
+        {/* Header Archive */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-[var(--color-obsidian)] pb-12">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-[var(--color-cinnabar)]">
+              <span className="w-8 h-px bg-[var(--color-cinnabar)]" />
+              Bibliothèque / Archive Universelle
+            </div>
+            <h1 className="text-6xl md:text-8xl font-serif text-[var(--color-obsidian)] leading-none tracking-tighter">
+              Catalogue <br /> <span className="italic opacity-30">Vivant.</span>
+            </h1>
+          </div>
+          <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-widest opacity-40">
+             <span>{isLoading ? 'Scanning...' : `${memoirs?.total ?? 0} Documents`}</span>
+             <button 
+               onClick={() => setShowFiltersMobile(!showFiltersMobile)}
+               className="md:hidden flex items-center gap-2 text-[var(--color-cinnabar)]"
+             >
+               <Filter className="w-3 h-3" /> Filtres
+             </button>
+          </div>
         </div>
 
-        <div className="md:hidden h-px bg-gray-200 w-full mb-4"></div>
-
-        {/* États */}
-        {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 h-48 animate-pulse shadow-sm" />
-            ))}
+        <div className="space-y-12">
+          {/* Filtres Horizontaux (Design Ledger) */}
+          <div className={`${showFiltersMobile ? 'block' : 'hidden md:block'} border-b border-[var(--color-obsidian)]/10 pb-12`}>
+             <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-30 mb-8">Paramètres d'Indexation</h2>
+             <MemoirFilters filters={filters} onChange={handleFiltersChange} />
           </div>
-        )}
 
-        {isError && (
-          <div className="text-center py-20">
-            <p className="text-red-500">Une erreur serveur l'empêche de s'afficher correctement.</p>
-          </div>
-        )}
-
-        {!isLoading && !isError && (!memoirs?.items || memoirs.items.length === 0) && (
-          <div className="bg-white border text-center py-24 rounded-2xl space-y-4 shadow-sm border-gray-100 hover:shadow-md transition-shadow">
-            <SearchX className="w-16 h-16 text-gray-300 mx-auto" />
-            <p className="text-gray-800 font-bold text-xl">Aucun manuscrit trouvé</p>
-            <p className="text-gray-500 max-w-sm mx-auto">Votre recherche est peut-être trop restrictive. Essayez de retirer quelques filtres ou de chercher par mots-clés plus larges.</p>
-          </div>
-        )}
-
-        {!isLoading && !isError && memoirs?.items?.length > 0 && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {memoirs.items.map(memoir => (
-                <MemoirCard key={memoir.id} memoir={memoir} />
-              ))}
-            </div>
-
-            {/* Pagination API */}
-            <div className="flex items-center justify-between mt-8 border-t border-gray-100 pt-6">
-              <span className="text-sm font-medium text-gray-500">
-                Page <span className="text-gray-900 font-bold">{memoirs.page}</span> sur {memoirs.total_pages} ({memoirs.total} résultats)
-              </span>
-              <div className="flex gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={memoirs.page === 1}
-                  >
-                    ← Précédent
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setPage(p => p + 1)}
-                    disabled={memoirs.page >= memoirs.total_pages}
-                  >
-                    Suivant →
-                  </Button>
+          {/* Résultats Archive */}
+          <div className="space-y-12">
+            {isLoading && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--color-obsidian)]/10 border border-[var(--color-obsidian)]/10">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-white/50 h-80 animate-pulse" />
+                ))}
               </div>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+            )}
+
+            {!isLoading && !isError && (!memoirs?.items || memoirs.items.length === 0) && (
+              <div className="border border-[var(--color-obsidian)]/10 p-24 text-center space-y-6">
+                <SearchX className="w-12 h-12 opacity-10 mx-auto" />
+                <p className="font-serif italic text-2xl opacity-40">Aucun manuscrit n'a été trouvé dans cette strate.</p>
+              </div>
+            )}
+
+            {!isLoading && !isError && memoirs?.items?.length > 0 && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {memoirs.items.map((memoir) => (
+                    <MemoirCard key={memoir.public_id || memoir.id} memoir={memoir} />
+                  ))}
+                </div>
+
+                {/* Pagination Ledger */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-12 border-t border-[var(--color-obsidian)]/10 font-mono text-[10px] uppercase tracking-widest">
+                  <div className="opacity-40">
+                    Strate {memoirs.page} / {memoirs.total_pages} — {memoirs.total} Unités
+                  </div>
+                  <div className="flex gap-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo(0, 0); }}
+                      disabled={memoirs.page === 1}
+                      className="rounded-none border-[var(--color-obsidian)]/20"
+                    >
+                      Précédent
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { setPage(p => p + 1); window.scrollTo(0, 0); }}
+                      disabled={memoirs.page >= memoirs.total_pages}
+                      className="rounded-none border-[var(--color-obsidian)]/20"
+                    >
+                      Suivant
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

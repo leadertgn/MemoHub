@@ -1,4 +1,5 @@
 # app/schemas/memoir.py
+from datetime import datetime
 from typing import Optional, List
 from sqlmodel import SQLModel, Field
 from app.models.enums import MemoirStatus, DegreeLevel
@@ -24,6 +25,7 @@ class MemoirRead(SQLModel):
     accepted_terms: bool
     university: Optional[UniversityRead] = None
     field_of_study: Optional[FieldOfStudyRead] = None
+    created_at: Optional[datetime] = None
 
 
 class MemoirReadWithAccess(MemoirRead):

@@ -44,10 +44,10 @@ export default function AuthCallback() {
   }, [login, navigate, searchParams]);
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="text-center space-y-3">
-        <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-sm text-gray-500">Connexion en cours...</p>
+    <div className="min-h-[70vh] flex items-center justify-center">
+      <div className="text-center space-y-6">
+        <div className="w-10 h-px bg-[var(--color-obsidian)]/20 animate-pulse mx-auto" />
+        <p className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-40 animate-pulse">Authentification...</p>
       </div>
     </div>
   );

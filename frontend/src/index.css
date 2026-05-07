@@ -1,23 +1,95 @@
 @import "tailwindcss";
 
-html, body {
-  overflow-x: hidden;
-  width: 100%;
+@theme {
+  --font-serif: "Fraunces", serif;
+  --font-sans: "Outfit", sans-serif;
+  --font-mono: "Space Mono", monospace;
+}
+
+:root {
+  /* Avant-Garde Palette: "L'Archive Vivante" */
+  --color-base: hsl(35, 30%, 96%);      /* Parchemin */
+  --color-obsidian: hsl(220, 10%, 10%); /* Noir Profond */
+  --color-cinnabar: hsl(10, 80%, 50%);  /* Accent Terre */
+  --color-stone: hsl(35, 10%, 80%);     /* Gris Pierre */
+  
+  --radius-premium: 24px;
+  --radius-soft: 12px;
+}
+
+body {
+  background-color: var(--color-base);
+  color: var(--color-obsidian);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
   position: relative;
-  scroll-behavior: smooth;
 }
 
-/* Fix pour certains navigateurs mobiles qui ignorent overflow-x hidden sur body */
-#root {
-  overflow-x: hidden;
+/* --- Grain Texture Overlay (Subtle CSS Pattern) --- */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  background-image: radial-gradient(var(--color-obsidian) 0.5px, transparent 0.5px);
+  background-size: 32px 32px;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+/* --- Typography Hierarchy --- */
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-.page-transition {
-  animation: fadeIn 0.4s ease-out forwards;
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* --- Avant-Garde Utilities --- */
+.glass-advanced {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.text-editorial {
+  line-height: 1.1;
+  text-transform: none;
+}
+
+.btn-avant-garde {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  border-radius: var(--radius-soft);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.btn-avant-garde:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -10px var(--color-obsidian);
+}
+
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-obsidian);
+  border-radius: 10px;
 }
