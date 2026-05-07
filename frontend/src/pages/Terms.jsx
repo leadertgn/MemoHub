@@ -2,111 +2,76 @@ import { Link } from "react-router-dom";
 import { Scale, ArrowLeft } from "lucide-react";
 
 export default function Terms() {
-    return (
-        <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="container mx-auto max-w-4xl">
+  return (
+    <div className="relative pb-32">
+      {/* Background Decor */}
+      <div className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 gap-px bg-[var(--color-stone)]/10 -z-20 pointer-events-none" />
 
-                {/* Bouton retour */}
-                <Link
-                    to="/"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 transition-colors mb-6 group"
-                >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Retour à l'accueil
-                </Link>
-
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-
-                    {/* Header avec dégradé Indigo/Bleu */}
-                    <div className="bg-linear-to-r from-indigo-600 to-blue-600 px-8 py-10 text-white relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4" />
-                        <div className="relative z-10">
-                            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
-                                <Scale className="w-4 h-4" />
-                                <span className="text-sm font-medium">Cadre légal · Conditions d'utilisation</span>
-                            </div>
-                            <h1 className="text-3xl font-extrabold tracking-tight">Conditions Générales d'Utilisation</h1>
-                            <p className="mt-2 text-indigo-100 opacity-90">Dernière mise à jour : 10 Avril 2026</p>
-                        </div>
-                    </div>
-
-                    <div className="p-8 sm:p-12 prose prose-slate max-w-none">
-                        <p className="text-lg text-gray-600 leading-relaxed">
-                            Bienvenue sur <strong>MemoHub</strong>. Les présentes Conditions Générales d'Utilisation (CGU) encadrent l'accès et l'utilisation de notre plateforme académique numérique. En accédant au service, vous acceptez sans réserve ces termes.
-                        </p>
-
-                        <div className="space-y-10 mt-10">
-                            <section>
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">01</span>
-                                    Objet du Service
-                                </h2>
-                                <p>
-                                    MemoHub est un portail décentralisé dédié à la préservation et à la diffusion du savoir académique. Il permet aux étudiants de soumettre leurs travaux de fin d'études et à la communauté de les consulter gratuitement dans un cadre de recherche et d'éducation.
-                                </p>
-                            </section>
-
-                            <section>
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">02</span>
-                                    Propriété Intellectuelle et Licence
-                                </h2>
-                                <p>
-                                    <strong>Droits d'Auteur :</strong> L'étudiant (ou l'auteur original) conserve l'intégralité de ses droits d'auteur sur les documents soumis.
-                                </p>
-                                <p>
-                                    <strong>Licence de Diffusion :</strong> En soumettant un document sur MemoHub, l'Utilisateur concède à la plateforme une licence mondiale, non-exclusive et gratuite de reproduire, diffuser et afficher l'œuvre sur le portail. Cette licence inclut le droit pour MemoHub d'apposer des marquages techniques (filigranes) pour assurer la traçabilité du document.
-                                </p>
-                            </section>
-
-                            <section>
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">03</span>
-                                    Responsabilité de l'Utilisateur
-                                </h2>
-                                <p>
-                                    L'Utilisateur est seul responsable des documents qu'il publie. Il garantit qu'il détient tous les droits nécessaires (accord de l'établissement, des co-auteurs, etc.) et que son travail ne constitue pas un plagiat.
-                                </p>
-                                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 my-4">
-                                    <p className="text-amber-700 text-sm">
-                                        <strong>Attention :</strong> Toute violation avérée du droit d'auteur ou signalement de plagiat entraînera le retrait immédiat du document et pourra conduire à la suspension définitive du compte utilisateur.
-                                    </p>
-                                </div>
-                            </section>
-
-                            <section>
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">04</span>
-                                    Modération et Administration
-                                </h2>
-                                <p>
-                                    MemoHub s'appuie sur un système de modération multi-niveaux (Ambassadeurs, Modérateurs, Admins). L'administration se réserve le droit discrétionnaire de refuser toute publication ne respectant pas les standards académiques ou la charte graphique de la plateforme.
-                                </p>
-                            </section>
-
-                            <section>
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">05</span>
-                                    Limitation de Responsabilité
-                                </h2>
-                                <p>
-                                    MemoHub agit en tant qu'hébergeur technique. La plateforme ne saurait être tenue responsable de l'exactitude des informations contenues dans les travaux de recherche publiés, ni des conséquences de leur utilisation par des tiers.
-                                </p>
-                            </section>
-
-                            <section className="pt-8 border-t border-gray-100">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-bold">06</span>
-                                    Contact Juridique
-                                </h2>
-                                <p>
-                                    Pour tout signalement relatif à la propriété intellectuelle (DMCA/Droit d'Auteur), veuillez nous contacter. L'adresse email dédiée sera communiquée prochainement.
-                                </p>
-                            </section>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <section className="pt-32 px-6 max-w-5xl mx-auto space-y-24">
+        {/* Header Contractuel */}
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[var(--color-cinnabar)]">
+            <span className="w-8 h-px bg-[var(--color-cinnabar)]" />
+            Légal / Cadre de Confiance 2026
+          </div>
+          <h1 className="text-5xl md:text-7xl font-serif text-[var(--color-obsidian)] leading-none">
+            Contrat Social <br /> <span className="italic opacity-30">Académique.</span>
+          </h1>
+          <p className="text-xl font-light opacity-60 max-w-2xl leading-relaxed">
+            L'utilisation de MemoHub implique l'adhésion stricte à nos principes d'intégrité intellectuelle et de partage souverain du savoir.
+          </p>
         </div>
-    )
+
+        {/* Corps du Contrat */}
+        <div className="space-y-20">
+          {[
+            {
+              id: "01",
+              title: "Objet du Service & Engagement",
+              content: "MemoHub est un portail décentralisé dédié à la préservation du savoir. En accédant à nos archives, vous vous engagez à respecter le travail de vos pairs et à utiliser les ressources à des fins exclusivement pédagogiques et de recherche."
+            },
+            {
+              id: "02",
+              title: "Propriété Intellectuelle & Souveraineté",
+              content: "L'auteur conserve l'intégralité de ses droits régaliens sur son œuvre. En soumettant un document, vous accordez à MemoHub une licence de diffusion non-exclusive, incluant le droit d'apposer des marquages techniques (filigranes) pour garantir la traçabilité et protéger l'œuvre contre le plagiat."
+            },
+            {
+              id: "03",
+              title: "Code de Conduite & Plagiat",
+              content: "L'Utilisateur garantit l'originalité des travaux soumis. Toute violation avérée du droit d'auteur ou signalement de plagiat académique entraîne le retrait immédiat et définitif de l'œuvre, ainsi qu'une possible restriction d'accès à la plateforme."
+            },
+            {
+              id: "04",
+              title: "Modération & Rigueur Scientifique",
+              content: "Notre système repose sur une validation humaine par les pairs (Ambassadeurs, Modérateurs). L'administration se réserve le droit de refuser toute publication ne répondant pas aux standards de rigueur scientifique et de présentation de l'Archive."
+            },
+            {
+              id: "05",
+              title: "Responsabilité & Usage",
+              content: "MemoHub agit en tant que dépositaire technique. Bien que nous veillions à la qualité des métadonnées, nous ne saurions être tenus responsables de l'exactitude des thèses soutenues dans les documents archivés."
+            }
+          ].map((clause) => (
+            <div key={clause.id} className="grid grid-cols-1 md:grid-cols-12 gap-8 border-t border-[var(--color-obsidian)]/10 pt-12">
+              <div className="md:col-span-3 font-mono text-xs uppercase tracking-[0.3em] text-[var(--color-stone)]">
+                Clause / {clause.id}
+              </div>
+              <div className="md:col-span-9 space-y-4">
+                <h2 className="text-2xl font-serif text-[var(--color-obsidian)]">{clause.title}</h2>
+                <p className="text-lg font-light text-[var(--color-obsidian)]/70 leading-relaxed">
+                  {clause.content}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer Contractuel */}
+        <div className="pt-20 border-t border-[var(--color-obsidian)]/10 text-center">
+          <p className="font-mono text-[10px] uppercase tracking-widest opacity-30 italic">
+            Approuvé pour diffusion — Version de Référence 1.0.26
+          </p>
+        </div>
+      </section>
+    </div>
+  );
 }

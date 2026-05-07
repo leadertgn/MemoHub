@@ -15,8 +15,8 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../api/client";
 import { toast } from "sonner";
 import { 
-   FileText, Building2, GraduationCap, Users, History,
-  BarChart3, Menu, X, PartyPopper, UserPlus, Info, Check, XCircle
+    FileText, Building2, GraduationCap, Users, History,
+    BarChart3, Menu, X, PartyPopper, UserPlus, Info, Check, XCircle, ArrowRight
 } from "lucide-react";
 import StatCard from "../../components/admin/StatCard";
 import MemoirModerationCard from "../../components/admin/MemoirModerationCard";
@@ -24,15 +24,16 @@ import UniversityModerationCard from "../../components/admin/UniversityModeratio
 import { useUpdateUserRole } from "../../hooks/useAdmin";
 import RoleAssigner from "../../components/admin/RoleAssigner";
 import RoleEditModal from "../../components/admin/RoleEditModal";
+import { Button } from "../ui/Button";
 
 const TABS = [
-  { id: "stats", label: "Vue générale", icon: BarChart3 },
-  { id: "memoirs", label: "Mémoires", icon: FileText },
-  { id: "universities", label: "Universités", icon: Building2 },
-  { id: "fields", label: "Filières", icon: GraduationCap },
-  { id: "users", label: "Utilisateurs", icon: Users },
-  { id: "applications", label: "Candidatures", icon: UserPlus },
-  { id: "history", label: "Historique", icon: History },
+  { id: "stats", label: "Contrôle", icon: BarChart3 },
+  { id: "memoirs", label: "Manuscrit", icon: FileText },
+  { id: "universities", label: "Instituts", icon: Building2 },
+  { id: "fields", label: "Disciplines", icon: GraduationCap },
+  { id: "users", label: "Individus", icon: Users },
+  { id: "applications", label: "Protocoles", icon: UserPlus },
+  { id: "history", label: "Registre", icon: History },
 ];
 
 export default function Dashboard() {
@@ -44,491 +45,289 @@ export default function Dashboard() {
 
   const visibleTabs = TABS.filter((tab) => {
     if (currentUser?.role === "ambassador") return tab.id === "memoirs" || tab.id === "history";
-    if (currentUser?.role === "moderator") {
-      return tab.id !== "users";
-
-    }
+    if (currentUser?.role === "moderator") return tab.id !== "users";
     return !(currentUser?.role !== "admin" && tab.id === "users");
-
   });
 
-  // Redirige si pas le droit
-  if (
-    currentUser?.role !== "admin" &&
-    currentUser?.role !== "moderator" &&
-    currentUser?.role !== "ambassador"
-  ) {
+  if (!["admin", "moderator", "ambassador"].includes(currentUser?.role)) {
     return <Navigate to="/" replace />;
   }
 
   return (
-    <div className="space-y-6">
-      {/* En-tête */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Bienvenue, {currentUser?.full_name}
-          </p>
-        </div>
-        <button 
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="lg:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-lg"
-        >
-          {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
+    <div className="relative pb-32">
+      {/* Background Decor */}
+      <div className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 gap-px bg-[var(--color-stone)]/10 -z-20 pointer-events-none" />
 
-      {/* Navigation desktop avec icônes */}
-      <div className="hidden lg:flex gap-1 bg-gray-100 p-1 rounded-xl w-full max-w-full overflow-x-auto whitespace-nowrap">
-        {visibleTabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 text-sm px-4 py-2 rounded-lg font-medium transition-colors ${
-              activeTab === tab.id
-                ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            <tab.icon className="w-4 h-4" />
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Sidebar mobile */}
-      {isSidebarOpen && (
-        <div className="lg:hidden bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-          <div className="p-2">
-            {visibleTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id);
-                  setIsSidebarOpen(false);
-                }}
-                className={`w-full flex items-center gap-3 text-sm px-4 py-3 rounded-lg font-medium transition-colors ${
-                  activeTab === tab.id
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <tab.icon className="w-5 h-5" />
-                {tab.label}
-              </button>
-            ))}
+      <section className="pt-12 px-6 max-w-7xl mx-auto space-y-16">
+        {/* Header Admin */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-[var(--color-obsidian)] pb-12">
+          <div className="space-y-4">
+             <div className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-[var(--color-cinnabar)]">
+                <span className="w-8 h-px bg-[var(--color-cinnabar)]" />
+                Console d'Administration / {currentUser?.role}
+             </div>
+             <h1 className="text-5xl md:text-7xl font-serif text-[var(--color-obsidian)] leading-none tracking-tighter">
+               Gestion de <br /> <span className="italic opacity-30">l'Archive.</span>
+             </h1>
+          </div>
+          <div className="flex items-center gap-4">
+             <button 
+               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+               className="lg:hidden p-3 border border-[var(--color-obsidian)]/10"
+             >
+               {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+             </button>
           </div>
         </div>
-      )}
 
-      {/* Contenu des tabs */}
-      {activeTab === "stats" && <StatsTab />}
-      {activeTab === "memoirs" && <MemoirsTab />}
-      {activeTab === "universities" && <UniversitiesTab />}
-      {activeTab === "fields" && <FieldsTab />}
-      {activeTab === "users" && <UsersTab />}
-      {activeTab === "applications" && <ApplicationsTab />}
-      {activeTab === "history" && <HistoryTab />}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Navigation Latérale Avant-Garde */}
+          <aside className={`lg:col-span-3 space-y-4 ${showSidebarMobile(isSidebarOpen)}`}>
+            <div className="sticky top-32 space-y-2">
+              <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-30 mb-8">Navigation Système</h2>
+              {visibleTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => { setActiveTab(tab.id); setIsSidebarOpen(false); }}
+                  className={`w-full flex items-center justify-between p-4 font-serif text-lg transition-all border ${
+                    activeTab === tab.id 
+                      ? 'border-[var(--color-obsidian)] bg-white text-[var(--color-obsidian)]' 
+                      : 'border-transparent opacity-40 hover:opacity-100'
+                  }`}
+                >
+                  <span className="flex items-center gap-4">
+                    <tab.icon className="w-4 h-4 opacity-40" />
+                    {tab.label}
+                  </span>
+                  {activeTab === tab.id && <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-cinnabar)]" />}
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          {/* Zone de Travail */}
+          <main className="lg:col-span-9 space-y-12">
+            {activeTab === "stats" && <StatsTab />}
+            {activeTab === "memoirs" && <MemoirsTab />}
+            {activeTab === "universities" && <UniversitiesTab />}
+            {activeTab === "fields" && <FieldsTab />}
+            {activeTab === "users" && <UsersTab />}
+            {activeTab === "applications" && <ApplicationsTab />}
+            {activeTab === "history" && <HistoryTab />}
+          </main>
+        </div>
+      </section>
     </div>
   );
 }
 
-// ---- Tab Stats ----
+function showSidebarMobile(isOpen) {
+  return isOpen ? 'block bg-white/95 backdrop-blur-xl fixed inset-0 z-50 p-8' : 'hidden lg:block';
+}
+
+// ---- Sub-components styled in place for brevity & consistency ----
+
 function StatsTab() {
   const { data: stats, isLoading } = useAdminStats();
+  if (isLoading) return <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--color-obsidian)]/10 animate-pulse h-48" />;
 
-  if (isLoading)
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
-        ))}
-      </div>
-    );
+  const items = [
+    { label: "Publiés", value: stats?.memoirs?.total, color: 'text-green-600' },
+    { label: "En Attente", value: stats?.memoirs?.pending, color: 'text-[var(--color-cinnabar)]' },
+    { label: "Instituts", value: stats?.universities?.total, color: 'text-[var(--color-obsidian)]' },
+    { label: "Membres", value: stats?.users?.total, color: 'text-[var(--color-obsidian)]' },
+  ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatCard
-        label="Mémoires publiés"
-        value={stats?.memoirs?.total}
-        icon={FileText}
-        color="blue"
-      />
-      <StatCard
-        label="Mémoires en attente"
-        value={stats?.memoirs?.pending}
-        icon={FileText}
-        color="orange"
-      />
-      <StatCard
-        label="Universités validées"
-        value={stats?.universities?.total}
-        icon={Building2}
-        color="green"
-      />
-      <StatCard
-        label="Utilisateurs"
-        value={stats?.users?.total}
-        icon={Users}
-        color="purple"
-      />
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--color-obsidian)]/10 border border-[var(--color-obsidian)]/10">
+      {items.map((item, i) => (
+        <div key={i} className="bg-[var(--color-base)] p-10 space-y-3">
+          <span className="font-mono text-[9px] uppercase tracking-[0.3em] opacity-30">{item.label}</span>
+          <p className={`text-4xl font-serif ${item.color}`}>{item.value || 0}</p>
+        </div>
+      ))}
     </div>
   );
 }
 
-// ---- Tab Mémoires ----
 function MemoirsTab() {
   const { data: memoirs, isLoading } = usePendingMemoirs();
-
-  if (isLoading) return <p className="text-sm text-gray-500">Chargement...</p>;
-
-  if (!memoirs?.length)
-    return (
-      <div className="text-center py-16 space-y-4">
-        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
-          <PartyPopper className="w-8 h-8" />
-        </div>
-        <p className="text-gray-500 font-medium">Aucun mémoire en attente</p>
-      </div>
-    );
+  if (isLoading) return <p className="font-mono text-[10px] uppercase opacity-20">Scanning Manuscripts...</p>;
+  if (!memoirs?.length) return <EmptyState label="Aucun manuscrit en attente d'indexation." />;
 
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-gray-500">
-        {memoirs.length} mémoire(s) à modérer
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-8">
+      <div className="flex items-center justify-between border-b border-[var(--color-obsidian)]/10 pb-6">
+         <h3 className="font-serif italic text-2xl">File de Modération</h3>
+         <span className="font-mono text-[10px] uppercase tracking-widest opacity-40">{memoirs.length} Documents</span>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {memoirs.map((memoir) => (
-          <MemoirModerationCard key={memoir.id} memoir={memoir} />
+          <MemoirModerationCard key={memoir.public_id} memoir={memoir} />
         ))}
       </div>
     </div>
   );
 }
 
-// ---- Tab Universités ----
 function UniversitiesTab() {
   const { data: universities, isLoading } = usePendingUniversities();
-
-  if (isLoading) return <p className="text-sm text-gray-500">Chargement...</p>;
-
-  if (!universities?.length)
-    return (
-      <div className="text-center py-16 space-y-4">
-        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
-          <PartyPopper className="w-8 h-8" />
-        </div>
-        <p className="text-gray-500 font-medium">
-          Aucune université en attente
-        </p>
-      </div>
-    );
+  if (isLoading) return <p className="font-mono text-[10px] uppercase opacity-20">Scanning Institutes...</p>;
+  if (!universities?.length) return <EmptyState label="Aucune institution en attente de validation." />;
 
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-gray-500">
-        {universities.length} université(s) à valider
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {universities.map((u) => (
-          <UniversityModerationCard key={u.id} university={u} />
-        ))}
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {universities.map((u) => (
+        <UniversityModerationCard key={u.id} university={u} />
+      ))}
     </div>
   );
 }
 
-// ---- Tab Filières ----
 function FieldsTab() {
   const { data: fields, isLoading } = usePendingFields();
   const { mutate: updateField } = useUpdateFieldStatus();
-
-  if (isLoading) return <p className="text-sm text-gray-500">Chargement...</p>;
-
-  if (!fields?.length)
-    return (
-      <div className="text-center py-16 space-y-4">
-        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
-          <PartyPopper className="w-8 h-8" />
-        </div>
-        <p className="text-gray-500 font-medium">Aucune filière en attente</p>
-      </div>
-    );
+  if (isLoading) return <p className="font-mono text-[10px] uppercase opacity-20">Scanning Disciplines...</p>;
+  if (!fields?.length) return <EmptyState label="Toutes les disciplines sont validées." />;
 
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-gray-500">{fields.length} filière(s) à valider</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {fields.map((f) => (
-          <div key={f.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-              <div>
-                  <h3 className="font-bold text-gray-900">{f.label}</h3>
-                  <p className="text-xs text-gray-500  mt-1">Suggérée par l'utilisateur {f.submitted_by ? `#${f.submitted_by}` : 'Inconnu'}</p>
-              </div>
-              <div className="flex gap-2 mt-4">
-                  <button onClick={() => updateField({ id: f.public_id || f.id, status: 'approved' }, {
-                      onSuccess: () => toast.success("Filière validée avec succès !"),
-                      onError: (err) => toast.error(`Erreur: ${err.message}`)
-                  })} className="flex-1 bg-green-50 text-green-700 font-semibold py-2 rounded-xl hover:bg-green-100 transition-colors">
-                      Valider
-                  </button>
-                  <button onClick={() => {
-                      const reason = window.prompt("Motif de refus pour cette filière (envoyé par email) ?");
-                      if (!reason) return;
-                      updateField({ id: f.public_id || f.id, status: 'rejected', rejection_reason: reason }, {
-                          onSuccess: () => toast.success("Filière rejetée, notification envoyée."),
-                          onError: (err) => toast.error(`Erreur: ${err.message}`)
-                      });
-                  }} className="flex-1 bg-red-50 text-red-700 font-semibold py-2 rounded-xl hover:bg-red-100 transition-colors">
-                      Rejeter
-                  </button>
-              </div>
-          </div>
-        ))}
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {fields.map((f) => (
+        <div key={f.id} className="bg-white/50 border border-[var(--color-obsidian)]/10 p-8 space-y-6">
+            <div>
+              <h3 className="text-xl font-serif text-[var(--color-obsidian)]">{f.label}</h3>
+              <p className="font-mono text-[9px] uppercase tracking-widest opacity-30 mt-2">Origine: {f.submitted_by ? `Ref_${f.submitted_by}` : 'System'}</p>
+            </div>
+            <div className="flex gap-4">
+              <Button size="sm" variant="outline" className="flex-1 rounded-none" onClick={() => updateField({ id: f.public_id || f.id, status: 'approved' })}>Valider</Button>
+              <Button size="sm" variant="outline" className="flex-1 rounded-none border-[var(--color-cinnabar)]/20 text-[var(--color-cinnabar)]" onClick={() => {
+                const reason = window.prompt("Motif de refus ?");
+                if (reason) updateField({ id: f.public_id || f.id, status: 'rejected', rejection_reason: reason });
+              }}>Rejeter</Button>
+            </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-// ---- Tab Utilisateurs ----
 function UsersTab() {
   const { user: currentUser } = useAuth();
-  const {
-    data: users,
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ["admin-users"],
-    queryFn: () => apiClient("/users"),
-  });
+  const { data: users, isLoading, refetch } = useQuery({ queryKey: ["admin-users"], queryFn: () => apiClient("/users") });
   const { mutate: updateRole } = useUpdateUserRole();
   const [editingUser, setEditingUser] = useState(null);
 
-  const handleSave = (payload) => {
-    updateRole(payload, {
-      onSuccess: () => refetch(),
-    });
-  };
-
-  if (isLoading) return <p className="text-sm text-gray-500">Chargement...</p>;
+  if (isLoading) return <p className="font-mono text-[10px] uppercase opacity-20">Scanning Citizens...</p>;
 
   return (
-    <>
-      <div className="space-y-3">
-        <p className="text-sm text-gray-500">{users?.length} utilisateur(s)</p>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
-          <table className="w-full text-sm min-w-max">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                {["Utilisateur", "Email", "Rôle", "Action"].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-4 py-3 text-xs font-medium text-gray-500"
-                  >
-                    {h}
-                  </th>
-                ))}
+    <div className="space-y-8">
+      <div className="bg-white/40 border border-[var(--color-obsidian)]/10 overflow-hidden">
+        <table className="w-full text-left font-mono text-[10px] uppercase tracking-widest">
+          <thead className="border-b border-[var(--color-obsidian)]/10 bg-[var(--color-obsidian)]/5">
+            <tr>
+              <th className="p-6 opacity-40">Individu</th>
+              <th className="p-6 opacity-40">Privilèges</th>
+              <th className="p-6 opacity-40 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--color-obsidian)]/5">
+            {users?.map((user) => (
+              <tr key={user.id} className="hover:bg-white transition-colors">
+                <td className="p-6">
+                  <p className="font-serif italic text-lg lowercase opacity-100 tracking-normal">{user.full_name}</p>
+                  <p className="opacity-30 mt-1">{user.email}</p>
+                </td>
+                <td className="p-6">
+                  <span className={`px-3 py-1 border ${user.role === 'admin' ? 'border-[var(--color-cinnabar)] text-[var(--color-cinnabar)]' : 'border-[var(--color-obsidian)]/20'}`}>
+                    {user.role}
+                  </span>
+                </td>
+                <td className="p-6 text-right">
+                  {user.public_id !== currentUser?.public_id ? (
+                    <RoleAssigner user={user} onEdit={setEditingUser} />
+                  ) : <span className="opacity-20 italic">Soi-même</span>}
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {users?.map((user) => (
-                <tr key={user.public_id || user.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-900">
-                    {user.full_name}
-                  </td>
-                  <td className="px-4 py-3 text-gray-500">{user.email}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        user.role === "admin"
-                          ? "bg-red-100 text-red-700"
-                          : user.role === "moderator"
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {user.public_id !== currentUser?.public_id ? (
-                      <RoleAssigner user={user} onEdit={setEditingUser} />
-                    ) : (
-                      <span className="text-xs text-gray-400 italic">
-                        C'est vous
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-
-      {/* Modal de modification du rôle */}
-      {editingUser && (
-        <RoleEditModal
-          user={editingUser}
-          onClose={() => setEditingUser(null)}
-          onSave={handleSave}
-        />
-      )}
-    </>
-  );
-}
-
-// ---- Tab Historique ----
-function HistoryTab() {
-  const { data: history, isLoading } = useModerationHistory();
-
-  if (isLoading) return <p className="text-sm text-gray-500">Chargement...</p>;
-
-  if (!history?.length) {
-    return (
-      <div className="text-center py-16 space-y-2">
-        <p className="text-gray-500 font-medium">Aucun historique de modération disponible</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-bold text-gray-800">Dernières décisions de l'équipe</h2>
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <ul className="divide-y divide-gray-50">
-          {history.map((item) => (
-             <li key={item.id} className="p-4 hover:bg-gray-50 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">
-                    <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full mr-2">
-                      {item.type}
-                    </span>
-                    {item.title}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Modéré par <span className="font-medium text-gray-700">{item.moderator_name}</span>
-                    {item.moderated_at ? ` le ${new Date(item.moderated_at).toLocaleString('fr-FR')}` : ''}
-                  </p>
-                  {item.rejection_reason && (
-                    <p className="text-xs text-red-600 mt-2 bg-red-50 p-2 rounded-md border border-red-100 w-fit">
-                      <span className="font-bold">Motif du rejet :</span> {item.rejection_reason}
-                    </p>
-                  )}
-                </div>
-                <div>
-                   <span className={`text-xs px-2 py-1 rounded-full font-bold ${
-                     item.status === 'approved' ? 'bg-green-100 text-green-700' :
-                     item.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                     'bg-cyan-100 text-cyan-700'
-                   }`}>
-                     {item.status === 'approved' ? 'Validé' : 
-                      item.status === 'rejected' ? 'Rejeté' :
-                      item.status === 'pre_validated' ? 'Pré-validé' : item.status}
-                   </span>
-                </div>
-             </li>
-          ))}
-        </ul>
-      </div>
+      {editingUser && <RoleEditModal user={editingUser} onClose={() => setEditingUser(null)} onSave={(p) => updateRole(p, { onSuccess: () => refetch() })} />}
     </div>
   );
 }
 
-// ---- Tab Candidatures ----
-function ApplicationsTab() {
-  const { data: apps, isLoading } = usePendingApplications();
-  const { mutate: updateStatus, isPending: isUpdating } = useUpdateApplicationStatus();
-
-  if (isLoading) return <p className="text-sm text-gray-500">Chargement...</p>;
-
-  if (!apps?.length)
-    return (
-      <div className="text-center py-16 space-y-4">
-        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto shadow-inner">
-          <PartyPopper className="w-8 h-8" />
-        </div>
-        <p className="text-gray-500 font-medium">Aucune candidature en attente</p>
-      </div>
-    );
-
-  const handleAction = (id, status) => {
-    const notes = status === 'rejected' ? window.prompt("Motif du refus ?") : null;
-    if (status === 'rejected' && notes === null) return;
-
-    updateStatus({ id, status, admin_notes: notes }, {
-      onSuccess: () => toast.success(`Candidature ${status === 'approved' ? 'approuvée' : 'rejetée'} !`),
-      onError: (err) => toast.error(`Erreur: ${err.message}`)
-    });
-  };
+function HistoryTab() {
+  const { data: history, isLoading } = useModerationHistory();
+  if (isLoading) return <p className="font-mono text-[10px] uppercase opacity-20">Scanning Records...</p>;
+  if (!history?.length) return <EmptyState label="Le registre est vierge." />;
 
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-gray-500">{apps.length} candidature(s) à examiner</p>
-      <div className="grid grid-cols-1 gap-4">
-        {apps.map((app) => (
-          <div key={app.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between gap-6">
-            <div className="flex-1 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                  app.role === 'moderator' ? 'bg-purple-100 text-purple-700' : 'bg-cyan-100 text-cyan-700'
-                }`}>
-                  {app.role === 'moderator' ? 'Modérateur' : 'Ambassadeur'}
-                </div>
-                <span className="text-xs text-gray-400">Soumis le {new Date(app.created_at).toLocaleDateString()}</span>
-              </div>
-              
-              <div>
-                <h3 className="font-bold text-gray-900 text-lg">{app.user_full_name}</h3>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-gray-600">
-                  <p className="flex items-center gap-1.5"><Building2 className="w-4 h-4" /> {app.country_name}</p>
-                  {app.university_name && (
-                    <p className="flex items-center gap-1.5"><GraduationCap className="w-4 h-4" /> {app.university_name}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <Info className="w-3.5 h-3.5" /> Motivation
-                </p>
-                <p className="text-sm text-gray-700 italic leading-relaxed">"{app.motivation}"</p>
-              </div>
-
-              <div className="flex flex-wrap gap-4 text-xs font-medium">
-                <div className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg">
-                  <span className="text-blue-400 mr-2">Preuve:</span> {app.student_proof}
-                </div>
-                {app.availability && (
-                  <div className="bg-indigo-50 text-indigo-700 px-3 py-2 rounded-lg">
-                    <span className="text-indigo-400 mr-2">Dispo:</span> {app.availability}h/semaine
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex md:flex-col gap-2 justify-center shrink-0 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
-              <button 
-                onClick={() => handleAction(app.id, 'approved')}
-                disabled={isUpdating}
-                className="flex-1 md:w-32 flex items-center justify-center gap-2 bg-green-600 text-white font-bold py-2.5 rounded-xl hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50"
-              >
-                <Check className="w-4 h-4" />
-                Approuver
-              </button>
-              <button 
-                onClick={() => handleAction(app.id, 'rejected')}
-                disabled={isUpdating}
-                className="flex-1 md:w-32 flex items-center justify-center gap-2 bg-white border border-red-200 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-50 transition-colors disabled:opacity-50"
-              >
-                <XCircle className="w-4 h-4" />
-                Rejeter
-              </button>
+    <div className="grid gap-px bg-[var(--color-obsidian)]/10 border border-[var(--color-obsidian)]/10">
+      {history.map((item) => (
+        <div key={item.id} className="bg-[var(--color-base)] p-8 flex items-center justify-between group hover:bg-white transition-colors">
+          <div className="space-y-2">
+            <p className="font-serif italic text-xl">{item.title}</p>
+            <div className="flex items-center gap-4 font-mono text-[9px] uppercase tracking-widest opacity-40">
+              <span className="text-[var(--color-cinnabar)]">{item.type}</span>
+              <span>Modéré par {item.moderator_name}</span>
             </div>
           </div>
-        ))}
-      </div>
+          <div className="font-mono text-[10px] uppercase tracking-widest px-4 py-2 border border-[var(--color-obsidian)]/10">
+            {item.status}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ApplicationsTab() {
+  const { data: apps, isLoading } = usePendingApplications();
+  const { mutate: updateStatus } = useUpdateApplicationStatus();
+  if (isLoading) return <p className="font-mono text-[10px] uppercase opacity-20">Scanning Applications...</p>;
+  if (!apps?.length) return <EmptyState label="Aucun nouveau protocole en attente." />;
+
+  return (
+    <div className="space-y-8">
+      {apps.map((app) => (
+        <div key={app.id} className="bg-white/50 border border-[var(--color-obsidian)]/20 p-10 grid grid-cols-1 md:grid-cols-12 gap-12">
+          <div className="md:col-span-8 space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="font-mono text-[9px] uppercase tracking-[0.3em] px-3 py-1 bg-[var(--color-obsidian)] text-white">{app.role}</div>
+              <span className="font-mono text-[9px] opacity-30 uppercase tracking-widest">Soumis le {new Date(app.created_at).toLocaleDateString()}</span>
+            </div>
+            <h3 className="text-4xl font-serif text-[var(--color-obsidian)] leading-none">{app.user_full_name}</h3>
+            <p className="text-lg font-light opacity-60 leading-relaxed italic">"{app.motivation}"</p>
+            <div className="grid grid-cols-2 gap-8 pt-6 border-t border-[var(--color-obsidian)]/5">
+               <div className="space-y-1">
+                 <p className="font-mono text-[9px] opacity-30 uppercase tracking-widest">Établissement</p>
+                 <p className="font-serif italic text-sm">{app.university_name || app.country_name}</p>
+               </div>
+               <div className="space-y-1">
+                 <p className="font-mono text-[9px] opacity-30 uppercase tracking-widest">Disponibilité</p>
+                 <p className="font-serif italic text-sm">{app.availability || 'N/A'} h / Semaine</p>
+               </div>
+            </div>
+          </div>
+          <div className="md:col-span-4 flex flex-col justify-center gap-4">
+            <Button variant="primary" size="xl" className="rounded-none w-full" onClick={() => updateStatus({ id: app.id, status: 'approved' })}>Approuver</Button>
+            <Button variant="outline" size="xl" className="rounded-none w-full border-[var(--color-cinnabar)]/20 text-[var(--color-cinnabar)]" onClick={() => {
+              const notes = window.prompt("Motif du refus ?");
+              if (notes) updateStatus({ id: app.id, status: 'rejected', admin_notes: notes });
+            }}>Rejeter</Button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EmptyState({ label }) {
+  return (
+    <div className="p-24 border border-dashed border-[var(--color-obsidian)]/10 text-center space-y-6">
+      <PartyPopper className="w-12 h-12 opacity-10 mx-auto" />
+      <p className="font-serif italic text-2xl opacity-40">{label}</p>
     </div>
   );
 }

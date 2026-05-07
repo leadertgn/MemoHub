@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Search, BookOpen, Upload, Download, Eye, Filter, ArrowRight, CheckCircle } from "lucide-react";
+import { Button } from "../components/ui/Button";
 
 const STEPS_SEARCH = [
   {
     step: "1",
     title: "Accédez à la recherche",
-    desc: "Depuis la page d'accueil, cliquez sur « Découvrir les travaux ». Vous arrivez sur la bibliothèque complète avec tous les mémoires validés.",
+    desc: "Depuis la page d'accueil, cliquez sur « EXPLORATION ». Vous arrivez sur la bibliothèque complète avec tous les mémoires validés.",
   },
   {
     step: "2",
@@ -38,7 +39,7 @@ const STEPS_SUBMIT = [
   {
     step: "3",
     title: "Téléversez le PDF",
-    desc: "Le fichier doit être au format PDF et ne pas dépasser 20 Mo. Seul l'auteur ou une personne autorisée par lui peut soumettre son travail.",
+    desc: "Le fichier doit être au format PDF et ne pas dépasser 10 Mo. Seul l'auteur ou une personne autorisée par lui peut soumettre son travail.",
   },
   {
     step: "4",
@@ -74,7 +75,7 @@ const FAQS = [
   },
   {
     q: "Mon université n'est pas dans la liste. Que faire ?",
-    a: "Lors de la soumission, un bouton « Mon école n'y figure pas » vous permet de suggérer votre université. Elle sera ajoutée après vérification par l'équipe.",
+    a: "Lors de la soumission, un bouton « ECOLE MANQUANTE » vous permet de suggérer votre université. Elle sera ajoutée après vérification par l'équipe.",
   },
 ];
 
@@ -97,178 +98,116 @@ function StepCard({ step, title, desc, icon: Icon }) {
 
 export default function Guide() {
   return (
-    <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto max-w-4xl space-y-8">
+    <div className="relative pb-32">
+      {/* Background Decor */}
+      <div className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 gap-px bg-[var(--color-stone)]/10 -z-20 pointer-events-none" />
 
-        {/* Retour */}
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 transition-colors group"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          Retour à l'accueil
-        </Link>
-
-        {/* En-tête */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="bg-linear-to-r from-indigo-600 to-blue-600 px-8 py-10 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4" />
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full mb-4">
-                <BookOpen className="w-4 h-4" />
-                <span className="text-sm font-medium">Guide d'utilisation</span>
-              </div>
-              <h1 className="text-3xl font-extrabold tracking-tight">Comment utiliser MemoHub</h1>
-              <p className="mt-2 text-indigo-100 opacity-90">
-                Tout ce que vous devez savoir pour trouver, lire et partager des mémoires académiques.
-              </p>
-            </div>
+      <section className="pt-32 px-6 max-w-7xl mx-auto space-y-32">
+        {/* En-tête de Document */}
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[var(--color-cinnabar)]">
+            <span className="w-8 h-px bg-[var(--color-cinnabar)]" />
+            Protocole / Documentation 2026
           </div>
+          <h1 className="text-6xl md:text-8xl font-serif text-[var(--color-obsidian)] leading-none">
+            Guide de <br /> <span className="italic opacity-30">Consultation.</span>
+          </h1>
+          <p className="text-xl font-light opacity-60 max-w-2xl leading-relaxed">
+            Un système pensé pour la rigueur. Apprenez à naviguer, soumettre et préserver le savoir académique sur MemoHub.
+          </p>
+        </div>
 
-          {/* Sommaire rapide */}
-          <div className="px-8 py-5 border-b border-gray-100 bg-gray-50/50">
-            <div className="flex flex-wrap gap-3 text-sm font-medium">
-              <a href="#rechercher" className="inline-flex items-center gap-1.5 text-gray-600 hover:text-indigo-600 transition-colors">
-                <Search className="w-4 h-4" /> Rechercher
-              </a>
-              <span className="text-gray-300">·</span>
-              <a href="#soumettre" className="inline-flex items-center gap-1.5 text-gray-600 hover:text-indigo-600 transition-colors">
-                <Upload className="w-4 h-4" /> Soumettre
-              </a>
-              <span className="text-gray-300">·</span>
-              <a href="#telecharger" className="inline-flex items-center gap-1.5 text-gray-600 hover:text-indigo-600 transition-colors">
-                <Download className="w-4 h-4" /> Télécharger
-              </a>
-              <span className="text-gray-300">·</span>
-              <a href="#faq" className="inline-flex items-center gap-1.5 text-gray-600 hover:text-indigo-600 transition-colors">
-                <Eye className="w-4 h-4" /> FAQ
-              </a>
-            </div>
+        {/* Section: Recherche - Documentation Flow */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 border-t border-[var(--color-obsidian)]/10 pt-16">
+          <div className="lg:col-span-4 sticky top-32 h-fit">
+            <h2 className="text-3xl font-serif italic mb-6">01. Exploration</h2>
+            <p className="text-sm font-light opacity-50 leading-relaxed">
+              Comment naviguer au sein de la bibliothèque universelle pour trouver l'inspiration.
+            </p>
           </div>
-
-          <div className="p-8 sm:p-12 space-y-14">
-
-            {/* Rechercher */}
-            <section id="rechercher">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                  <Search className="w-5 h-5" />
+          <div className="lg:col-span-8 space-y-12">
+            {STEPS_SEARCH.map((s, i) => (
+              <div key={i} className="group grid grid-cols-1 md:grid-cols-6 gap-8">
+                <div className="font-mono text-2xl text-[var(--color-stone)] group-hover:text-[var(--color-cinnabar)] transition-colors">
+                  .{s.step}
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">Rechercher un mémoire</h2>
-              </div>
-              <div>
-                {STEPS_SEARCH.map((s) => (
-                  <StepCard key={s.step} {...s} />
-                ))}
-              </div>
-              <Link
-                to="/search"
-                className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
-              >
-                <Search className="w-4 h-4" />
-                Accéder à la bibliothèque
-              </Link>
-            </section>
-
-            <div className="border-t border-gray-100" />
-
-            {/* Soumettre */}
-            <section id="soumettre">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-                  <Upload className="w-5 h-5" />
+                <div className="md:col-span-5 space-y-3">
+                  <h3 className="text-xl font-bold uppercase tracking-tight">{s.title}</h3>
+                  <p className="text-lg font-light opacity-60 leading-relaxed">{s.desc}</p>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">Soumettre votre mémoire</h2>
               </div>
-              <p className="text-sm text-gray-500 mb-6 ml-13 pl-0.5">
-                La soumission est entièrement libre et volontaire. Aucune obligation n'est faite à qui que ce soit.
-              </p>
-              <div>
-                {STEPS_SUBMIT.map((s) => (
-                  <StepCard key={s.step} {...s} />
-                ))}
-              </div>
-              {/* Prérequis */}
-              <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 mb-6">
-                <p className="text-sm font-semibold text-amber-900 mb-3">Avant de soumettre, assurez-vous que :</p>
-                <ul className="space-y-1.5">
+            ))}
+          </div>
+        </div>
+
+        {/* Section: Soumission - Documentation Flow */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 border-t border-[var(--color-obsidian)]/10 pt-16">
+          <div className="lg:col-span-4 sticky top-32 h-fit">
+            <h2 className="text-3xl font-serif italic mb-6">02. Contribution</h2>
+            <p className="text-sm font-light opacity-50 leading-relaxed">
+              Le protocole pour immortaliser vos travaux de recherche.
+            </p>
+          </div>
+          <div className="lg:col-span-8 space-y-12">
+             {/* Amber Alert Refactored */}
+             <div className="border border-[var(--color-cinnabar)]/20 p-8 bg-[var(--color-cinnabar)]/5 space-y-4">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-cinnabar)]">Vérification de Conformité</p>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
-                    "Vous êtes l'auteur du mémoire ou avez l'autorisation de l'auteur",
-                    "Le fichier est en format PDF (maximum 20 Mo)",
-                    "Vous disposez d'un compte Google pour vous connecter",
-                    "Les informations renseignées (université, filière, année) sont exactes",
-                  ].map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-amber-800">
-                      <CheckCircle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                    "Autorisation de l'auteur requise",
+                    "Format PDF uniquement (< 10 Mo)",
+                    "Connexion Google authentifiée",
+                    "Données institutionnelles exactes"
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-3 text-sm opacity-70">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-cinnabar)]" />
                       {item}
                     </li>
                   ))}
                 </ul>
-              </div>
-              <Link
-                to="/upload"
-                className="inline-flex items-center gap-2 bg-linear-to-r from-indigo-600 to-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
-              >
-                <Upload className="w-4 h-4" />
-                Soumettre un mémoire
-              </Link>
-            </section>
+             </div>
 
-            <div className="border-t border-gray-100" />
-
-            {/* Télécharger */}
-            <section id="telecharger">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                  <Download className="w-5 h-5" />
+            {STEPS_SUBMIT.map((s, i) => (
+              <div key={i} className="group grid grid-cols-1 md:grid-cols-6 gap-8">
+                <div className="font-mono text-2xl text-[var(--color-stone)] group-hover:text-[var(--color-cinnabar)] transition-colors">
+                  .{s.step}
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">Télécharger un mémoire</h2>
-              </div>
-              <div className="prose prose-slate max-w-none text-gray-500 text-sm space-y-3">
-                <p>
-                  Certains mémoires autorisent le téléchargement direct — ce choix appartient à l'auteur au moment de la soumission.
-                  La lecture intégrale du PDF et le téléchargement nécessitent tous deux une <strong className="text-gray-700">connexion avec votre compte Google</strong>.
-                </p>
-                <p>
-                  Que vous lisiez en ligne ou que vous téléchargiez, le document est systématiquement marqué d'un{" "}
-                  <strong className="text-gray-700">filigrane numérique</strong> contenant le nom de l'université, l'année
-                  et la référence MemoHub. Ce filigrane est présent pour protéger l'auteur — y compris contre les captures d'écran —
-                  et garantir la traçabilité de chaque document.
-                </p>
-              </div>
-            </section>
-
-            <div className="border-t border-gray-100" />
-
-            {/* FAQ */}
-            <section id="faq">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-violet-50 text-violet-600 rounded-xl flex items-center justify-center">
-                  <Eye className="w-5 h-5" />
+                <div className="md:col-span-5 space-y-3">
+                  <h3 className="text-xl font-bold uppercase tracking-tight">{s.title}</h3>
+                  <p className="text-lg font-light opacity-60 leading-relaxed">{s.desc}</p>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">Questions fréquentes</h2>
               </div>
-              <div className="space-y-4">
-                {FAQS.map((faq) => (
-                  <div key={faq.q} className="border border-gray-100 rounded-2xl p-5 hover:border-indigo-100 hover:bg-indigo-50/30 transition-colors">
-                    <p className="font-semibold text-gray-900 text-sm mb-2">{faq.q}</p>
-                    <p className="text-sm text-gray-500 leading-relaxed">{faq.a}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
+            ))}
           </div>
         </div>
 
-        {/* CTA bas de page */}
-        <div className="text-center py-4">
-          <p className="text-gray-400 text-sm mb-4">Vous avez encore des questions ?</p>
-          <p className="inline-flex items-center gap-2 text-gray-500 font-semibold text-sm">
-            Contactez-nous via les réseaux sociaux (en attendant notre e-mail dédié)
-          </p>
+        {/* FAQ - Ledger Grid */}
+        <div className="border-t border-[var(--color-obsidian)]/10 pt-16 space-y-16">
+          <h2 className="text-4xl font-serif italic text-center">Questions & Protocoles</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[var(--color-obsidian)]/10 border border-[var(--color-obsidian)]/10">
+             {FAQS.map((faq, i) => (
+               <div key={i} className="bg-[var(--color-base)] p-12 space-y-6 hover:bg-white transition-colors">
+                  <div className="font-mono text-[10px] uppercase opacity-30 tracking-[0.3em]">Question 0{i+1}</div>
+                  <h3 className="text-xl font-bold leading-tight">{faq.q}</h3>
+                  <p className="text-lg font-light opacity-60 leading-relaxed">{faq.a}</p>
+               </div>
+             ))}
+          </div>
         </div>
-      </div>
+
+        {/* CTA final */}
+        <div className="text-center py-20 border-t border-[var(--color-obsidian)]/10">
+          <p className="font-serif italic text-2xl opacity-60 mb-8">D'autres interrogations ?</p>
+          <div className="flex justify-center gap-6">
+            <Button variant="primary" size="xl" to="/search" className="rounded-none px-12">
+              Explorer
+            </Button>
+            <Button variant="outline" size="xl" to="/upload" className="rounded-none px-12">
+              Soumettre
+            </Button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
