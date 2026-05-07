@@ -59,19 +59,17 @@ export default function Search() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Sidebar de Filtres (Design Ledger) */}
-          <aside className={`lg:col-span-3 space-y-8 ${showFiltersMobile ? 'block' : 'hidden lg:block'}`}>
-            <div className="sticky top-32">
-              <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-30 mb-8">Paramètres d'Indexation</h2>
-              <MemoirFilters filters={filters} onChange={handleFiltersChange} />
-            </div>
-          </aside>
+        <div className="space-y-12">
+          {/* Filtres Horizontaux (Design Ledger) */}
+          <div className={`${showFiltersMobile ? 'block' : 'hidden md:block'} border-b border-[var(--color-obsidian)]/10 pb-12`}>
+             <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-30 mb-8">Paramètres d'Indexation</h2>
+             <MemoirFilters filters={filters} onChange={handleFiltersChange} />
+          </div>
 
           {/* Résultats Archive */}
-          <div className="lg:col-span-9 space-y-12">
+          <div className="space-y-12">
             {isLoading && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[var(--color-obsidian)]/10 border border-[var(--color-obsidian)]/10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--color-obsidian)]/10 border border-[var(--color-obsidian)]/10">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="bg-white/50 h-80 animate-pulse" />
                 ))}
@@ -87,7 +85,7 @@ export default function Search() {
 
             {!isLoading && !isError && memoirs?.items?.length > 0 && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {memoirs.items.map((memoir) => (
                     <MemoirCard key={memoir.public_id || memoir.id} memoir={memoir} />
                   ))}
