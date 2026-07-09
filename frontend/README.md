@@ -4,14 +4,16 @@ Application React pour la plateforme de partage de mémoires académiques en Afr
 
 ## 🚀 Stack Technique
 
-- **Framework** : React 18+ avec Vite
+- **Framework** : React 19 avec Vite
 - **Langage** : JavaScript (ES6+)
-- **Routing** : React Router v6
-- **HTTP Client** : Axios
-- **UI** : Tailwind CSS + composants personnalisés
+- **Routing** : React Router v7
+- **Data fetching** : TanStack Query (React Query)
+- **HTTP** : `fetch` (wrapper maison `api/client.js`)
+- **Formulaires** : react-hook-form + Zod
+- **UI** : Tailwind CSS 4 + composants personnalisés
 - **Icons** : Lucide React
 - **Notifications** : Sonner (toasts)
-- **Gestion d'état** : React Query (TanStack Query)
+- **PDF** : react-pdf (visionneuse protégée)
 
 ## 📋 Prérequis
 
@@ -34,8 +36,9 @@ cp .env.example .env
 
 | Variable | Description | Exemple |
 |----------|-------------|---------|
-| `VITE_API_URL` | URL de l'API backend | `http://localhost:8000` |
+| `VITE_API_URL` | Endpoint racine de l'API (v1) | `http://localhost:8000/api/v1` |
 | `VITE_GOOGLE_CLIENT_ID` | Client ID Google OAuth | `xxx.apps.googleusercontent.com` |
+| `VITE_REDIRECT_URI` | URI de redirection OAuth | `http://localhost:5173/auth/callback` |
 
 ## 🏃‍♂️ Lancer l'application
 
@@ -83,7 +86,7 @@ frontend/
 ### Authentification
 - Login via Google OAuth2
 - Gestion des rôles : student, ambassador, moderator, admin
-- Tokens JWT stockés côté backend
+- Tokens JWT (access + refresh) stockés dans le `localStorage`, refresh automatique sur 401 (cf `api/client.js`)
 
 ### Modération
 - Dashboard admin pour valider/rejeter :
@@ -99,13 +102,13 @@ frontend/
 
 ## 🔌 API Intégration
 
-Le frontend communique avec le backend via axios :
+Le frontend communique avec le backend via un wrapper `fetch` (`api/client.js`) qui ajoute automatiquement le token JWT et gère le refresh :
 
 ```javascript
-import apiClient from './api/client';
+import { apiClient } from './api/client';
 
-// Exemple de requête
-const response = await apiClient.get('/memoirs');
+// Exemple de requête (le préfixe /api/v1 vient de VITE_API_URL)
+const memoirs = await apiClient('/memoirs');
 ```
 
 ## 🛠️ Scripts disponibles
