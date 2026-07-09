@@ -106,7 +106,7 @@ export default function MemoirDetail() {
            <div className="md:col-span-4 space-y-6">
               <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] opacity-30">Abstract / Résumé</h2>
               <p className="text-sm font-light opacity-60 leading-relaxed italic border-l-2 border-[var(--color-cinnabar)] pl-6">
-                "Cet ouvrage académique traite des problématiques fondamentales liées à {memoir.field_of_study?.label} au sein de {memoir.university?.name}."
+                {memoir.field_of_study?.label} · {memoir.university?.name}
               </p>
            </div>
            <div className="md:col-span-8">

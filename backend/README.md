@@ -43,7 +43,7 @@ cp .env.example .env
 
 | Variable | Description | Exemple |
 |----------|-------------|---------|
-| `DATABASE_URL` | URL de connexion PostgreSQL | `postgresql+psycopg2://user:pass@host/db` |
+| `DATABASE_URL` | URL de connexion PostgreSQL | `postgresql://user:pass@host/db` |
 | `SECRET_KEY` | Clé secrète pour JWT | `votre-clé-secrète` |
 | `GOOGLE_CLIENT_ID` | Client ID Google OAuth | `xxx.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Client Secret Google | `xxx` |
